@@ -1,10 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-// Counts the tones the page starts, by frequency, so the check can hear what was played.
+// Counts the tones the page starts, by frequency, and the recordings it plays, by length, so the
+// check can hear what was played.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     const played: number[] = [];
+    const recordings: number[] = [];
     (window as unknown as { __tones: number[] }).__tones = played;
+    (window as unknown as { __recordings: number[] }).__recordings = recordings;
+    const play = AudioBufferSourceNode.prototype.start;
+    AudioBufferSourceNode.prototype.start = function (this: AudioBufferSourceNode, ...args: [number?, number?, number?]) {
+      recordings.push(Math.round((this.buffer?.duration ?? 0) * 10) / 10);
+      return play.apply(this, args);
+    };
     const start = OscillatorNode.prototype.start;
     OscillatorNode.prototype.start = function (this: OscillatorNode, ...args: [number?]) {
       played.push(Math.round(this.frequency.value * 100) / 100);
@@ -33,7 +41,8 @@ test('open /en, press Start and play sol with G', async ({ page, isMobile }) => 
   await expect(instrument.locator('.key[data-note="G4"]')).toHaveClass(/is-on/);
   await expect(instrument.locator('.staff__note[data-note="G4"]')).toHaveClass(/is-on/);
   await expect(instrument.locator('.instrument__note')).toHaveText('sol');
-  expect(await page.evaluate(() => (window as unknown as { __tones: number[] }).__tones)).toContain(392);
+  // The piano's G: a two-second recording.
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __recordings: number[] }).__recordings)).toContain(2);
 });
 
 test('the path follows the language, and the choice is kept', async ({ page }) => {
@@ -86,4 +95,11 @@ test('on a phone the instrument also comes up without the first Start', async ({
   // Scrolling down to the lesson brings it up, as for someone who comes back to their level.
   await page.evaluate(() => document.getElementById('c1')!.scrollIntoView());
   await expect(page.locator('.key').first()).toBeInViewport();
+});
+
+test('the keys load the piano notes at the first touch', async ({ page }) => {
+  await page.goto('/en/');
+  const asked = page.waitForRequest((r) => r.url().endsWith('/piano/G4.m4a'));
+  await page.getByRole('button', { name: 'Start' }).first().click();
+  await asked;
 });

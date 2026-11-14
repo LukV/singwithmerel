@@ -93,6 +93,7 @@ const en: Strings = {
     about: [
       'Made by Luk Verhelst. Merel is free, and open source under the Apache 2.0 licence.',
       'The letters are Kalam and Hanken Grotesk, under the SIL Open Font License.',
+      'The piano is recorded by the University of Iowa Electronic Music Studios.',
     ],
     code: 'The code on GitHub',
   },

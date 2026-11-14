@@ -69,8 +69,9 @@ Luk runs this on the release candidate, after merging and `cz bump --prerelease 
 *(Things that turn up during the block and wait for a later one.)*
 
 - Four clips start 21 to 47 ms after their sound begins (do-C5, fa-F4, si-B4, sol-G4); they pass, and trimming them is optional.
-- Playwright's Chromium cannot play AAC, so the browser check runs on the stand-in tone; the clips are checked by ear.
 
 ## What actually happened
 
 All three pitches shipped. Release 0.1.0 holds the lesson and the instrument with Merel, the four exercises with rounds, dots, levels, skip and the progress code, English, French and Dutch with their own paths, Merel's 17 clips sung in Synthesizer V with the tone as fallback, install and offline through a small service worker, a privacy and about page, phone tips, and the AWS hosting (S3 and CloudFront in eu-north-1, set up by `deploy/setup.sh`) that a version tag deploys through OIDC. After 1.2, recognition gained its "yes" and the trail of answers, and progress can be started over. Nothing moved to a later block; the two notes above are small. The live site, the candidate deploy and the release are Luk's, after the merge.
+
+After the first candidate (v0.1.0-rc.0), Luk's phone found three things, fixed before the release: on a phone the staff and keys came up only with the first screen's Start, now also when you scroll down or start any exercise; the invitation to install showed on a desktop and was scrolled past after the first level; and the keys played a plain tone, now a recorded grand piano ([[013-piano-samples]]). The deploy role also had to trust GitHub's new token subject, with the repository's name and id.

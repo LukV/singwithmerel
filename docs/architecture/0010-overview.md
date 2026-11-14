@@ -15,7 +15,7 @@ updated: 2026-11-14
 | Build | Vite + TypeScript | static output, fast, what Claude Code knows well |
 | UI | Preact with signals | small bundle on a phone; Merel and the staff are SVG |
 | Install, offline | a web app manifest and a small service worker written by the build (`build/service-worker.ts`) | keeps the app and all clips at the first visit; no plugin to follow |
-| Audio out | Web Audio API, one AudioContext | sample-accurate scheduling of clips |
+| Audio out | Web Audio API, one AudioContext | sample-accurate scheduling of clips; the keys play recorded piano notes ([[013-piano-samples]]) |
 | Audio in | getUserMedia + an AudioWorklet | microphone frames off the main thread |
 | Pitch | a small open-source detector (candidate: pitchy, McLeod method) | no AI, runs on the device |
 | Hosting | S3 (eu-north-1) and CloudFront behind Route 53 ([[010-hosting]]); the setup is in `deploy/README.md` | the domain is already in Route 53 |
@@ -29,7 +29,7 @@ src/
   main.tsx, app.tsx  # entry point; the split screen, the keyboard
   state.ts    # the app's signals: language, started, the note played, progress
   melody/     # the do major scale, the scale exercises, the random three-note melody; pure functions, tested
-  audio/      # the AudioContext, the plain tone, Merel's clips scheduled on the audio clock
+  audio/      # the AudioContext, the plain tone, the piano notes, Merel's clips scheduled on the audio clock
   round/      # one round as a small state machine (round.ts), and the controller that plays it
   listen/     # block 2: microphone, pitch detection, the mild judge
   progress/   # the merel.v1 record in local storage, levels and dots, the progress code
@@ -39,9 +39,9 @@ src/
   offline.ts  # registers the service worker
   install.ts  # the install prompt, and whether Merel runs from the home screen
 build/        # Vite plugins: a static page per language, the service worker; design SVGs cleaned on import
-public/       # the icons, the manifest, robots.txt; voice/ holds Merel's clips and their list, voice.json
+public/       # the icons, the manifest, robots.txt; voice/ holds Merel's clips and their list, voice.json; piano/ the eight piano notes
 voice/        # the clips' WAV sources, never published; npm run voice checks and converts them; make/ is how they are made
-scripts/      # npm run voice: reads WAV, measures pitch (YIN), converts to AAC
+scripts/      # npm run voice: reads WAV, measures pitch (YIN), converts to AAC; npm run piano makes the piano notes
 deploy/       # the one-time AWS setup, the upload, the CloudFront path function and response headers
 ```
 

@@ -49,6 +49,7 @@ Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwri
 | `npm run build` | the static site in `dist/`: `/`, `/en/`, `/fr/`, `/nl/`; it must print no warning |
 | `npm run preview` | serves `dist/` at http://localhost:4173, with the live site's security headers |
 | `npm run voice` | checks the WAV clips in `voice/` (pitch within 10 cents) and converts them to `public/voice/*.m4a` with `voice.json` |
+| `npm run piano` | downloads the Iowa piano notes C4 to C5, trims and checks them, and writes `public/piano/*.m4a` (run once; the clips are in git) |
 | `npm run deploy -- next\|site` | the manual fallback: uploads `dist/` and clears CloudFront's cache; a version tag normally does this (`deploy/README.md`) |
 
 ## Layout
@@ -58,7 +59,7 @@ src/
   main.tsx, app.tsx   # entry point; the split screen and the keyboard
   state.ts            # the app's signals: language, started, the note played, progress
   melody/             # the do major scale, the scale exercises, the random melody; pure, tested
-  audio/              # the AudioContext, the plain tone, Merel's clips on the audio clock
+  audio/              # the AudioContext, the plain tone, the piano notes for the keys, Merel's clips on the audio clock
   round/              # one round as a state machine, and the controller that plays it
   progress/           # the merel.v1 record, levels and dots, the progress code
   i18n/               # languages, paths, and one string file per language (en.ts, fr.ts, nl.ts)
@@ -66,9 +67,9 @@ src/
   styles/             # tokens.css (DESIGN.md tokens) and app.css
   offline.ts          # registers the service worker
   install.ts          # the install prompt; iPhone and home-screen checks
-public/               # the icons (copied from docs/design/assets/icons/), the manifest, robots.txt; voice/ for Merel's clips
+public/               # the icons (copied from docs/design/assets/icons/), the manifest, robots.txt; voice/ for Merel's clips, piano/ for the keys
 voice/                # the clips' WAV sources, never published; make/ holds how they are made in Synthesizer V
-scripts/              # npm run voice: WAV reading, pitch measuring, conversion
+scripts/              # npm run voice and npm run piano: WAV reading, pitch measuring, conversion
 build/                # Vite plugins: the pages per language, the service worker, SVGs cleaned on import, preview headers
 deploy/               # the one-time AWS setup, the upload, the CloudFront function and headers; README.md explains them
 tests/e2e/            # the Playwright check

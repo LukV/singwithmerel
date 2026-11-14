@@ -17,7 +17,7 @@ updated: 2026-11-14
 
 The first screen is the identity, always exactly one screen high so the lesson starts below it: the wordmark, "You play. He sings.", Start, and Merel singing. Start scrolls gently to the first exercise. On a phone the instrument slides up when you press Start, scroll past the first screen, or start any exercise, and the first screen holds a line on headphones (and on an iPhone, one on the silent switch).
 
-The instrument shows real notation: treble clef, 4/4 time signature, stems, bar lines. Under each note, its solfege name and, where the language uses them, its letter name. Each key shows its note's colour dot, its solfege name, its letter name and, on a computer, the keyboard key that plays it (A S D F G H J K for do to high do).
+The instrument shows real notation: treble clef, 4/4 time signature, stems, bar lines. Under each note, its solfege name and, where the language uses them, its letter name. Each key shows its note's colour dot, its solfege name, its letter name and, on a computer, the keyboard key that plays it (A S D F G H J K for do to high do). The keys sound like a grand piano ([[013-piano-samples]]).
 
 ## The lesson as a path
 

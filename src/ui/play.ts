@@ -1,13 +1,13 @@
-import { playTone } from '../audio/tone';
+import { playPiano } from '../audio/piano';
 import { SCALE } from '../melody/scale';
 import { keyPressed } from '../round/controller';
 import { lit, plays } from '../state';
 
-/** Play a note of the scale on the instrument: its tone, its dot on the key, its mark on the staff. */
+/** Play a note of the scale on the instrument: its piano note, its dot on the key, its mark on the staff. */
 export function playNote(step: number): void {
   const note = SCALE[step];
   if (!note) return;
-  playTone(note.freq);
+  playPiano(step);
   lit.value = step;
   plays.value++;
   keyPressed(step);
