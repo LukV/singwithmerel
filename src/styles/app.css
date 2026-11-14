@@ -1022,3 +1022,135 @@ a {
     bottom: auto;
   }
 }
+
+/* ---- Phone tips, under Start ---- */
+
+.tips {
+  max-width: 420px;
+  margin: -16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--quiet);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+/* ---- The invitation to add Merel to the home screen ---- */
+
+.invite {
+  margin-left: 92px;
+  padding: 22px 24px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invite__title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.05;
+}
+
+.invite__text {
+  margin: 0;
+  max-width: 440px;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.invite__how {
+  font-weight: 500;
+}
+
+.invite__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* ---- The foot of the lesson, and the privacy page ---- */
+
+.lesson__foot {
+  padding-left: 92px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lesson__foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  color: var(--quiet);
+  text-underline-offset: 4px;
+}
+
+.privacy {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 24px 96px;
+}
+
+.privacy__body {
+  padding-top: 48px;
+  max-width: 600px;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.privacy__title {
+  margin: 40px 0 12px;
+  font-size: 40px;
+  line-height: 1.05;
+}
+
+.privacy__title:first-child {
+  margin-top: 0;
+}
+
+.privacy__body a:not(.button) {
+  color: var(--ink);
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.privacy__back {
+  margin-top: 40px;
+}
+
+.privacy .button {
+  text-decoration: none;
+}
+
+@media (max-width: 700px) {
+  .invite {
+    margin-left: 60px;
+    padding: 18px;
+  }
+
+  .lesson__foot {
+    padding-left: 60px;
+  }
+
+  .privacy {
+    padding: 8px 16px 64px;
+  }
+
+  .privacy__body {
+    padding-top: 24px;
+    font-size: 17px;
+  }
+
+  .privacy__title {
+    font-size: 34px;
+  }
+}

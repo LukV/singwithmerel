@@ -5,6 +5,7 @@ import { lang, started, t } from '../state';
 import { Header } from './Header';
 import { HandRule } from './HandRule';
 import { Merel } from './merel/Merel';
+import { Tips } from './Tips';
 
 /** The first screen: the wordmark, "You play. He sings.", Start, and Merel singing on his line. */
 export function Identity() {
@@ -38,6 +39,7 @@ export function Identity() {
           <HandRule class="identity__ground" strokeWidth={5} wobble={2} seed={7} />
         </div>
       </div>
+      <Tips />
     </section>
   );
 }

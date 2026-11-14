@@ -1,6 +1,6 @@
 import { computed, signal } from '@preact/signals';
 import { STRINGS } from './i18n/strings';
-import { pathFor, pickLang, type Lang } from './i18n/langs';
+import { pageFromPath, pathFor, pickLang, type Lang, type Page } from './i18n/langs';
 import { pageMeta } from './i18n/meta';
 import { levelStates } from './progress/levels';
 import { readProgress, saveProgress, type Progress } from './progress/store';
@@ -8,6 +8,9 @@ import { readProgress, saveProgress, type Progress } from './progress/store';
 /** The language on screen. */
 export const lang = signal<Lang>('en');
 export const t = computed(() => STRINGS[lang.value]);
+
+/** The page on screen, from the path. */
+export const page = signal<Page>(typeof location === 'undefined' ? 'lesson' : pageFromPath(location.pathname));
 
 /** Whether Start was pressed; on a phone the instrument slides up then. */
 export const started = signal(false);
@@ -38,8 +41,8 @@ export function applyLang(next: Lang, history: 'push' | 'replace' | 'none' = 'pu
   lang.value = next;
   setProgress({ ...progress.value, lang: next });
   document.documentElement.lang = next;
-  document.title = pageMeta[next].title;
-  const path = pathFor(next);
+  document.title = page.value === 'privacy' ? pageMeta[next].privacyTitle : pageMeta[next].title;
+  const path = pathFor(next, page.value);
   if (history !== 'none' && location.pathname !== path) {
     const url = path + location.search + location.hash;
     if (history === 'push') window.history.pushState(null, '', url);

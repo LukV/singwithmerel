@@ -65,6 +65,37 @@ const nl: Strings = {
   dockShow: 'Toon de notenbalk en de toetsen',
   keyLabel: (name, letter, kbd) => `${name}${letter ? `, ${letter}` : ''}, toets ${kbd.toUpperCase()}`,
   staffLabel: (names) => `De toonladder van do groot op de notenbalk: ${names}`,
+  tips: {
+    headphones: 'Zing mee met oortjes in: je hoort Merel, en hij overstemt je niet.',
+    silentSwitch: 'Op een iPhone zet de stilteknop ook Merel stil.',
+  },
+  install: {
+    title: 'Hou Merel op je gsm',
+    iosText: 'Zet Merel op je beginscherm. Hij opent als een app, werkt zonder netwerk en houdt je voortgang bij: Safari vergeet die na zeven dagen zonder bezoek.',
+    iosHow: 'Tik op Deel en dan op ‘Zet op beginscherm’.',
+    text: 'Installeer Merel. Hij opent als een app en werkt zonder netwerk.',
+    button: 'Installeer',
+    later: 'Niet nu',
+  },
+  privacyLink: 'Privacy en over Merel',
+  privacy: {
+    back: 'Terug naar Merel',
+    title: 'Privacy',
+    paragraphs: [
+      'Merel heeft geen accounts en vraagt niets over jou.',
+      'Je voortgang en je taal blijven in deze browser, op je toestel. Er wordt niets verstuurd: geen tracking, geen statistieken, geen reclame.',
+      'Merel gebruikt je microfoon niet en neemt niets op.',
+      'De voortgangscode bevat alleen je bolletjes en niveaus. Hij gaat waar jij hem plakt, en nergens anders heen.',
+      'Wil je alles wissen, gebruik dan Begin opnieuw aan het einde van de les, of wis de gegevens van deze site in je browser.',
+      'De site wordt geleverd door Amazon CloudFront. Zoals elke webserver ziet die je adres om je verzoek te beantwoorden; Merel houdt geen logboek bij.',
+    ],
+    aboutTitle: 'Over Merel',
+    about: [
+      'Gemaakt door Luk Verhelst. Merel is gratis, en open source onder de Apache 2.0-licentie.',
+      'De letters zijn Kalam en Hanken Grotesk, onder de SIL Open Font License.',
+    ],
+    code: 'De code op GitHub',
+  },
   merel: {
     waiting: 'Merel wacht',
     singing: 'Merel zingt',

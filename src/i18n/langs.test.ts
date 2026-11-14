@@ -21,3 +21,15 @@ describe('choosing the language', () => {
     expect(pickLang('/', null, ['fr-CA'])).toBe('fr');
   });
 });
+
+describe('pages', () => {
+  it('reads the privacy page from its path, and writes it back', async () => {
+    const { pageFromPath, pathFor } = await import('./langs');
+    expect(pageFromPath('/fr/privacy/')).toBe('privacy');
+    expect(pageFromPath('/fr/privacy')).toBe('privacy');
+    expect(pageFromPath('/fr/')).toBe('lesson');
+    expect(pageFromPath('/')).toBe('lesson');
+    expect(pathFor('nl', 'privacy')).toBe('/nl/privacy/');
+    expect(pathFor('nl')).toBe('/nl/');
+  });
+});

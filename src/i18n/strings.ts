@@ -70,6 +70,27 @@ export interface Strings {
   /** The accessible label of a key: name, letter, computer key. */
   keyLabel: (name: string, letter: string | null, kbd: string) => string;
   staffLabel: (names: string) => string;
+  /** One line each on the first screen, on phones. */
+  tips: { headphones: string; silentSwitch: string };
+  install: {
+    title: string;
+    /** On an iPhone or iPad, in Safari: why, and how. */
+    iosText: string;
+    iosHow: string;
+    /** Where the browser can install it itself (Android, Chrome). */
+    text: string;
+    button: string;
+    later: string;
+  };
+  privacyLink: string;
+  privacy: {
+    back: string;
+    title: string;
+    paragraphs: string[];
+    aboutTitle: string;
+    about: string[];
+    code: string;
+  };
   merel: { waiting: string; singing: string; thinking: string; listening: string; bowing: string };
 }
 

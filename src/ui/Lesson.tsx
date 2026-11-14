@@ -1,3 +1,4 @@
+import { Fragment } from 'preact';
 import { SCALE, noteColour } from '../melody/scale';
 import { dotsOf, isDone, isSkipped, type LevelState } from '../progress/levels';
 import { DOTS } from '../progress/store';
@@ -6,7 +7,10 @@ import { goesUp, isRecognition, type Round } from '../round/round';
 import { cards, progress, t } from '../state';
 import { HandRule } from './HandRule';
 import { Merel, type Pose } from './merel/Merel';
+import { InstallInvite } from './InstallInvite';
 import { ProgressPanel } from './ProgressPanel';
+import { pathFor } from '../i18n/langs';
+import { lang } from '../state';
 
 const CARD_VIEWBOX = '20 -40 280 378';
 
@@ -15,9 +19,16 @@ export function Lesson() {
     <div class="lesson">
       <HandRule direction="vertical" class="lesson__path" strokeWidth={3} wobble={1.6} seed={11} />
       {cards.value.map((state, i) => (
-        <Card key={i} level={i + 1} state={state} />
+        <Fragment key={i}>
+          {state === 'active' && <InstallInvite />}
+          <Card level={i + 1} state={state} />
+        </Fragment>
       ))}
+      {!cards.value.includes('active') && <InstallInvite />}
       <ProgressPanel />
+      <footer class="lesson__foot">
+        <a href={pathFor(lang.value, 'privacy')}>{t.value.privacyLink}</a>
+      </footer>
     </div>
   );
 }

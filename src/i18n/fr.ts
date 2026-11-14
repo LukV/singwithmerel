@@ -65,6 +65,37 @@ const fr: Strings = {
   dockShow: 'Montrer la portée et le clavier',
   keyLabel: (name, letter, kbd) => `${name}${letter ? `, ${letter}` : ''}, touche ${kbd.toUpperCase()} du clavier`,
   staffLabel: (names) => `La gamme de do majeur sur la portée : ${names}`,
+  tips: {
+    headphones: 'Chante avec des écouteurs : tu entends Merel, et il ne couvre pas ta voix.',
+    silentSwitch: 'Sur un iPhone, le bouton silence fait aussi taire Merel.',
+  },
+  install: {
+    title: 'Garde Merel sur ton téléphone',
+    iosText: 'Ajoute Merel à ton écran d’accueil. Il s’ouvre comme une app, marche sans réseau et garde tes progrès : Safari les oublie après sept jours sans visite.',
+    iosHow: 'Touche Partager, puis « Sur l’écran d’accueil ».',
+    text: 'Installe Merel. Il s’ouvre comme une app et marche sans réseau.',
+    button: 'Installer',
+    later: 'Pas maintenant',
+  },
+  privacyLink: 'Confidentialité et à propos',
+  privacy: {
+    back: 'Retour à Merel',
+    title: 'Confidentialité',
+    paragraphs: [
+      'Merel n’a pas de compte et ne te demande rien sur toi.',
+      'Tes progrès et ta langue restent dans ce navigateur, sur ton appareil. Rien n’est envoyé nulle part : pas de pistage, pas de statistiques, pas de publicité.',
+      'Merel n’utilise pas ton micro et n’enregistre rien.',
+      'Le code de progrès contient seulement tes points et tes niveaux. Il va là où tu le colles, et nulle part ailleurs.',
+      'Pour tout effacer, utilise Recommencer à la fin de la leçon, ou efface les données de ce site dans ton navigateur.',
+      'Le site est servi par Amazon CloudFront. Comme tout serveur web, il voit ton adresse pour répondre à la demande ; Merel ne garde aucun journal.',
+    ],
+    aboutTitle: 'À propos',
+    about: [
+      'Fait par Luk Verhelst. Merel est gratuit, et libre sous la licence Apache 2.0.',
+      'Les lettres sont Kalam et Hanken Grotesk, sous la licence SIL Open Font License.',
+    ],
+    code: 'Le code sur GitHub',
+  },
   merel: {
     waiting: 'Merel attend',
     singing: 'Merel chante',

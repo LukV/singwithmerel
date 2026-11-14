@@ -25,6 +25,14 @@ export function pickLang(path: string, stored: Lang | null, languages: readonly 
   return langFromPath(path) ?? stored ?? langFromBrowser(languages);
 }
 
-export function pathFor(lang: Lang): string {
-  return `/${lang}/`;
+/** The pages: the lesson, and privacy and about. */
+export type Page = 'lesson' | 'privacy';
+
+/** The page a path names, as in `/fr/privacy/`; the lesson otherwise. */
+export function pageFromPath(path: string): Page {
+  return path.split('/').filter(Boolean)[1] === 'privacy' ? 'privacy' : 'lesson';
+}
+
+export function pathFor(lang: Lang, page: Page = 'lesson'): string {
+  return page === 'privacy' ? `/${lang}/privacy/` : `/${lang}/`;
 }

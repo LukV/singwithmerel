@@ -65,6 +65,37 @@ const en: Strings = {
   dockShow: 'Show the staff and keys',
   keyLabel: (name, letter, kbd) => `${name}${letter ? `, ${letter}` : ''}, keyboard key ${kbd.toUpperCase()}`,
   staffLabel: (names) => `The scale of do major on the staff: ${names}`,
+  tips: {
+    headphones: 'Sing along with headphones on: you hear Merel, and he does not drown you out.',
+    silentSwitch: 'On an iPhone, the silent switch silences Merel too.',
+  },
+  install: {
+    title: 'Keep Merel on your phone',
+    iosText: 'Add Merel to your home screen. He opens like an app, works without a network, and keeps your progress: Safari forgets it after seven days without a visit.',
+    iosHow: 'Tap Share, then “Add to Home Screen”.',
+    text: 'Install Merel. He opens like an app and works without a network.',
+    button: 'Install',
+    later: 'Not now',
+  },
+  privacyLink: 'Privacy and about',
+  privacy: {
+    back: 'Back to Merel',
+    title: 'Privacy',
+    paragraphs: [
+      'Merel has no accounts and asks nothing about you.',
+      'Your progress and your language stay in this browser, on your device. Nothing is sent anywhere: there is no tracking, no analytics and no advertising.',
+      'Merel does not use your microphone and records nothing.',
+      'The progress code holds only your dots and levels. It goes where you paste it, and nowhere else.',
+      'To clear everything, use Start over at the end of the lesson, or clear this site’s data in your browser.',
+      'The site is served by Amazon CloudFront. Like any web server it sees your address to answer the request; Merel keeps no logs.',
+    ],
+    aboutTitle: 'About',
+    about: [
+      'Made by Luk Verhelst. Merel is free, and open source under the Apache 2.0 licence.',
+      'The letters are Kalam and Hanken Grotesk, under the SIL Open Font License.',
+    ],
+    code: 'The code on GitHub',
+  },
   merel: {
     waiting: 'Merel waits',
     singing: 'Merel sings',
