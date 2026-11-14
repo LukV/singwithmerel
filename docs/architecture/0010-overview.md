@@ -26,15 +26,23 @@ updated: 2026-11-14
 
 ```
 src/
-  melody/     # the random three-note melody and the scale exercises; pure functions, tested
-  audio/      # loads and schedules Merel's clips; interface sounds
-  listen/     # microphone, pitch detection, the mild judge
-  progress/   # local storage, the progress code, levels and dots
-  i18n/       # EN, FR, NL strings and note names
-  ui/         # lesson (path, cards), instrument (staff, keys), Merel (SVG poses, CSS motion)
+  main.tsx, app.tsx  # entry point; the split screen, the keyboard
+  state.ts    # the app's signals: language, started, the note played, card states
+  melody/     # the do major scale; from 1.2 the random three-note melody; pure functions, tested
+  audio/      # the AudioContext and the plain tone; from 1.2 Merel's clips
+  listen/     # block 2: microphone, pitch detection, the mild judge
+  progress/   # the merel.v1 record in local storage; from 1.2 levels, dots and the progress code
+  i18n/       # languages and paths; EN, FR, NL strings and note names, one file each
+  ui/         # identity, lesson (path, cards), instrument (staff, keys), Merel (SVG poses, CSS motion)
+  styles/     # the tokens of DESIGN.md as custom properties, and the layout
+build/        # Vite plugins: a static page per language; design SVGs cleaned on import
 public/
-  voice/      # Merel's clips, see docs/reference/0010-voice-clips.md
+  voice/      # Merel's clips (from 1.2), see docs/reference/0010-voice-clips.md
 ```
+
+**Pages and languages.** The build writes `/en/`, `/fr/` and `/nl/` as static pages, each with its `lang`, title and description, and a `/` that runs the same app. On load the app picks the language (the path, then the stored choice, then the browser), stores it in `merel.v1` and moves to its path; the switch in the header does the same without a reload.
+
+**Drawings.** Merel, the wordmark and the clef are imported from `docs/design/assets/` and cleaned at build time. Hand-drawn lines (the staff, the lesson path, underlines) are drawn per size from a seeded wobble, never stretched; the staff measures its box and places everything in multiples of half a line space.
 
 ## One round in code
 
@@ -67,7 +75,7 @@ Microphone refused, missing or too noisy: the app falls back to the release 1 ru
 
 ## Progress
 
-Stored under one local-storage key, `merel.v1`:
+Stored under one local-storage key, `merel.v1`; release 1 so far stores only `lang`, and pitch 1.2 adds the rest:
 
 ```json
 {

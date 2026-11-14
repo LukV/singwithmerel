@@ -18,7 +18,7 @@ Merel is a free web app that teaches anyone to sing a scale and to recognise not
 
 It runs in English, French and Dutch, on a phone or a laptop, and installs like an app. There are no accounts, nothing is tracked, and when Merel starts listening to your voice, the sound is analysed on your device and never leaves it.
 
-> **Status.** Designed, not built yet. Block 1, the first release, is in progress: see [the plan](docs/planning/blocks/1-sing-along.md).
+> **Status.** Block 1, the first release, is in progress: the screen and the instrument work; the exercises come next. See [the plan](docs/planning/blocks/1-sing-along.md).
 
 ## What you do
 
@@ -33,7 +33,7 @@ Every round is **Hear it**, **Sing along**, **Your turn**. Five rounds fill five
 
 ## How it is built
 
-A static, installable web app (a PWA): TypeScript, built with Vite, served from S3 and CloudFront at singwithmerel.com. Everything runs in the browser: the melodies, Merel's recorded voice, the progress (in local storage) and, from block 2, pitch detection without AI. GitHub Actions checks every push; a release tag deploys. Versions follow semantic versioning and Conventional Commits, with commitizen; each release has a [changelog](CHANGELOG.md).
+A static, installable web app (a PWA): TypeScript and Preact, built with Vite, served from S3 and CloudFront at singwithmerel.com. Everything runs in the browser: the melodies, Merel's recorded voice, the progress (in local storage) and, from block 2, pitch detection without AI. GitHub Actions checks every push; a release tag deploys. Versions follow semantic versioning and Conventional Commits, with commitizen; each release has a [changelog](CHANGELOG.md).
 
 | | |
 |---|---|
@@ -47,7 +47,7 @@ A static, installable web app (a PWA): TypeScript, built with Vite, served from 
 
 ## Getting started
 
-Coming with the first pitch: `npm install`, `npm run dev`, `npm run check`. [AGENTS.md](AGENTS.md) will hold the commands.
+With Node 26: `npm install`, then `npm run dev` for the app and `npm run check` for types, lint and tests. [AGENTS.md](AGENTS.md) holds all the commands.
 
 ## How we work
 

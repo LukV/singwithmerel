@@ -1,10 +1,11 @@
 ---
 project: merel
 type: pitch
-status: in-cycle
+status: shipped
 block: 1-sing-along
 created: 2026-11-14
 started: 2026-11-14
+shipped_on: 2026-11-14
 ---
 # 1.1 The instrument and the lesson
 
@@ -54,17 +55,17 @@ The identity screen and the split screen with the instrument playing tones from 
 
 ## Definition of done
 
-- [ ] Repository on `block/1-sing-along`, pushed to GitHub, with the scripts above; `npm run check` passes.
-- [ ] The CI workflow runs on the block branch and is green.
-- [ ] Decision 012 records the stack.
-- [ ] Every commit follows Conventional Commits; CI checks them on the pull request.
-- [ ] Identity screen, lesson path with four cards in three states, and the instrument match the canvas closely.
-- [ ] Every key plays its note by mouse, touch and keyboard, and shows its dot and the dashes on the staff.
-- [ ] Merel's five poses render and move; reduced motion stops them.
-- [ ] /en, /fr, /nl and the switch work; names and letters follow the language.
-- [ ] The phone layout docks the instrument at the bottom from 360 px wide.
-- [ ] One Playwright check opens /en, presses Start and plays sol by pressing G.
-- [ ] `AGENTS.md` has the real commands; `docs/architecture/0010-overview.md` matches the code layout.
+- [x] Repository on `block/1-sing-along`, pushed to GitHub, with the scripts above; `npm run check` passes.
+- [x] The CI workflow runs on the block branch and is green.
+- [x] Decision 012 records the stack.
+- [x] Every commit follows Conventional Commits; CI checks them on the pull request.
+- [x] Identity screen, lesson path with four cards in three states, and the instrument match the canvas closely.
+- [x] Every key plays its note by mouse, touch and keyboard, and shows its dot and the dashes on the staff.
+- [x] Merel's five poses render and move; reduced motion stops them.
+- [x] /en, /fr, /nl and the switch work; names and letters follow the language.
+- [x] The phone layout docks the instrument at the bottom from 360 px wide.
+- [x] One Playwright check opens /en, presses Start and plays sol by pressing G.
+- [x] `AGENTS.md` has the real commands; `docs/architecture/0010-overview.md` matches the code layout.
 
 ## Test scenario
 
@@ -74,12 +75,12 @@ The identity screen and the split screen with the instrument playing tones from 
 4. Press Start. The lesson shows four numbered cards on a path, the instrument shows the do major scale on the staff and eight keys.
 5. Click each key, then press A S D F G H J K. Each plays its note, its dot shows, the dashes appear at the note on the staff.
 6. Switch to Français, then Nederlands. Names change (ré in French, no letters in French), the page path changes, a reload keeps the language.
-7. Open the browser's device toolbar at 390 by 844. The instrument docks at the bottom; the keys are big enough to tap. (A person judges.)
-8. In the dev control, set card 1 to active, 2 to completed, 3 and 4 upcoming. Active is black and underlined, completed is grey with Merel bowing. (A person judges.)
+7. Open the browser's device toolbar at 390 by 844 and press Start. The instrument slides up and docks at the bottom; the keys are big enough to tap. (A person judges.)
+8. In the dev control (the small "dev" button at the bottom left, only in `npm run dev`), set card 1 to active, 2 to completed, 3 and 4 upcoming. Active is black and underlined, completed is grey with Merel bowing. (A person judges.)
 9. On your phone, open the dev address on the same network (`npm run dev -- --host`). Tap Start and play a few keys; you hear them.
 
 ---
 
 ## What actually happened
 
-*(At the end.)*
+The whole pitch landed, French and Dutch included. Vite, TypeScript and Preact with signals ([[012-stack]]); Merel, the wordmark and the clef are imported straight from `docs/design/assets/` and cleaned at build time, so there is one copy of each drawing. The staff is drawn per size: it measures its box and places everything in multiples of half a line space, and the staff lines, the lesson path and the underlines are seeded hand-drawn lines rather than stretched paths. On a phone the notes keep a readable spacing, about five show, and the staff scrolls to the note just played; the keys stay at least 44 px wide down to 360 px because the gutters and key gaps shrink instead (Luk, 2026-11-14), and the instrument slides up on Start, not under reduced motion. Routine choices: the build writes static `/en/`, `/fr/`, `/nl/` pages and a `/` that runs the same app and picks the language; the language is stored in the `merel.v1` record, which 1.2 extends; keys play on pointer down for less delay on phones, and the computer keyboard also plays the home row by position, so A S D F G H J K works on AZERTY too; the desktop shows the instrument from the start, as on the canvas, and Start scrolls to exercise 1; the card copy follows the docs, not the canvas (exercise 3 is a random melody, not Vader Jacob); completed dots take the colours of do to sol; the instrument's head shows the note just played with its dot. Worth knowing: the cards' Start and Hear it buttons do nothing yet, that is 1.2; the dev control appears only in `npm run dev`; CI runs `cz check` on every push to a branch as well as on pull requests, and fails the build on any warning; `npm audit` reports moderate advisories in typescript-eslint, a development tool that never reaches the site. Also fixed on the way: the README said a pull request deploys on merge (a tag does), DESIGN.md now allows the one slide and says the keys keep 44 px, and the block's definition of done marks the items Luk checks after the release.

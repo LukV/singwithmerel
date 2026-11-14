@@ -38,8 +38,35 @@ A free web app that teaches anyone to sing a scale and recognise notes by ear, w
 
 ## Commands
 
-*(Written by pitch 1.1 when the project exists: dev, check, build, voice, deploy.)*
+Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwright install chromium` for the browser check.
+
+| Command | Does |
+|---|---|
+| `npm run dev` | the app at http://localhost:5173, with the dev control for card states; `npm run dev -- --host` to open it from a phone on the same network |
+| `npm run check` | types (`tsc`), lint (ESLint) and unit tests (Vitest): what CI runs first |
+| `npm test` | the unit tests only |
+| `npm run test:e2e` | builds the site and runs the Playwright check against it, on a desktop and a phone viewport |
+| `npm run build` | the static site in `dist/`: `/`, `/en/`, `/fr/`, `/nl/`; it must print no warning |
+| `npm run preview` | serves `dist/` at http://localhost:4173 |
+
+Still to come: `npm run voice` (pitch 1.3) and `npm run deploy` (pitch 1.3).
 
 ## Layout
 
-*(Written by pitch 1.1; the intended shape is in `docs/architecture/0010-overview.md`.)*
+```
+src/
+  main.tsx, app.tsx   # entry point; the split screen and the keyboard
+  state.ts            # the app's signals: language, started, the note played, card states
+  melody/             # the do major scale (and, from 1.2, the melodies); pure, tested
+  audio/              # the AudioContext and the plain tone
+  progress/           # the merel.v1 record in local storage
+  i18n/               # languages, paths, and one string file per language (en.ts, fr.ts, nl.ts)
+  ui/                 # identity, header, lesson and cards, instrument (staff, keys), Merel, hand-drawn lines
+  styles/             # tokens.css (DESIGN.md tokens) and app.css
+build/                # Vite plugins: the page per language, SVGs cleaned on import
+tests/e2e/            # the Playwright check
+docs/                 # the docs; Merel and the signs are imported from docs/design/assets/
+.github/workflows/    # ci.yml
+```
+
+Merel, the wordmark and the clef are imported straight from `docs/design/assets/` (`?clean`), so the design sources stay the only copy.
