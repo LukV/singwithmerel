@@ -3,7 +3,7 @@ import { audioContext, unlock } from '../audio/tone';
 import { BEAT, preloadVoice, sing, type Performance } from '../audio/voice';
 import type { Melody } from '../melody/melody';
 import { activeLevel, completeRound, skipLevel } from '../progress/levels';
-import { dockOpen, lang, progress, setProgress } from '../state';
+import { dockOpen, lang, progress, setProgress, started } from '../state';
 import { advance, isRecognition, melodyFor, newRound, type Round, type RoundEvent } from './round';
 
 /**
@@ -123,6 +123,9 @@ export function startRound(level: number): void {
   preloadVoice(lang.value);
   clearTimeout(bowTimer);
   bowing.value = false;
+  // A card's Start or Hear it brings the instrument up too, not only the first screen's Start:
+  // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
+  started.value = true;
   dockOpen.value = true;
   const melody = melodyFor(level, lastMelody[level] ?? null);
   lastMelody[level] = melody;
@@ -141,6 +144,9 @@ export function hear(level: number): void {
   }
   clearTimeout(bowTimer);
   bowing.value = false;
+  // A card's Start or Hear it brings the instrument up too, not only the first screen's Start:
+  // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
+  started.value = true;
   dockOpen.value = true;
   const melody = level <= 2 ? melodyFor(level) : (lastMelody[level] ??= melodyFor(level));
   const preview = newRound(level, melody, 'preview');

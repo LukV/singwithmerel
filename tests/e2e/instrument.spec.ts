@@ -78,3 +78,12 @@ test('on a phone the instrument tucks away and comes back', async ({ page }) => 
   await show.click();
   await expect(page.locator('.key').first()).toBeInViewport();
 });
+
+test('on a phone the instrument also comes up without the first Start', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/en/');
+  await expect(page.locator('.key').first()).not.toBeInViewport();
+  // Scrolling down to the lesson brings it up, as for someone who comes back to their level.
+  await page.evaluate(() => document.getElementById('c1')!.scrollIntoView());
+  await expect(page.locator('.key').first()).toBeInViewport();
+});
