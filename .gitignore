@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+*.tsbuildinfo
+.vite/
+
+# Merel's voice: the .m4a files are built from public/voice/source/*.wav by `npm run voice`
+public/voice/*.m4a
+
+# Tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Obsidian, when the docs are opened as a vault
+.obsidian/
+
+# Claude Code, per machine
+.claude/settings.local.json
+.claude/worktrees/

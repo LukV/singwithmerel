@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Merel typography and colour</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500&family=Kalam:wght@700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#121212}a:hover{color:#121212}
+button{font-family:inherit}
+
+.live .m-bob{animation:m-bob 2.6s ease-in-out infinite}
+.live .m-eye{animation:m-blink 4.2s infinite}
+.live .m-tail{animation:m-tail 3.4s ease-in-out infinite}
+.live.p-singing .m-bob{animation:m-hop .62s ease-in-out infinite}
+.live.p-singing .m-beak-u{animation:m-beak-u .31s ease-in-out infinite alternate}
+.live.p-singing .m-beak-l{animation:m-beak-l .31s ease-in-out infinite alternate}
+.live.p-singing .m-head{animation:m-sway 1.24s ease-in-out infinite}
+.live.p-singing .m-marks{animation:m-marks .62s steps(2) infinite}
+.live.p-listening .m-head{animation:m-cock 2.8s ease-in-out infinite}
+.live.p-thinking .m-head{animation:m-ponder 3.6s ease-in-out infinite}
+.live.p-waiting .m-head{animation:m-look 5s ease-in-out infinite}
+.live.p-bowing .m-bob{animation:m-bow 2.4s ease-in-out infinite}
+@keyframes m-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes m-hop{0%,100%{transform:translateY(0) scaleY(1)}12%{transform:translateY(0) scaleY(.96)}45%{transform:translateY(-12px) scaleY(1.02)}}
+@keyframes m-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes m-tail{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-12deg)}84%{transform:rotate(4deg)}}
+@keyframes m-beak-u{from{transform:rotate(0)}to{transform:rotate(-12deg)}}
+@keyframes m-beak-l{from{transform:rotate(0)}to{transform:rotate(12deg)}}
+@keyframes m-sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes m-cock{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-14deg)}}
+@keyframes m-ponder{0%,100%{transform:rotate(0)}40%,60%{transform:rotate(-8deg)}}
+@keyframes m-look{0%,40%,100%{transform:rotate(0)}50%,85%{transform:rotate(-10deg)}}
+@keyframes m-bow{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}
+@keyframes m-marks{0%{opacity:1}50%{opacity:0}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.live *{animation:none !important}}
+</style>
+</helmet>
+<div style="width: 1600px; height: 1000px; box-sizing: border-box; display: flex; font-family: 'Hanken Grotesk', system-ui, sans-serif">
+<div style="width: 800px; flex: none; box-sizing: border-box; background: #F4F3EF; color: #121212; padding: 56px; display: flex; flex-direction: column; gap: 24px">
+<div style="font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #121212">Lettering · a marker, by hand</div>
+<div style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 112px; line-height: 1.02; letter-spacing: 0.02em; text-transform: uppercase; color: #121212; ">Do re mi fa<br>sol la si do</div>
+<p style="margin: 0; max-width: 600px; font-size: 18px; font-weight: 400; line-height: 1.45">The wordmark is drawn. For running headlines Kalam Bold stands in on the web, always in capitals. A real project would commission its own alphabet.</p>
+<div style="font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #121212">Small text · Hanken Grotesk</div>
+<div style="display: flex; gap: 36px; align-items: flex-start; font-size: 20px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase"><span style="display: flex; flex-direction: column; gap: 4px"><span>Sing</span><svg aria-hidden="true" viewBox="0 0 52 10" style="display: block; width: 52px; height: 10px"><path d="M3.0 5.0 L49.0 5.0" fill="none" stroke="#121212" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Recognize</span><span>About</span></div>
+<p style="margin: 0; max-width: 600px; font-size: 22px; font-weight: 300; line-height: 1.4">Merel teaches you to sing a scale and to recognise a note by ear. You play and he sings. Then he sings and you find the key.</p>
+<div style="font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #121212">Buttons</div>
+<div style="display: flex; gap: 16px; flex-wrap: wrap"><button type="button" style="min-height: 52px; padding: 0 28px; background: transparent; color: #121212; border: 2px solid #121212; border-radius: 8px; font-size: 18px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer">Start</button><button type="button" style="min-height: 52px; padding: 0 28px; background: #121212; color: #FFFFFF; border: 2px solid #121212; border-radius: 8px; font-size: 18px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer">Sing it back</button></div>
+</div>
+<div style="width: 800px; flex: none; box-sizing: border-box; background: #121212; color: #FFFFFF; padding: 56px; display: flex; flex-direction: column; gap: 30px">
+<div style="font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Colour · ink dots, one at a time</div>
+<div style="display: flex; gap: 8px"><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #E5354B"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">do</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#E5354B</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #F58A2A"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">re</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#F58A2A</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #F4C83F"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">mi</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#F4C83F</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #45B97C"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">fa</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#45B97C</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #4AA8E8"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">sol</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#4AA8E8</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #8A6BE0"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">la</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#8A6BE0</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1 1 0; min-width: 0">
+<span style="display: block; width: 78px; height: 70px; border-radius: 50%; transform: rotate(-12deg); background: #E86BB0"></span>
+<span style="font-family: 'Kalam', 'Comic Sans MS', cursive; font-weight: 700; font-size: 32px; line-height: 1; text-transform: uppercase; color: #FFFFFF">si</span>
+<span style="font-size: 13px; font-weight: 400; letter-spacing: 0.04em; color: #D6D6D6">#E86BB0</span>
+</div></div>
+<p style="margin: 0; max-width: 620px; font-size: 22px; font-weight: 300; line-height: 1.4">Black and paper carry everything. A note shows its colour only while it sounds, and only as a dot.</p>
+<div style="display: flex; gap: 16px">
+<div style="flex: 1 1 0; box-sizing: border-box; height: 92px; background: #121212; border: 2px solid #FFFFFF; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 15px; letter-spacing: 0.06em">INK #121212</div>
+<div style="flex: 1 1 0; box-sizing: border-box; height: 92px; background: #F4F3EF; color: #121212; border: 2px solid #F4F3EF; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 15px; letter-spacing: 0.06em">PAPER #F4F3EF</div>
+<div style="flex: 1 1 0; box-sizing: border-box; height: 92px; background: #FF8A1F; color: #121212; border: 2px solid #FF8A1F; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: flex-end; font-size: 15px; letter-spacing: 0.06em">MEREL'S BEAK #FF8A1F</div>
+</div>
+<div style="font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Signs · same marker, white on black</div>
+<div style="display: flex; gap: 26px; flex-wrap: wrap"><div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg viewBox="0 0 80 80" aria-hidden="true" style="display: block; width: 84px; height: 84px"><path d="M27 19 L57 40 L26 61 Z" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Sing</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg viewBox="0 0 80 80" aria-hidden="true" style="display: block; width: 84px; height: 84px"><path d="M58.0 30.0 C56.0 28.0 51.0 19.7 46.0 18.0 C41.0 16.3 32.3 16.7 28.0 20.0 C23.7 23.3 20.3 32.0 20.0 38.0 C19.7 44.0 22.0 52.0 26.0 56.0 C30.0 60.0 38.7 62.7 44.0 62.0 C49.3 61.3 55.7 53.7 58.0 52.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M59.9 14.0 Q59.0 30.8 51.0 29.9 L43.0 29.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Again</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg viewBox="0 0 80 80" aria-hidden="true" style="display: block; width: 84px; height: 84px"><path d="M17.8 42.2 Q34.3 58.2 48.1 40.1 L62.0 22.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Right</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg viewBox="0 0 80 80" aria-hidden="true" style="display: block; width: 84px; height: 84px"><ellipse cx="30" cy="56" rx="12" ry="9" transform="rotate(-18 30 56)" fill="#FFFFFF"></ellipse><path d="M40.8 54.0 L42.0 16.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M42.0 16.0 C44.0 17.0 51.3 19.3 54.0 22.0 C56.7 24.7 58.0 28.7 58.0 32.0 C58.0 35.3 54.7 40.3 54.0 42.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Note</span>
+</div><div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg viewBox="0 0 80 80" aria-hidden="true" style="display: block; width: 84px; height: 84px"><path d="M28.0 60.0 C27.0 57.3 22.7 49.7 22.0 44.0 C21.3 38.3 21.3 30.7 24.0 26.0 C26.7 21.3 33.3 16.7 38.0 16.0 C42.7 15.3 49.0 18.7 52.0 22.0 C55.0 25.3 56.7 32.0 56.0 36.0 C55.3 40.0 50.0 42.7 48.0 46.0 C46.0 49.3 46.0 53.3 44.0 56.0 C42.0 58.7 37.3 61.0 36.0 62.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M34.0 38.0 C34.3 36.3 34.3 29.7 36.0 28.0 C37.7 26.3 42.3 26.7 44.0 28.0 C45.7 29.3 45.7 34.7 46.0 36.0" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF">Listen</span>
+</div></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
