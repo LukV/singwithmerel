@@ -1,3 +1,9 @@
+## v0.1.0-rc.2 (2026-11-14)
+
+### Fix
+
+- **offline**: an open app moves on to a new release by itself
+
 ## v0.1.0-rc.1 (2026-11-14)
 
 ### Feat
