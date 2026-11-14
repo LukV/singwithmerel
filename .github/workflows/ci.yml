@@ -1,7 +1,9 @@
 name: CI
 
+# Branches only: a version tag runs deploy.yml, which runs the same checks before it deploys.
 on:
   push:
+    branches: ['**']
   pull_request:
 
 permissions:
