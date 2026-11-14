@@ -155,13 +155,18 @@ role() {
   echo "$provider"
 
   say "Role $ROLE"
-  local trust
-  trust=$(jq -n --arg p "$provider" --arg repo "$REPO" '{
+  # GitHub names the repository in the token's subject by name and id (repo:owner@id/name@id) for
+  # repositories that use immutable subjects, and by name only otherwise; ask which this one uses.
+  local subject trust
+  subject=$(gh api "repos/$REPO/actions/oidc/customization/sub" -q '.sub_claim_prefix // empty' 2>/dev/null || true)
+  subject=${subject:-repo:$REPO}
+  echo "trusted subject: $subject:ref:refs/tags/v*"
+  trust=$(jq -n --arg p "$provider" --arg subject "$subject" '{
     Version: "2012-10-17",
     Statement: [{Effect: "Allow", Principal: {Federated: $p}, Action: "sts:AssumeRoleWithWebIdentity",
       Condition: {
         StringEquals: {"token.actions.githubusercontent.com:aud": "sts.amazonaws.com"},
-        StringLike: {"token.actions.githubusercontent.com:sub": "repo:\($repo):ref:refs/tags/v*"}}}]}')
+        StringLike: {"token.actions.githubusercontent.com:sub": "\($subject):ref:refs/tags/v*"}}}]}')
   if aws iam get-role --role-name "$ROLE" >/dev/null 2>&1; then
     aws iam update-assume-role-policy --role-name "$ROLE" --policy-document "$trust"
   else

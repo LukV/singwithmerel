@@ -10,6 +10,6 @@ updated: 2026-11-14
 
 **Why.** The DNS is already on AWS, so everything stays in one account. At low traffic the cost is the hosted zone's small monthly fee and a few cents of transfer. Automatic checks and deploys mean Luk reviews behaviour, not code: a green pull request is enough to merge, and a passing test scenario on the candidate is enough to release.
 
-**Because the repository is public.** Pull requests from forks run CI but never deploy: the deploy runs only on a pushed tag `v*`, and the role's trust policy accepts only `repo:LukV/singwithmerel:ref:refs/tags/v*`. Only Luk can push tags. `main` is protected: changes arrive by pull request with green checks.
+**Because the repository is public.** Pull requests from forks run CI but never deploy: the deploy runs only on a pushed tag `v*`, and the role's trust policy accepts only this repository's `v*` tags (`repo:LukV@859544/singwithmerel@1457480722:ref:refs/tags/v*`, the name and id GitHub puts in the token). Only Luk can push tags. `main` is protected: changes arrive by pull request with green checks.
 
 **The alternative.** GitHub Pages or Cloudflare Pages with DNS records in Route 53: simpler deploys from git, but a second provider.
