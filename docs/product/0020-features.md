@@ -84,6 +84,7 @@ Planned, not specified yet ([[planning/_about|the plan]]):
 
 - **Installable.** Merel installs to the home screen like an app, with its own icon. On a phone or tablet, after the first completed level, the lesson invites you once, just before the next level, and scrolls to the invitation: on an iPhone or iPad with how (Share, then Add to Home Screen) and why (Safari forgets progress after seven days without a visit); where the browser can install it, with an Install button. "Not now" closes it for good.
 - **Offline.** After the first visit Merel starts, sings and keeps your progress without a network.
+- **Updates.** A new release arrives by itself: the next time Merel opens with a network, or, if it stays open, once no round is under way. Nothing to do and nothing lost.
 - **Privacy and about.** A short page per language, linked at the foot of the lesson: no accounts, nothing sent, no microphone, what the progress code holds, how to clear everything, and who made Merel.
 
 ## Languages
