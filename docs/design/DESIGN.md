@@ -30,6 +30,21 @@ The canvas lives on claude.ai and Claude Code cannot open it. Its sources are co
 
 Merel's parts are grouped for motion: `m-bob` (whole bird), `m-head`, `m-beak-u` and `m-beak-l`, `m-eye`, `m-tail`, `m-marks` (the dashes and note). Keep those groups when porting.
 
+## Icons
+
+Merel's head in profile on a paper tile: a black disc, the orange eye ring and the orange beak, nothing else (Luk, 2026-11-14: the tuft and bow tie were too busy at 16 px). The tile keeps it readable on dark tab bars as well as light ones, down to 16 px. The files are in `assets/icons/`; `preview.png` shows every size on light and dark.
+
+| File | Use |
+|---|---|
+| `favicon.svg` | the browser tab, modern browsers: `<link rel="icon" href="/favicon.svg" type="image/svg+xml">` |
+| `favicon.ico` | fallback with 16, 32 and 48 px: `<link rel="icon" href="/favicon.ico" sizes="any">` |
+| `apple-touch-icon.png` | 180 px, iOS home screen: `<link rel="apple-touch-icon" href="/apple-touch-icon.png">` |
+| `icon-192.png`, `icon-512.png` | the web app manifest, purpose `any` |
+| `icon-maskable-512.png` | the manifest, purpose `maskable`: full-bleed paper, the head inside the safe zone |
+| `icon-maskable.svg`, `icon-32.png` | sources and a small PNG for anything else |
+
+They are copied into `public/` as they are (all but the sources and the preview), with the favicon links in `index.html`; the manifest entries come in pitch 1.3.
+
 ## Tokens
 
 | Token | Value | Use |
@@ -64,7 +79,7 @@ Kalam is a free Google font that imitates marker handwriting; Print Club London'
 3. **Real notation first**: clef, time signature, stems, bar lines; colour marks what was played or sung.
 4. **Colour is never the only cue**: every note also shows its name, its letter where the language uses it, and its key.
 5. **Lines are hand-drawn, one weight**; the staff and the keys wobble slightly. Merel is the exception: built from geometry.
-6. **Touch targets at least 44 px.** Text contrast at least 4.5:1.
+6. **Touch targets at least 44 px**, the piano keys included: on a narrow phone the gutters give way, not the keys. Text contrast at least 4.5:1.
 
 ## Merel
 
@@ -78,6 +93,6 @@ A geometric blackbird of discs and rounded bars: black body and head, white shir
 | Listening | Your turn, recognition | cocks his head and holds it |
 | Bowing | a round or level completed | a small dip, held |
 
-Only Merel moves; nothing else animates. Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
+Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed, or down to its handle and back, and the gentle scroll from Start to the first exercise (Luk, 2026-11-14). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
 
 A more naturalistic blackbird (long tail, level body, no shirt front) was tried on 2026-11-13 and dropped by Luk the same day; it is on the "Earlier rounds" page.

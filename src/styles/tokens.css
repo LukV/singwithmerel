@@ -1,0 +1,23 @@
+/* The tokens of docs/design/DESIGN.md. Colour belongs to a note and is the same everywhere. */
+:root {
+  --ink: #121212;
+  --paper: #f4f3ef;
+  --quiet: #6b6b6b;
+  --on-ink: #ffffff;
+  --beak: #ff8a1f;
+  --bow: #e5354b;
+
+  --note-do: #e5354b;
+  --note-re: #f58a2a;
+  --note-mi: #f4c83f;
+  --note-fa: #45b97c;
+  --note-sol: #4aa8e8;
+  --note-la: #8a6be0;
+  --note-si: #e86bb0;
+
+  --font-hand: 'Kalam', 'Comic Sans MS', cursive;
+  --font-text: 'Hanken Grotesk', system-ui, sans-serif;
+
+  --touch: 44px;
+  --dock-handle: 52px;
+}

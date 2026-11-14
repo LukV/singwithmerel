@@ -1,0 +1,1156 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.lettering {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 26px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.button--big {
+  min-height: 64px;
+  padding: 0 28px;
+  font-size: 20px;
+  gap: 10px;
+}
+
+.button--filled {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-ink);
+}
+
+.dot {
+  display: block;
+  flex: none;
+  width: 24px;
+  height: 21px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+
+.dot--on {
+  background: var(--dot);
+  border-color: var(--dot);
+}
+
+/* Merel. The motion is in merel-motion.css; the wrapper carries "live p-<pose>". */
+.merel {
+  display: block;
+  flex: none;
+}
+
+.merel svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Layout: lesson left, instrument right ---- */
+
+.app {
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.app__lesson {
+  flex: 1 1 420px;
+  min-width: 0;
+  padding: 0 48px 140px;
+}
+
+/* ---- Identity ---- */
+
+.identity {
+  /* Always exactly one screen high, so the lesson never shows below it. */
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 24px 0 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.header nav {
+  display: flex;
+  gap: 8px 28px;
+}
+
+.header a {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  min-width: var(--touch);
+  text-decoration: none;
+}
+
+.header__langs {
+  font-size: 16px;
+}
+
+.header__langs a {
+  justify-content: center;
+  color: var(--quiet);
+}
+
+.header__langs a[aria-current] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+.identity__wordmark {
+  margin: 0;
+  width: 100%;
+  max-width: 560px;
+}
+
+.identity__wordmark svg {
+  display: block;
+  overflow: visible;
+  width: 100%;
+  height: auto;
+}
+
+.identity__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.identity__call {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  padding-bottom: 8px;
+}
+
+.identity__tagline {
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(40px, 4.2vw, 52px);
+  line-height: 1.02;
+}
+
+.identity__merel {
+  position: relative;
+  flex: 0 1 250px;
+  min-width: 100px;
+  margin-left: auto;
+}
+
+.identity__merel .merel {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 300 / 390;
+}
+
+.identity__ground {
+  position: absolute;
+  left: -12px;
+  right: -12px;
+  bottom: 10px;
+  width: calc(100% + 24px);
+  height: 12px;
+}
+
+/* ---- The lesson: cards on a path ---- */
+
+.lesson {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 128px;
+  padding-top: 10px;
+}
+
+.lesson__path {
+  position: absolute;
+  left: 27px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.card {
+  position: relative;
+  padding-left: 92px;
+  scroll-margin-top: 24px;
+}
+
+.card__node {
+  position: absolute;
+  left: 0;
+  top: -6px;
+  width: 64px;
+  height: 64px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.card__node span {
+  padding-top: 6px;
+}
+
+.card__node svg {
+  width: 44px;
+  height: 44px;
+}
+
+.card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.card__top {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.card__words {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.card__heading {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  align-self: flex-start;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.05;
+}
+
+.card__underline {
+  display: block;
+  height: 10px;
+}
+
+.card__text {
+  margin: 0;
+  max-width: 380px;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.card__merel {
+  width: 124px;
+  height: auto;
+  aspect-ratio: 280 / 378;
+}
+
+.card__dots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+}
+
+.card__status {
+  margin-left: 10px;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.card__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card__answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card__trail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trail__step,
+.trail__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  font-size: 16px;
+}
+
+.trail__note {
+  min-width: 52px;
+  justify-content: center;
+  border-style: dashed;
+  color: var(--quiet);
+}
+
+.trail__note.is-next {
+  border-style: solid;
+  color: var(--ink);
+}
+
+.trail__note.is-found {
+  border-style: solid;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.trail__dot {
+  width: 14px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--dot);
+  transform: rotate(-12deg);
+}
+
+.progress__ask {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card__skip {
+  align-self: flex-start;
+  min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--quiet);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ---- The progress code ---- */
+
+.progress {
+  position: relative;
+  padding: 28px 0 0 92px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-margin-top: 24px;
+}
+
+.progress__title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+.progress__text {
+  margin: 0;
+  max-width: 420px;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.progress__label {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.progress__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.progress__input {
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 0 14px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: 15px/1.2 ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+.progress__input::placeholder {
+  font-family: var(--font-text);
+  color: var(--quiet);
+}
+
+.progress__note {
+  min-height: 1.4em;
+  margin: 0;
+  font-size: 16px;
+}
+
+.progress__note.is-wrong {
+  font-weight: 500;
+}
+
+.card--active .card__node {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.card--completed {
+  color: var(--quiet);
+}
+
+.card--completed .card__node {
+  border-color: var(--quiet);
+}
+
+.card--completed .card__merel {
+  opacity: 0.45;
+}
+
+.card--completed .card__dots {
+  opacity: 0.6;
+}
+
+/* ---- The instrument ---- */
+
+.instrument {
+  flex: 1.1 1 480px;
+  min-width: 0;
+  align-self: stretch;
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.instrument__inner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 560px;
+  padding: 24px 30px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.instrument__head {
+  position: absolute;
+  top: 24px;
+  left: 30px;
+  right: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 20px;
+  min-height: 36px;
+}
+
+.instrument__label {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.instrument__note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.instrument__note .dot {
+  width: 26px;
+  height: 23px;
+}
+
+.staff {
+  position: relative;
+  flex: none;
+  /* What the screen leaves after the head, the keys and the help, between 180 and 420 px. */
+  height: clamp(180px, calc(100vh - 380px), 420px);
+  height: clamp(180px, calc(100dvh - 380px), 420px);
+}
+
+.staff svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.staff__line {
+  fill: none;
+  stroke: var(--on-ink);
+  stroke-linecap: round;
+}
+
+.staff__ink {
+  fill: var(--on-ink);
+}
+
+.staff__clef {
+  color: var(--on-ink);
+  overflow: visible;
+}
+
+.staff__time text,
+.staff__name,
+.staff__letter {
+  fill: var(--on-ink);
+  text-anchor: middle;
+}
+
+.staff__time text {
+  dominant-baseline: central;
+}
+
+.staff__letter {
+  font-family: var(--font-text);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.staff__burst line {
+  stroke: var(--on-ink);
+  stroke-linecap: round;
+}
+
+.instrument__body {
+  flex: 0 1 auto;
+  margin-top: 36px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instrument__play {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instrument__help {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+/* Keys: eight white keys, black keys between, each with its colour dot, name, letter and computer key. */
+.keys {
+  --gap: 6px;
+  position: relative;
+  display: flex;
+  gap: var(--gap);
+  height: clamp(120px, 24vh, 188px);
+}
+
+.key {
+  flex: 1 1 0;
+  min-width: var(--touch);
+  padding: 0 0 8px;
+  border: 0;
+  background: var(--on-ink);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.key:focus-visible {
+  outline-color: var(--on-ink);
+}
+
+.key__dot {
+  display: block;
+  width: 20px;
+  height: 17px;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+  background: var(--dot);
+}
+
+.key.is-on .key__dot {
+  width: 34px;
+  height: 30px;
+}
+
+.key__name {
+  font-size: 23px;
+  line-height: 1;
+}
+
+.key__letter {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.key__cap {
+  min-width: 24px;
+  padding: 2px 5px;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.key-black {
+  --w: calc((100% - 7 * var(--gap)) / 8 * 0.55);
+  position: absolute;
+  top: -4px;
+  left: calc((100% + var(--gap)) * var(--after) / 8 - var(--gap) / 2 - var(--w) / 2);
+  width: var(--w);
+  height: 54%;
+  background: var(--ink);
+  border: 4px solid var(--on-ink);
+  border-top: 0;
+  border-radius: 0 0 10px 11px;
+  pointer-events: none;
+}
+
+@media (pointer: coarse) {
+  .key__cap {
+    display: none;
+  }
+}
+
+/* ---- Phone in portrait: lesson on top, instrument docked at the bottom (DOCKED in app.tsx) ---- */
+
+@media (max-width: 700px) {
+  .app {
+    display: block;
+  }
+
+  .app__lesson {
+    padding: 0 16px 48px;
+  }
+
+  .app.is-started .app__lesson {
+    padding-bottom: calc(45vh + 48px);
+    padding-bottom: calc(45dvh + 48px);
+  }
+
+  .identity {
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: 8px;
+  }
+
+  .header {
+    font-size: 16px;
+  }
+
+  .header nav {
+    gap: 4px 18px;
+  }
+
+  .identity__tagline {
+    font-size: 40px;
+  }
+
+  .identity__merel {
+    flex-basis: 190px;
+  }
+
+  .lesson {
+    gap: 56px;
+  }
+
+  .lesson__path {
+    left: 17px;
+  }
+
+  .card {
+    padding-left: 60px;
+    scroll-margin-top: 12px;
+  }
+
+  .card__node {
+    width: 44px;
+    height: 44px;
+    top: -2px;
+    border-width: 3px;
+    font-size: 26px;
+  }
+
+  .card__node svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .card__title {
+    font-size: 30px;
+  }
+
+  .card__text {
+    font-size: 17px;
+  }
+
+  .card__merel {
+    width: 84px;
+  }
+
+  .progress {
+    padding-left: 60px;
+  }
+
+  .button--big {
+    min-height: 56px;
+    padding: 0 20px;
+    font-size: 18px;
+  }
+
+  .button {
+    min-height: 48px;
+    padding: 0 18px;
+    font-size: 16px;
+  }
+
+  .instrument {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    height: 45vh;
+    height: 45dvh;
+    min-height: 300px;
+    transform: translateY(105%);
+    visibility: hidden;
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear 0.45s;
+  }
+
+  .instrument.is-up.is-collapsed {
+    /* Tucked away: only the handle shows. */
+    transform: translateY(calc(100% - var(--dock-handle) - env(safe-area-inset-bottom)));
+  }
+
+  .instrument.is-collapsed .instrument__body {
+    visibility: hidden;
+    transition: visibility 0s linear 0.45s;
+  }
+
+  .app.is-started.is-tucked .app__lesson {
+    padding-bottom: calc(var(--dock-handle) + 48px);
+  }
+
+  .instrument.is-up {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s;
+  }
+
+  .instrument__inner {
+    position: static;
+    height: 100%;
+    min-height: 0;
+    gap: 0;
+    /* The gutters give way so the keys stay at least 44 px wide (DESIGN.md, rule 6). */
+    padding: 0 clamp(0px, calc((100vw - 394px) / 2), 16px) max(8px, env(safe-area-inset-bottom));
+  }
+
+  .instrument__head,
+  .staff {
+    margin: 0 12px;
+  }
+
+  .instrument__body {
+    flex: 1 1 auto;
+    margin-top: 0;
+    gap: 6px;
+  }
+
+  .instrument__head {
+    position: static;
+    inset: auto;
+  }
+
+  .instrument__handle {
+    position: relative;
+    flex: none;
+    width: auto;
+    height: var(--dock-handle);
+    padding: 14px 0 6px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The grab bar. */
+  .instrument__handle::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    margin-left: -22px;
+    border-radius: 3px;
+    background: var(--on-ink);
+    opacity: 0.55;
+  }
+
+  .instrument__handle:focus-visible {
+    outline-color: var(--on-ink);
+    outline-offset: -3px;
+  }
+
+  .instrument__label {
+    font-size: 12px;
+  }
+
+  .instrument__note {
+    font-size: 22px;
+  }
+
+  .staff {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .keys {
+    --gap: clamp(1px, calc((100vw - 352px) / 7), 6px);
+    height: 35%;
+    min-height: 100px;
+    flex: none;
+  }
+
+  .key {
+    gap: 3px;
+    padding-bottom: 6px;
+  }
+
+  .key__name {
+    font-size: 19px;
+  }
+
+  .key__letter {
+    font-size: 13px;
+  }
+
+  .key__cap,
+  .instrument__help {
+    display: none;
+  }
+
+  .key-black {
+    height: 40%;
+    border-width: 3px;
+  }
+
+  .instrument__play {
+    flex: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .instrument,
+  .instrument.is-up {
+    transition: none;
+  }
+}
+
+/* ---- Development only ---- */
+
+.dev {
+  position: fixed;
+  left: 8px;
+  bottom: 8px;
+  z-index: 100;
+  font: 13px/1.3 ui-monospace, monospace;
+}
+
+.dev__toggle {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.dev__panel button {
+  min-height: 28px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dev__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .dev {
+    top: 8px;
+    bottom: auto;
+  }
+}
+
+/* ---- Phone tips, under Start ---- */
+
+.tips {
+  max-width: 420px;
+  margin: -16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--quiet);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+/* ---- The invitation to add Merel to the home screen ---- */
+
+.invite {
+  margin-left: 92px;
+  padding: 22px 24px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invite__title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.05;
+}
+
+.invite__text {
+  margin: 0;
+  max-width: 440px;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.invite__how {
+  font-weight: 500;
+}
+
+.invite__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* ---- The foot of the lesson, and the privacy page ---- */
+
+.lesson__foot {
+  padding-left: 92px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lesson__foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  color: var(--quiet);
+  text-underline-offset: 4px;
+}
+
+.privacy {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 24px 96px;
+}
+
+.privacy__body {
+  padding-top: 48px;
+  max-width: 600px;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.privacy__title {
+  margin: 40px 0 12px;
+  font-size: 40px;
+  line-height: 1.05;
+}
+
+.privacy__title:first-child {
+  margin-top: 0;
+}
+
+.privacy__body a:not(.button) {
+  color: var(--ink);
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.privacy__back {
+  margin-top: 40px;
+}
+
+.privacy .button {
+  text-decoration: none;
+}
+
+@media (max-width: 700px) {
+  .invite {
+    margin-left: 60px;
+    padding: 18px;
+  }
+
+  .lesson__foot {
+    padding-left: 60px;
+  }
+
+  .privacy {
+    padding: 8px 16px 64px;
+  }
+
+  .privacy__body {
+    padding-top: 24px;
+    font-size: 17px;
+  }
+
+  .privacy__title {
+    font-size: 34px;
+  }
+}

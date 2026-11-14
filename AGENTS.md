@@ -38,8 +38,42 @@ A free web app that teaches anyone to sing a scale and recognise notes by ear, w
 
 ## Commands
 
-*(Written by pitch 1.1 when the project exists: dev, check, build, voice, deploy.)*
+Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwright install chromium` for the browser check.
+
+| Command | Does |
+|---|---|
+| `npm run dev` | the app at http://localhost:5173, with the dev control (fill a dot on a level, start over); `npm run dev -- --host` to open it from a phone on the same network |
+| `npm run check` | types (`tsc`), lint (ESLint) and unit tests (Vitest): what CI runs first |
+| `npm test` | the unit tests only |
+| `npm run test:e2e` | builds the site and runs the Playwright check against it, on a desktop and a phone viewport |
+| `npm run build` | the static site in `dist/`: `/`, `/en/`, `/fr/`, `/nl/`; it must print no warning |
+| `npm run preview` | serves `dist/` at http://localhost:4173, with the live site's security headers |
+| `npm run voice` | checks the WAV clips in `voice/` (pitch within 10 cents) and converts them to `public/voice/*.m4a` with `voice.json` |
+| `npm run deploy -- next\|site` | the manual fallback: uploads `dist/` and clears CloudFront's cache; a version tag normally does this (`deploy/README.md`) |
 
 ## Layout
 
-*(Written by pitch 1.1; the intended shape is in `docs/architecture/0010-overview.md`.)*
+```
+src/
+  main.tsx, app.tsx   # entry point; the split screen and the keyboard
+  state.ts            # the app's signals: language, started, the note played, progress
+  melody/             # the do major scale, the scale exercises, the random melody; pure, tested
+  audio/              # the AudioContext, the plain tone, Merel's clips on the audio clock
+  round/              # one round as a state machine, and the controller that plays it
+  progress/           # the merel.v1 record, levels and dots, the progress code
+  i18n/               # languages, paths, and one string file per language (en.ts, fr.ts, nl.ts)
+  ui/                 # identity, header, lesson and cards, instrument (staff, keys), Merel, hand-drawn lines
+  styles/             # tokens.css (DESIGN.md tokens) and app.css
+  offline.ts          # registers the service worker
+  install.ts          # the install prompt; iPhone and home-screen checks
+public/               # the icons (copied from docs/design/assets/icons/), the manifest, robots.txt; voice/ for Merel's clips
+voice/                # the clips' WAV sources, never published; make/ holds how they are made in Synthesizer V
+scripts/              # npm run voice: WAV reading, pitch measuring, conversion
+build/                # Vite plugins: the pages per language, the service worker, SVGs cleaned on import, preview headers
+deploy/               # the one-time AWS setup, the upload, the CloudFront function and headers; README.md explains them
+tests/e2e/            # the Playwright check
+docs/                 # the docs; Merel and the signs are imported from docs/design/assets/
+.github/workflows/    # ci.yml (every push), deploy.yml (version tags)
+```
+
+Merel, the wordmark and the clef are imported straight from `docs/design/assets/` (`?clean`), so the design sources stay the only copy.

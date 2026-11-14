@@ -7,3 +7,4 @@ update_changelog_on_bump = true
 changelog_incremental = true
 major_version_zero = true
 annotated_tag = true
+changelog_merge_prerelease = true

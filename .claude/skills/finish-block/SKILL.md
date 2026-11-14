@@ -6,7 +6,7 @@ description: Finish the current Merel block after its last pitch shipped. Runs t
 # finish-block
 
 1. **All slots shipped or dropped?** If not, say which is open and stop.
-2. **Check the block's definition of done**, item by item. Fix what is not true, as a commit on the block branch.
+2. **Check the block's definition of done**, item by item. Fix what is not true, as a commit on the block branch. Items marked *(after release)* stay open: Luk checks them after the release.
 3. **Run the block's test scenario**: every machine-runnable step, with its output. Fix and rerun what fails.
 4. **Block status.** Block note `status: shipped`, `shipped_on: <today>`, and a short *What actually happened* at its end: what the release holds, what moved to *Later*. Commit: `docs(planning): finish block <n>`.
 5. **Pull request.** Push the branch and open one pull request into `main` (`gh pr create`). Its body: what the block delivers, the list of pitches with one line each, and the block's test scenario as numbered steps with what to see. Wait for the checks; if one fails, fix it on the branch and push until all are green.

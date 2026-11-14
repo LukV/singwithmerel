@@ -13,9 +13,9 @@ updated: 2026-11-14
 | Device | Lesson | Instrument |
 |---|---|---|
 | Desktop, tablet, phone in landscape | Left half, scrolls | Right half, fixed: staff and keys |
-| Phone in portrait | Top, scrolls, one exercise card at a time | Docked at the bottom, about 45% of the screen; the staff follows the current note |
+| Phone in portrait | Top, scrolls, one exercise card at a time | Docked at the bottom, about 45% of the screen; the staff follows the current note; a handle tucks it away to a slim bar and brings it back (tap or swipe) |
 
-The first screen is the identity: the wordmark, "You play. He sings.", Start, and Merel singing. On a phone the instrument slides up when you press Start.
+The first screen is the identity, always exactly one screen high so the lesson starts below it: the wordmark, "You play. He sings.", Start, and Merel singing. Start scrolls gently to the first exercise. On a phone the instrument slides up when you press Start, and the first screen holds a line on headphones (and on an iPhone, one on the silent switch).
 
 The instrument shows real notation: treble clef, 4/4 time signature, stems, bar lines. Under each note, its solfege name and, where the language uses them, its letter name. Each key shows its note's colour dot, its solfege name, its letter name and, on a computer, the keyboard key that plays it (A S D F G H J K for do to high do).
 
@@ -31,11 +31,13 @@ The exercises hang from a thin hand-drawn line, each on a numbered node.
 
 ## One round
 
-1. **Hear it.** Merel sings the notes alone.
-2. **Sing along.** You sing with Merel.
-3. **Your turn.** Merel is silent; you sing and the app listens.
+1. **Hear it.** Merel sings the notes alone, by name, while the staff marks each one.
+2. **Sing along.** A beat later he sings them again and you sing with him.
+3. **Your turn.** Merel is silent and listens; you sing alone, then press "next round". Until the app listens (block 2), Your turn is practice: the round is already complete.
 
-Recognition replaces step 3 with answering: first the direction of each step (up or down), then the notes on the keys. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round.
+Recognition (exercise 4) sings on "du" and replaces steps 2 and 3 with answering, while the staff stays empty: first the direction of each step (up or down, two big buttons), then the notes on the keys, which appear on the staff as you find them. Each right answer says yes and stays on the card: the directions with a tick, then the three notes, filled in their colour and name as you find them, with the next one outlined. On a phone the keys come back up when it is time to find the notes. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round. "Hear it" sings the melody again at any time.
+
+Merel acts the round out: singing while he sings, thinking over up or down, listening while you sing or search, bowing when a round completes, waiting otherwise.
 
 What makes a round "completed" grows per release, from sang along to the end, to a steady tone per note, to a match per note: [[architecture/0010-overview#Voice evaluation|voice evaluation]].
 
@@ -44,6 +46,8 @@ What makes a round "completed" grows per release, from sang along to the end, to
 - **One dot is one completed round.** Five dots per level (Luk, 2026-11-14).
 - **Five full dots open the next level.**
 - **Skip:** a quiet "skip this level" opens the next level without filling the dots, for teachers and confident singers.
+- A completed or skipped level turns quiet and grey; the next becomes active and the lesson scrolls to it. A completed level can be played again; an upcoming one can be heard, not started.
+- **Progress** stays in the browser. A short progress code, at the end of the lesson, copies it to another browser or phone and pastes it back. "Start over", under the code, clears every dot and level after asking once.
 
 ## Exercises
 
@@ -75,6 +79,12 @@ Planned, not specified yet ([[planning/_about|the plan]]):
 - A wider range, beyond one octave, and larger leaps.
 - Rhythmic dictation with rhythm syllables (taa, ti-ti, tiri-tiri).
 - Longer melodies and longer notes.
+
+## Install, offline, privacy
+
+- **Installable.** Merel installs to the home screen like an app, with its own icon. After the first completed level the lesson invites you once, just before the next level: on an iPhone or iPad with how (Share, then Add to Home Screen) and why (Safari forgets progress after seven days without a visit); where the browser can install it, with an Install button. "Not now" closes it for good.
+- **Offline.** After the first visit Merel starts, sings and keeps your progress without a network.
+- **Privacy and about.** A short page per language, linked at the foot of the lesson: no accounts, nothing sent, no microphone, what the progress code holds, how to clear everything, and who made Merel.
 
 ## Languages
 

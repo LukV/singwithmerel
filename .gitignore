@@ -7,9 +7,6 @@ dist-ssr/
 *.tsbuildinfo
 .vite/
 
-# Merel's voice: the .m4a files are built from public/voice/source/*.wav by `npm run voice`
-public/voice/*.m4a
-
 # Tests
 coverage/
 playwright-report/
@@ -45,3 +42,8 @@ Thumbs.db
 # Claude Code, per machine
 .claude/settings.local.json
 .claude/worktrees/
+
+# The whole-track render the clips are cut from
+voice/make/*.wav
+# Voicebanks unpacked here while making the clips; they belong in OpenUtau, not in git
+voice/make/*/

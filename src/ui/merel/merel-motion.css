@@ -1,0 +1,27 @@
+/* Merel's movement. Put class="live p-<pose>" on the svg; without "live" he stands still. */
+
+.live .m-bob{animation:m-bob 2.6s ease-in-out infinite}
+.live .m-eye{animation:m-blink 4.2s infinite}
+.live .m-tail{animation:m-tail 3.4s ease-in-out infinite}
+.live.p-singing .m-bob{animation:m-hop .62s ease-in-out infinite}
+.live.p-singing .m-beak-u{animation:m-beak-u .31s ease-in-out infinite alternate}
+.live.p-singing .m-beak-l{animation:m-beak-l .31s ease-in-out infinite alternate}
+.live.p-singing .m-head{animation:m-sway 1.24s ease-in-out infinite}
+.live.p-singing .m-marks{animation:m-marks .62s steps(2) infinite}
+.live.p-listening .m-head{animation:m-cock 2.8s ease-in-out infinite}
+.live.p-thinking .m-head{animation:m-ponder 3.6s ease-in-out infinite}
+.live.p-waiting .m-head{animation:m-look 5s ease-in-out infinite}
+.live.p-bowing .m-bob{animation:m-bow 2.4s ease-in-out infinite}
+@keyframes m-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes m-hop{0%,100%{transform:translateY(0) scaleY(1)}12%{transform:translateY(0) scaleY(.96)}45%{transform:translateY(-12px) scaleY(1.02)}}
+@keyframes m-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes m-tail{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-12deg)}84%{transform:rotate(4deg)}}
+@keyframes m-beak-u{from{transform:rotate(0)}to{transform:rotate(-12deg)}}
+@keyframes m-beak-l{from{transform:rotate(0)}to{transform:rotate(12deg)}}
+@keyframes m-sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes m-cock{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-14deg)}}
+@keyframes m-ponder{0%,100%{transform:rotate(0)}40%,60%{transform:rotate(-8deg)}}
+@keyframes m-look{0%,40%,100%{transform:rotate(0)}50%,85%{transform:rotate(-10deg)}}
+@keyframes m-bow{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}
+@keyframes m-marks{0%{opacity:1}50%{opacity:0}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.live *{animation:none !important}}

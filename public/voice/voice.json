@@ -1,0 +1,22 @@
+{
+  "octaveOffset": 0,
+  "clips": [
+    "do-C4",
+    "do-C5",
+    "du-A4",
+    "du-B4",
+    "du-C4",
+    "du-C5",
+    "du-D4",
+    "du-E4",
+    "du-F4",
+    "du-G4",
+    "fa-F4",
+    "la-A4",
+    "mi-E4",
+    "re-D4",
+    "si-B4",
+    "sol-G4",
+    "ti-B4"
+  ]
+}

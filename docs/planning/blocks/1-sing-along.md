@@ -1,8 +1,9 @@
 ---
 project: merel
 type: block
-status: ready
+status: shipped
 updated: 2026-11-14
+shipped_on: 2026-11-14
 ---
 # Block 1: Sing along
 
@@ -16,8 +17,8 @@ Read first: [[0010-vision]], [[0020-features]], [[DESIGN]], [[architecture/0010-
 
 ## Before the first pitch
 
-- **Stack.** The overview proposes Vite, TypeScript and Preact, with Vitest for unit tests and Playwright for a browser check. Claude Code confirms or argues otherwise at the start of 1.1, and records it as decision 012.
-- **Repository.** `git init` in `~/Documents/Code/merel`, `main` as the first branch, then `block/1-sing-along`. The remote is the public GitHub repository [LukV/singwithmerel](https://github.com/LukV/singwithmerel), open source under Apache 2.0 (Luk, 2026-11-14).
+- **Stack.** Vite, TypeScript and Preact, with Vitest for unit tests and Playwright for a browser check: [[012-stack]].
+- **Repository.** `~/Documents/Code/merel`, `main` as the first branch, then `block/1-sing-along`. The remote is the public GitHub repository [LukV/singwithmerel](https://github.com/LukV/singwithmerel), open source under Apache 2.0 (Luk, 2026-11-14).
 - **CI, versions and deploy.** GitHub Actions checks every push and pull request, commit messages included (pitch 1.1). Release tags deploy: candidates to next.singwithmerel.com, releases to singwithmerel.com (pitch 1.3). [[011-versions-and-releases]] has the flow.
 - **The docs folder** is linked into Luk's vault; it stays where it is, inside the repository.
 
@@ -25,25 +26,27 @@ Read first: [[0010-vision]], [[0020-features]], [[DESIGN]], [[architecture/0010-
 
 | # | Pitch | Status | What Luk can try at the end |
 |---|---|---|---|
-| 1.1 | [[1-1-instrument-and-lesson\|The instrument and the lesson]] | ready | The app on a laptop and a phone: identity screen, the lesson path, the staff and the keys that sound, Merel moving, three languages |
-| 1.2 | [[1-2-rounds-and-progress\|Rounds, melodies and progress]] | ready | All four exercises playable, rounds and dots, levels that open, progress kept, Merel's clips or a stand-in |
-| 1.3 | [[1-3-merel-goes-live\|Merel goes live]] | ready | singwithmerel.com on a phone, installed, working offline |
+| 1.1 | [[1-1-instrument-and-lesson\|The instrument and the lesson]] | shipped | The app on a laptop and a phone: identity screen, the lesson path, the staff and the keys that sound, Merel moving, three languages |
+| 1.2 | [[1-2-rounds-and-progress\|Rounds, melodies and progress]] | shipped | All four exercises playable, rounds and dots, levels that open, progress kept, Merel's clips or a stand-in |
+| 1.3 | [[1-3-merel-goes-live\|Merel goes live]] | shipped | singwithmerel.com on a phone, installed, working offline |
 
 1.1 comes first; 1.2 builds on it; 1.3 needs both, and the voice clips if they exist by then.
 
 ## Definition of done
 
-- [ ] https://singwithmerel.com serves release 1 over HTTPS; www redirects to it.
-- [ ] /en, /fr and /nl work; the first visit follows the browser's language.
-- [ ] The four exercises are playable to the end on iPhone Safari, Android Chrome and a desktop browser.
-- [ ] Five completed rounds open the next level; "skip this level" works.
-- [ ] Progress survives a reload, and the progress code restores it in a cleared browser.
-- [ ] The app installs to the home screen and works with no network after the first visit.
-- [ ] Merel sings the note names from the clips when they are in place, and falls back to a plain tone when they are not.
-- [ ] Unit tests and the browser check pass; the build has no errors or warnings; CI is green on the pull request.
-- [ ] A pushed candidate tag deploys to next.singwithmerel.com and a release tag to singwithmerel.com, through GitHub Actions, with no AWS keys stored in GitHub.
-- [ ] `v0.1.0` is tagged, with a `CHANGELOG.md` and a GitHub release; every commit on the block passes `cz check`.
-- [ ] Every page in `docs/` is true for what was built.
+Items marked *(after release)* become true only after Luk merges, bumps and tags; Luk checks them, and `finish-block` leaves them open when it opens the pull request (Luk, 2026-11-14).
+
+- [ ] *(after release)* https://singwithmerel.com serves release 1 over HTTPS; www redirects to it.
+- [x] /en, /fr and /nl work; the first visit follows the browser's language.
+- [ ] The four exercises are playable to the end on iPhone Safari, Android Chrome and a desktop browser. *(Checked in the browser check on a desktop and a phone viewport; Luk confirms on real phones with the candidate.)*
+- [x] Five completed rounds open the next level; "skip this level" works.
+- [x] Progress survives a reload, and the progress code restores it in a cleared browser.
+- [ ] The app installs to the home screen and works with no network after the first visit. *(The browser check covers the manifest and offline loads; Luk confirms the install on his phones with the candidate.)*
+- [x] Merel sings the note names from the clips when they are in place, and falls back to a plain tone when they are not.
+- [x] Unit tests and the browser check pass; the build has no errors or warnings; CI is green on the pull request.
+- [ ] *(after release)* A pushed candidate tag deploys to next.singwithmerel.com and a release tag to singwithmerel.com, through GitHub Actions, with no AWS keys stored in GitHub.
+- [ ] *(after release)* `v0.1.0` is tagged, with a `CHANGELOG.md` and a GitHub release; every commit on the block passes `cz check`.
+- [x] Every page in `docs/` is true for what was built.
 
 ## Test scenario
 
@@ -64,3 +67,10 @@ Luk runs this on the release candidate, after merging and `cz bump --prerelease 
 ## Later
 
 *(Things that turn up during the block and wait for a later one.)*
+
+- Four clips start 21 to 47 ms after their sound begins (do-C5, fa-F4, si-B4, sol-G4); they pass, and trimming them is optional.
+- Playwright's Chromium cannot play AAC, so the browser check runs on the stand-in tone; the clips are checked by ear.
+
+## What actually happened
+
+All three pitches shipped. Release 0.1.0 holds the lesson and the instrument with Merel, the four exercises with rounds, dots, levels, skip and the progress code, English, French and Dutch with their own paths, Merel's 17 clips sung in Synthesizer V with the tone as fallback, install and offline through a small service worker, a privacy and about page, phone tips, and the AWS hosting (S3 and CloudFront in eu-north-1, set up by `deploy/setup.sh`) that a version tag deploys through OIDC. After 1.2, recognition gained its "yes" and the trail of answers, and progress can be started over. Nothing moved to a later block; the two notes above are small. The live site, the candidate deploy and the release are Luk's, after the merge.
