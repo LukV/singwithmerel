@@ -12,10 +12,10 @@ updated: 2026-11-14
 
 | Device | Lesson | Instrument |
 |---|---|---|
-| Desktop, tablet, phone in landscape | Left half, scrolls | Right half, fixed: staff and keys |
-| Phone in portrait | Top, scrolls, one exercise card at a time | Docked at the bottom, about 45% of the screen; the staff follows the current note |
+| Desktop, tablet, phone in landscape | Left, as wide as the first screen, scrolls | Right, the rest of the width, fixed: staff and keys |
+| Phone in portrait | Top, scrolls, one exercise card at a time | Docked at the bottom, about 45% of the screen; the staff follows the current note; a handle tucks it away to a slim bar and brings it back (tap or swipe) |
 
-The first screen is the identity: the wordmark, "You play. He sings.", Start, and Merel singing. On a phone the instrument slides up when you press Start.
+The first screen is the identity: the wordmark, "You play. He sings.", Start, and Merel singing. Start scrolls gently to the first exercise. On a phone the instrument slides up when you press Start.
 
 The instrument shows real notation: treble clef, 4/4 time signature, stems, bar lines. Under each note, its solfege name and, where the language uses them, its letter name. Each key shows its note's colour dot, its solfege name, its letter name and, on a computer, the keyboard key that plays it (A S D F G H J K for do to high do).
 

@@ -105,9 +105,10 @@ a {
 }
 
 .app__lesson {
-  flex: 1 1 420px;
+  /* As wide as the start page needs; the instrument takes the rest. */
+  flex: 0 0 clamp(420px, 42vw, 620px);
   min-width: 0;
-  padding: 0 48px 110px;
+  padding: 0 40px 140px;
 }
 
 /* ---- Identity ---- */
@@ -176,13 +177,13 @@ a {
 
 .identity__foot {
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px 24px;
 }
 
 .identity__call {
+  flex: none;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -192,19 +193,22 @@ a {
 
 .identity__tagline {
   margin: 0;
-  font-size: 52px;
+  white-space: nowrap;
+  font-size: clamp(38px, 3.6vw, 52px);
   line-height: 1.02;
 }
 
 .identity__merel {
   position: relative;
-  width: 250px;
+  flex: 0 1 250px;
+  min-width: 140px;
   margin-left: auto;
 }
 
 .identity__merel .merel {
-  width: 250px;
-  height: 325px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 300 / 390;
 }
 
 .identity__ground {
@@ -222,7 +226,7 @@ a {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 76px;
+  gap: 128px;
   padding-top: 10px;
 }
 
@@ -237,7 +241,7 @@ a {
 
 .card {
   position: relative;
-  padding-left: 92px;
+  padding-left: 88px;
   scroll-margin-top: 24px;
 }
 
@@ -298,7 +302,7 @@ a {
 
 .card__title {
   margin: 0;
-  font-size: 42px;
+  font-size: clamp(32px, 2.9vw, 42px);
   line-height: 1.05;
 }
 
@@ -316,8 +320,9 @@ a {
 }
 
 .card__merel {
-  width: 124px;
-  height: 167px;
+  width: clamp(88px, 7.5vw, 124px);
+  height: auto;
+  aspect-ratio: 280 / 378;
 }
 
 .card__dots {
@@ -364,7 +369,7 @@ a {
 /* ---- The instrument ---- */
 
 .instrument {
-  flex: 1.1 1 480px;
+  flex: 1 1 0;
   min-width: 0;
   align-self: stretch;
   background: var(--ink);
@@ -460,6 +465,14 @@ a {
 .staff__burst line {
   stroke: var(--on-ink);
   stroke-linecap: round;
+}
+
+.instrument__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .instrument__play {
@@ -597,13 +610,8 @@ a {
     font-size: 40px;
   }
 
-  .identity__merel,
-  .identity__merel .merel {
-    width: 190px;
-  }
-
-  .identity__merel .merel {
-    height: 247px;
+  .identity__merel {
+    flex-basis: 190px;
   }
 
   .lesson {
@@ -642,7 +650,6 @@ a {
 
   .card__merel {
     width: 84px;
-    height: 113px;
   }
 
   .button {
@@ -667,6 +674,20 @@ a {
       visibility 0s linear 0.45s;
   }
 
+  .instrument.is-up.is-collapsed {
+    /* Tucked away: only the handle shows. */
+    transform: translateY(calc(100% - var(--dock-handle) - env(safe-area-inset-bottom)));
+  }
+
+  .instrument.is-collapsed .instrument__body {
+    visibility: hidden;
+    transition: visibility 0s linear 0.45s;
+  }
+
+  .app.is-started.is-tucked .app__lesson {
+    padding-bottom: calc(var(--dock-handle) + 48px);
+  }
+
   .instrument.is-up {
     transform: none;
     visibility: visible;
@@ -679,9 +700,9 @@ a {
     position: static;
     height: 100%;
     min-height: 0;
-    gap: 6px;
+    gap: 0;
     /* The gutters give way so the keys stay at least 44 px wide (DESIGN.md, rule 6). */
-    padding: 8px clamp(0px, calc((100vw - 394px) / 2), 16px) max(8px, env(safe-area-inset-bottom));
+    padding: 0 clamp(0px, calc((100vw - 394px) / 2), 16px) max(8px, env(safe-area-inset-bottom));
   }
 
   .instrument__head,
@@ -689,8 +710,42 @@ a {
     margin: 0 12px;
   }
 
-  .instrument__head {
-    min-height: 28px;
+  .instrument__body {
+    gap: 6px;
+  }
+
+  .instrument__handle {
+    position: relative;
+    flex: none;
+    width: auto;
+    height: var(--dock-handle);
+    padding: 14px 0 6px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The grab bar. */
+  .instrument__handle::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    margin-left: -22px;
+    border-radius: 3px;
+    background: var(--on-ink);
+    opacity: 0.55;
+  }
+
+  .instrument__handle:focus-visible {
+    outline-color: var(--on-ink);
+    outline-offset: -3px;
   }
 
   .instrument__label {

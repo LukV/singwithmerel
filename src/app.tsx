@@ -1,6 +1,6 @@
 import { useEffect } from 'preact/hooks';
 import { langFromPath } from './i18n/langs';
-import { applyLang, started } from './state';
+import { applyLang, dockOpen, started } from './state';
 import { DevControl } from './ui/DevControl';
 import { Identity } from './ui/Identity';
 import { Instrument } from './ui/Instrument';
@@ -28,7 +28,7 @@ export function App() {
   }, []);
 
   return (
-    <div class={`app${started.value ? ' is-started' : ''}`}>
+    <div class={`app${started.value ? ' is-started' : ''}${docked && !dockOpen.value ? ' is-tucked' : ''}`}>
       <main class="app__lesson">
         <Identity />
         <Lesson />

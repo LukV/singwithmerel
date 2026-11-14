@@ -24,6 +24,8 @@ const nl: Strings = {
   done: 'Klaar.',
   instrument: 'De toonladder van do groot',
   instrumentHelp: 'Klik op een toets, of typ A S D F G H J K op je toetsenbord: A is de lage do, K de hoge do.',
+  dockHide: 'Verberg de notenbalk en de toetsen',
+  dockShow: 'Toon de notenbalk en de toetsen',
   keyLabel: (name, letter, kbd) => `${name}${letter ? `, ${letter}` : ''}, toets ${kbd.toUpperCase()}`,
   staffLabel: (names) => `De toonladder van do groot op de notenbalk: ${names}`,
   merel: {

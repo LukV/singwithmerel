@@ -24,6 +24,8 @@ const en: Strings = {
   done: 'Done.',
   instrument: 'The scale of do major',
   instrumentHelp: 'Click a key, or type A S D F G H J K on your keyboard: A is low do, K is high do.',
+  dockHide: 'Hide the staff and keys',
+  dockShow: 'Show the staff and keys',
   keyLabel: (name, letter, kbd) => `${name}${letter ? `, ${letter}` : ''}, keyboard key ${kbd.toUpperCase()}`,
   staffLabel: (names) => `The scale of do major on the staff: ${names}`,
   merel: {

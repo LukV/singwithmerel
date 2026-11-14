@@ -11,7 +11,8 @@ export function Identity() {
   const begin = () => {
     unlock();
     started.value = true;
-    document.getElementById('c1')?.scrollIntoView({ block: 'start' });
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('c1')?.scrollIntoView({ block: 'start', behavior: still ? 'auto' : 'smooth' });
   };
   return (
     <section class="identity" aria-labelledby="wordmark">

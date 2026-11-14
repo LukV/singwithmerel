@@ -78,6 +78,6 @@ A geometric blackbird of discs and rounded bars: black body and head, white shir
 | Listening | Your turn, recognition | cocks his head and holds it |
 | Bowing | a round or level completed | a small dip, held |
 
-Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed (Luk, 2026-11-14). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
+Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed, or down to its handle and back, and the gentle scroll from Start to the first exercise (Luk, 2026-11-14). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
 
 A more naturalistic blackbird (long tail, level body, no shirt front) was tried on 2026-11-13 and dropped by Luk the same day; it is on the "Earlier rounds" page.

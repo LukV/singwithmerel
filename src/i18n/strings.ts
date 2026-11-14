@@ -25,6 +25,8 @@ export interface Strings {
   done: string;
   instrument: string;
   instrumentHelp: string;
+  dockHide: string;
+  dockShow: string;
   /** The accessible label of a key: name, letter, computer key. */
   keyLabel: (name: string, letter: string | null, kbd: string) => string;
   staffLabel: (names: string) => string;

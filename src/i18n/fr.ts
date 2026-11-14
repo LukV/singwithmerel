@@ -24,6 +24,8 @@ const fr: Strings = {
   done: 'Fini.',
   instrument: 'La gamme de do majeur',
   instrumentHelp: 'Clique sur une touche, ou tape A S D F G H J K sur ton clavier : A est le do grave, K le do aigu.',
+  dockHide: 'Cacher la portée et le clavier',
+  dockShow: 'Montrer la portée et le clavier',
   keyLabel: (name, letter, kbd) => `${name}${letter ? `, ${letter}` : ''}, touche ${kbd.toUpperCase()} du clavier`,
   staffLabel: (names) => `La gamme de do majeur sur la portée : ${names}`,
   merel: {

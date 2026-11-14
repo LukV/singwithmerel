@@ -13,6 +13,9 @@ export const t = computed(() => STRINGS[lang.value]);
 /** Whether Start was pressed; on a phone the instrument slides up then. */
 export const started = signal(false);
 
+/** On a phone, whether the docked instrument is open or tucked away to its handle. */
+export const dockOpen = signal(true);
+
 /** The note last played on the instrument, as a scale step, or null. */
 export const lit = signal<number | null>(null);
 /** Counts plays, so playing the same note twice still marks it again. */

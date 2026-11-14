@@ -21,7 +21,7 @@ test('open /en, press Start and play sol with G', async ({ page, isMobile }) => 
 
   const instrument = page.getByRole('complementary', { name: 'The scale of do major' });
   await expect(instrument).toBeInViewport();
-  await expect(instrument.getByRole('button')).toHaveCount(8);
+  await expect(instrument.locator('.key')).toHaveCount(8);
 
   if (isMobile) {
     // No keyboard on a phone: tap the key.
@@ -61,4 +61,20 @@ test('the phone keys are at least 44 px wide at 360 px', async ({ page }) => {
       return Math.round(box!.y + box!.height);
     })
     .toBe(740);
+});
+
+test('on a phone the instrument tucks away and comes back', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/en/');
+  await page.getByRole('button', { name: 'Start' }).first().click();
+  const handle = page.getByRole('button', { name: 'Hide the staff and keys' });
+  await expect(handle).toHaveAttribute('aria-expanded', 'true');
+  await handle.click();
+  const show = page.getByRole('button', { name: 'Show the staff and keys' });
+  await expect(show).toHaveAttribute('aria-expanded', 'false');
+  // Only the handle stays on screen.
+  await expect.poll(async () => Math.round((await page.locator('.instrument').boundingBox())!.y)).toBe(844 - 52);
+  await expect(page.locator('.key').first()).not.toBeInViewport();
+  await show.click();
+  await expect(page.locator('.key').first()).toBeInViewport();
 });
