@@ -27,7 +27,7 @@ Read first: [[0010-vision]], [[0020-features]], [[DESIGN]], [[architecture/0010-
 |---|---|---|---|
 | 1.1 | [[1-1-instrument-and-lesson\|The instrument and the lesson]] | shipped | The app on a laptop and a phone: identity screen, the lesson path, the staff and the keys that sound, Merel moving, three languages |
 | 1.2 | [[1-2-rounds-and-progress\|Rounds, melodies and progress]] | shipped | All four exercises playable, rounds and dots, levels that open, progress kept, Merel's clips or a stand-in |
-| 1.3 | [[1-3-merel-goes-live\|Merel goes live]] | in-cycle | singwithmerel.com on a phone, installed, working offline |
+| 1.3 | [[1-3-merel-goes-live\|Merel goes live]] | shipped | singwithmerel.com on a phone, installed, working offline |
 
 1.1 comes first; 1.2 builds on it; 1.3 needs both, and the voice clips if they exist by then.
 

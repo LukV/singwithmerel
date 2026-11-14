@@ -47,9 +47,9 @@ Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwri
 | `npm test` | the unit tests only |
 | `npm run test:e2e` | builds the site and runs the Playwright check against it, on a desktop and a phone viewport |
 | `npm run build` | the static site in `dist/`: `/`, `/en/`, `/fr/`, `/nl/`; it must print no warning |
-| `npm run preview` | serves `dist/` at http://localhost:4173 |
-
-Still to come: `npm run voice` (pitch 1.3) and `npm run deploy` (pitch 1.3).
+| `npm run preview` | serves `dist/` at http://localhost:4173, with the live site's security headers |
+| `npm run voice` | checks the WAV clips in `voice/` (pitch within 10 cents) and converts them to `public/voice/*.m4a` with `voice.json` |
+| `npm run deploy -- next\|site` | the manual fallback: uploads `dist/` and clears CloudFront's cache; a version tag normally does this (`deploy/README.md`) |
 
 ## Layout
 
@@ -64,11 +64,16 @@ src/
   i18n/               # languages, paths, and one string file per language (en.ts, fr.ts, nl.ts)
   ui/                 # identity, header, lesson and cards, instrument (staff, keys), Merel, hand-drawn lines
   styles/             # tokens.css (DESIGN.md tokens) and app.css
-public/               # the icons (copied from docs/design/assets/icons/); voice/ for Merel's clips
-build/                # Vite plugins: the page per language, SVGs cleaned on import
+  offline.ts          # registers the service worker
+  install.ts          # the install prompt; iPhone and home-screen checks
+public/               # the icons (copied from docs/design/assets/icons/), the manifest, robots.txt; voice/ for Merel's clips
+voice/                # the clips' WAV sources, never published
+scripts/              # npm run voice: WAV reading, pitch measuring, conversion
+build/                # Vite plugins: the pages per language, the service worker, SVGs cleaned on import, preview headers
+deploy/               # the one-time AWS setup, the upload, the CloudFront function and headers; README.md explains them
 tests/e2e/            # the Playwright check
 docs/                 # the docs; Merel and the signs are imported from docs/design/assets/
-.github/workflows/    # ci.yml
+.github/workflows/    # ci.yml (every push), deploy.yml (version tags)
 ```
 
 Merel, the wordmark and the clef are imported straight from `docs/design/assets/` (`?clean`), so the design sources stay the only copy.

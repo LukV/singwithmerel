@@ -15,7 +15,7 @@ updated: 2026-11-14
 | Desktop, tablet, phone in landscape | Left half, scrolls | Right half, fixed: staff and keys |
 | Phone in portrait | Top, scrolls, one exercise card at a time | Docked at the bottom, about 45% of the screen; the staff follows the current note; a handle tucks it away to a slim bar and brings it back (tap or swipe) |
 
-The first screen is the identity, always exactly one screen high so the lesson starts below it: the wordmark, "You play. He sings.", Start, and Merel singing. Start scrolls gently to the first exercise. On a phone the instrument slides up when you press Start.
+The first screen is the identity, always exactly one screen high so the lesson starts below it: the wordmark, "You play. He sings.", Start, and Merel singing. Start scrolls gently to the first exercise. On a phone the instrument slides up when you press Start, and the first screen holds a line on headphones (and on an iPhone, one on the silent switch).
 
 The instrument shows real notation: treble clef, 4/4 time signature, stems, bar lines. Under each note, its solfege name and, where the language uses them, its letter name. Each key shows its note's colour dot, its solfege name, its letter name and, on a computer, the keyboard key that plays it (A S D F G H J K for do to high do).
 
@@ -79,6 +79,12 @@ Planned, not specified yet ([[planning/_about|the plan]]):
 - A wider range, beyond one octave, and larger leaps.
 - Rhythmic dictation with rhythm syllables (taa, ti-ti, tiri-tiri).
 - Longer melodies and longer notes.
+
+## Install, offline, privacy
+
+- **Installable.** Merel installs to the home screen like an app, with its own icon. After the first completed level the lesson invites you once, just before the next level: on an iPhone or iPad with how (Share, then Add to Home Screen) and why (Safari forgets progress after seven days without a visit); where the browser can install it, with an Install button. "Not now" closes it for good.
+- **Offline.** After the first visit Merel starts, sings and keeps your progress without a network.
+- **Privacy and about.** A short page per language, linked at the foot of the lesson: no accounts, nothing sent, no microphone, what the progress code holds, how to clear everything, and who made Merel.
 
 ## Languages
 
