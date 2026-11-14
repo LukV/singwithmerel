@@ -33,13 +33,18 @@ export interface Strings {
     turn: string;
     direction: (step: number) => string;
     wrongDirection: string;
-    find: string;
+    /** Recognition, finding the notes: `found` notes are found so far. */
+    find: (found: number) => string;
     wrongNote: (name: string) => string;
     bravo: string;
     levelDone: string;
   };
   up: string;
   down: string;
+  /** The answers given in a recognition round, for screen readers. */
+  answersLabel: string;
+  /** A note still to find, for screen readers. */
+  toFind: (n: number) => string;
   progressTitle: string;
   progressText: string;
   progressCode: string;
@@ -50,6 +55,11 @@ export interface Strings {
   restore: string;
   restored: string;
   badCode: string;
+  startOver: string;
+  startOverText: string;
+  startOverYes: string;
+  startOverNo: string;
+  startedOver: string;
   cardAgain: string;
   hearIt: string;
   done: string;

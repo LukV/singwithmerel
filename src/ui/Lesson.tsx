@@ -2,7 +2,7 @@ import { SCALE, noteColour } from '../melody/scale';
 import { dotsOf, isDone, isSkipped, type LevelState } from '../progress/levels';
 import { DOTS } from '../progress/store';
 import { answer, bowing, hear, round, skip, startRound, stop } from '../round/controller';
-import type { Round } from '../round/round';
+import { goesUp, isRecognition, type Round } from '../round/round';
 import { cards, progress, t } from '../state';
 import { HandRule } from './HandRule';
 import { Merel, type Pose } from './merel/Merel';
@@ -46,7 +46,7 @@ function statusFor(mine: Round | null, levelDone: boolean): string {
     case 'direction':
       return mine.wrong ? s.status.wrongDirection : s.status.direction(mine.dir);
     case 'find':
-      return mine.wrong?.kind === 'note' ? s.status.wrongNote(s.noteNames[mine.wrong.step]!) : s.status.find;
+      return mine.wrong?.kind === 'note' ? s.status.wrongNote(s.noteNames[mine.wrong.step]!) : s.status.find(mine.found);
     case 'done':
       return levelDone ? s.status.levelDone : s.status.bravo;
     default:
@@ -103,6 +103,7 @@ function Card({ level, state }: { level: number; state: LevelState }) {
             {status}
           </span>
         </div>
+        {running && isRecognition(level) && mine.phase !== 'hear' && <Trail r={mine} />}
         {running && mine.phase === 'direction' && (
           <div class="card__answers">
             <button type="button" class="button button--big" onClick={() => answer(true)}>
@@ -143,5 +144,40 @@ function Card({ level, state }: { level: number; state: LevelState }) {
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * A recognition round so far: the directions answered, each with a tick, then the three notes,
+ * filled in their colour and name as they are found. Colour is never the only cue.
+ */
+function Trail({ r }: { r: Round }) {
+  const s = t.value;
+  const finding = r.phase === 'find' || r.phase === 'done';
+  return (
+    <ol class="card__trail" aria-label={s.answersLabel}>
+      {Array.from({ length: r.dir }, (_, i) => {
+        const up = goesUp(r.melody, i);
+        return (
+          <li key={`d${i}`} class="trail__step">
+            <span aria-hidden="true">{up ? '↗' : '↘'}</span> {up ? s.up : s.down} <span aria-hidden="true">✓</span>
+          </li>
+        );
+      })}
+      {finding &&
+        r.melody.map((note, i) =>
+          i < r.found ? (
+            <li key={`n${i}`} class="trail__note is-found" style={{ '--dot': noteColour(SCALE[note.step]!) }}>
+              <span class="trail__dot" aria-hidden="true" />
+              {s.noteNames[note.step]}
+            </li>
+          ) : (
+            <li key={`n${i}`} class={`trail__note${i === r.found ? ' is-next' : ''}`}>
+              <span aria-hidden="true">?</span>
+              <span class="visually-hidden">{s.toFind(i + 1)}</span>
+            </li>
+          ),
+        )}
+    </ol>
   );
 }

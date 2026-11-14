@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { decodeProgress, encodeProgress } from '../progress/code';
+import { empty } from '../progress/store';
 import { stop } from '../round/controller';
 import { progress, setProgress, t } from '../state';
 
@@ -9,6 +10,7 @@ export function ProgressPanel() {
   const [code, setCode] = useState('');
   const [pasted, setPasted] = useState('');
   const [note, setNote] = useState<{ text: string; ok: boolean } | null>(null);
+  const [asking, setAsking] = useState(false);
   const current = progress.value;
 
   useEffect(() => {
@@ -39,6 +41,15 @@ export function ProgressPanel() {
     setProgress({ ...restored, lang: current.lang });
     setPasted('');
     setNote({ text: s.restored, ok: true });
+  };
+
+  const startOver = () => {
+    stop();
+    setProgress({ ...empty(), lang: current.lang });
+    setAsking(false);
+    setNote({ text: s.startedOver, ok: true });
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('c1')?.scrollIntoView({ block: 'start', behavior: still ? 'auto' : 'smooth' });
   };
 
   return (
@@ -73,6 +84,32 @@ export function ProgressPanel() {
           {s.restore}
         </button>
       </form>
+      {asking ? (
+        <div class="progress__ask" role="group" aria-labelledby="start-over-text">
+          <p id="start-over-text" class="progress__text">
+            {s.startOverText}
+          </p>
+          <div class="progress__row">
+            <button type="button" class="button button--filled" onClick={startOver}>
+              {s.startOverYes}
+            </button>
+            <button type="button" class="button" onClick={() => setAsking(false)}>
+              {s.startOverNo}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          class="card__skip"
+          onClick={() => {
+            setNote(null);
+            setAsking(true);
+          }}
+        >
+          {s.startOver}
+        </button>
+      )}
       <p class={`progress__note${note && !note.ok ? ' is-wrong' : ''}`} role="status">
         {note?.text ?? ''}
       </p>

@@ -88,6 +88,8 @@ function dispatch(event: RoundEvent): void {
   if (!r) return;
   const { round: next, completed } = advance(r, event);
   round.value = next;
+  // Finding the notes needs the keys: on a phone, bring the instrument back if it is tucked away.
+  if (next.phase === 'find' && r.phase !== 'find') dockOpen.value = true;
   if (completed) complete(next);
   else if (next.phase === 'along' && r.phase === 'hear') void playAlong(next);
 }

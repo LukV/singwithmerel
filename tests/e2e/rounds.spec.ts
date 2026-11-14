@@ -53,6 +53,17 @@ test('skip opens the next level; the progress code brings progress back in a cle
   await expect(card(page, 2)).toHaveAttribute('data-state', 'active');
   await page.reload();
   await expect(card(page, 2)).toHaveAttribute('data-state', 'active');
+
+  // Start over asks once, then clears every level; keeping your progress changes nothing.
+  await page.getByRole('button', { name: 'Start over' }).click();
+  await page.getByRole('button', { name: 'Keep my progress' }).click();
+  await expect(card(page, 2)).toHaveAttribute('data-state', 'active');
+  await page.getByRole('button', { name: 'Start over' }).click();
+  await page.getByRole('button', { name: 'Yes, start over' }).click();
+  await expect(card(page, 1)).toHaveAttribute('data-state', 'active');
+  await expect(card(page, 2)).toHaveAttribute('data-state', 'upcoming');
+  await page.reload();
+  await expect(card(page, 1)).toHaveAttribute('data-state', 'active');
 });
 
 test('recognition: up or down, then the notes on the keys; a wrong key shows and lets you try again', async ({ page }) => {
@@ -66,11 +77,15 @@ test('recognition: up or down, then the notes on the keys; a wrong key shows and
   await expect(status).toHaveText('Up or down?', { timeout: 10_000 });
   await expect(card(page, 4).locator('.merel')).toHaveAttribute('data-pose', 'thinking');
   // Answer both steps, trying the other way after a wrong answer.
-  for (const next of ['And the next step?', 'Find the notes.']) {
+  for (const next of ['Yes. And the next step?', 'Yes. Now find the first note on the keys.']) {
     await card(page, 4).getByRole('button', { name: 'Up' }).click();
     if ((await status.textContent()) !== next) await card(page, 4).getByRole('button', { name: 'Down' }).click();
     await expect(status).toHaveText(next);
   }
+  // The answers stay in view, each with a tick, and three notes wait to be found.
+  const trail = card(page, 4).locator('.card__trail');
+  await expect(trail.locator('.trail__step')).toHaveCount(2);
+  await expect(trail.locator('.trail__note')).toHaveCount(3);
 
   // Find each note by trying the keys from low do upwards.
   const found = page.locator('.staff__note.is-found');
@@ -84,6 +99,7 @@ test('recognition: up or down, then the notes on the keys; a wrong key shows and
       await expect(status).toHaveText(/^Not /);
     }
     await expect(found).toHaveCount(n);
+    await expect(trail.locator('.trail__note.is-found')).toHaveCount(n);
   }
   expect(wrongSeen).toBe(true);
   await expect(filledDots(page, 4)).toHaveCount(1);

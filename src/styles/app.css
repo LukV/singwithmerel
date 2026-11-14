@@ -363,6 +363,59 @@ a {
   gap: 12px;
 }
 
+.card__trail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trail__step,
+.trail__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  font-size: 16px;
+}
+
+.trail__note {
+  min-width: 52px;
+  justify-content: center;
+  border-style: dashed;
+  color: var(--quiet);
+}
+
+.trail__note.is-next {
+  border-style: solid;
+  color: var(--ink);
+}
+
+.trail__note.is-found {
+  border-style: solid;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.trail__dot {
+  width: 14px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--dot);
+  transform: rotate(-12deg);
+}
+
+.progress__ask {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .card__skip {
   align-self: flex-start;
   min-height: var(--touch);
