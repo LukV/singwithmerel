@@ -42,9 +42,12 @@ export function staffLayout(width: number, height: number, count: number, compac
   const lineYs = [0, 1, 2, 3, 4].map((k) => top + 2 * s * k);
   const notesLeft = LEFT * s;
   const available = Math.max(0, width - notesLeft - RIGHT * s);
+  // A little room between the last note and the final double bar.
+  const tail = 0.8 * s;
   // On a phone the notes keep a readable spacing and the staff follows the current note.
-  const spacing = compact ? Math.max(available / count, 5.6 * s) : available / count;
-  const content = spacing * count + 0.8 * s;
+  const fit = (available - tail) / count;
+  const spacing = compact ? Math.max(fit, 5.6 * s) : fit;
+  const content = spacing * count + tail;
   let offset = 0;
   if (content > available && current !== null) {
     const centre = spacing * (current + 0.5);

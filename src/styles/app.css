@@ -105,17 +105,17 @@ a {
 }
 
 .app__lesson {
-  /* As wide as the start page needs; the instrument takes the rest. */
-  flex: 0 0 clamp(420px, 42vw, 620px);
+  flex: 1 1 420px;
   min-width: 0;
-  padding: 0 40px 140px;
+  padding: 0 48px 140px;
 }
 
 /* ---- Identity ---- */
 
 .identity {
-  min-height: min(100vh, 840px);
-  min-height: min(100svh, 840px);
+  /* Always exactly one screen high, so the lesson never shows below it. */
+  min-height: 100vh;
+  min-height: 100svh;
   padding: 24px 0 34px;
   display: flex;
   flex-direction: column;
@@ -194,14 +194,14 @@ a {
 .identity__tagline {
   margin: 0;
   white-space: nowrap;
-  font-size: clamp(38px, 3.6vw, 52px);
+  font-size: clamp(40px, 4.2vw, 52px);
   line-height: 1.02;
 }
 
 .identity__merel {
   position: relative;
   flex: 0 1 250px;
-  min-width: 140px;
+  min-width: 100px;
   margin-left: auto;
 }
 
@@ -241,7 +241,7 @@ a {
 
 .card {
   position: relative;
-  padding-left: 88px;
+  padding-left: 92px;
   scroll-margin-top: 24px;
 }
 
@@ -302,7 +302,7 @@ a {
 
 .card__title {
   margin: 0;
-  font-size: clamp(32px, 2.9vw, 42px);
+  font-size: 42px;
   line-height: 1.05;
 }
 
@@ -320,7 +320,7 @@ a {
 }
 
 .card__merel {
-  width: clamp(88px, 7.5vw, 124px);
+  width: 124px;
   height: auto;
   aspect-ratio: 280 / 378;
 }
@@ -369,7 +369,7 @@ a {
 /* ---- The instrument ---- */
 
 .instrument {
-  flex: 1 1 0;
+  flex: 1.1 1 480px;
   min-width: 0;
   align-self: stretch;
   background: var(--ink);
@@ -385,10 +385,15 @@ a {
   padding: 24px 30px 28px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 12px;
 }
 
 .instrument__head {
+  position: absolute;
+  top: 24px;
+  left: 30px;
+  right: 30px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -419,9 +424,10 @@ a {
 
 .staff {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 160px;
-  max-height: 420px;
+  flex: none;
+  /* What the screen leaves after the head, the keys and the help, between 180 and 420 px. */
+  height: clamp(180px, calc(100vh - 380px), 420px);
+  height: clamp(180px, calc(100dvh - 380px), 420px);
 }
 
 .staff svg {
@@ -468,7 +474,8 @@ a {
 }
 
 .instrument__body {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  margin-top: 36px;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -711,7 +718,14 @@ a {
   }
 
   .instrument__body {
+    flex: 1 1 auto;
+    margin-top: 0;
     gap: 6px;
+  }
+
+  .instrument__head {
+    position: static;
+    inset: auto;
   }
 
   .instrument__handle {
@@ -757,6 +771,8 @@ a {
   }
 
   .staff {
+    flex: 1 1 auto;
+    height: auto;
     min-height: 0;
   }
 

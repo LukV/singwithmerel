@@ -27,3 +27,9 @@ describe('the staff layout', () => {
     expect(l.barXs[0]).toBeLessThan(l.noteX(4));
   });
 });
+
+describe('the staff on a wide screen', () => {
+  it('never scrolls, whichever note is played', () => {
+    for (let note = 0; note < 8; note++) expect(staffLayout(640, 372, 8, false, note).offset).toBe(0);
+  });
+});
