@@ -1,25 +1,8 @@
-## v0.1.0-rc.2 (2026-11-14)
-
-### Fix
-
-- **offline**: an open app moves on to a new release by itself
-
-## v0.1.0-rc.1 (2026-11-14)
+## v0.1.0 (2026-11-14)
 
 ### Feat
 
 - **instrument**: the keys play a recorded grand piano
-
-### Fix
-
-- **install**: invite only on a phone or tablet, and scroll to the invitation
-- **instrument**: on a phone, the staff and keys come up without the first Start
-- **deploy**: trust the token subject GitHub sends, repository name and id
-
-## v0.1.0-rc.0 (2026-11-14)
-
-### Feat
-
 - **voice**: Merel's 17 clips, sung in Synthesizer V
 - **pages**: privacy and about page, phone tips, and the invitation to install
 - **voice**: npm run voice checks the clips' pitch and converts them
@@ -32,5 +15,9 @@
 
 ### Fix
 
+- **offline**: an open app moves on to a new release by itself
+- **install**: invite only on a phone or tablet, and scroll to the invitation
+- **instrument**: on a phone, the staff and keys come up without the first Start
+- **deploy**: trust the token subject GitHub sends, repository name and id
 - **layout**: the first screen is always one screen high
 - **layout**: narrower lesson column, smooth start, a handle to tuck the phone instrument away
