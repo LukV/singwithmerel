@@ -1,7 +1,8 @@
-import { spawn } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { createServer, type Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { extname, join } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 test('installable, and after the first visit Merel starts and plays offline', async ({ page, context }) => {
@@ -30,15 +31,43 @@ test('installable, and after the first visit Merel starts and plays offline', as
   await context.setOffline(false);
 });
 
-// Its own copy of the build on its own port, so changing the worker touches no other test.
-test('an open page moves on to a new release by itself', async ({ page }, info) => {
-  const port = 4180 + info.parallelIndex;
+const TYPES: Record<string, string> = {
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.webmanifest': 'application/manifest+json',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
+  '.woff': 'font/woff',
+  '.m4a': 'audio/mp4',
+  '.txt': 'text/plain',
+};
+
+/** A plain static server for a copy of dist/, on a free port, with nothing cached. */
+async function serve(dir: string): Promise<{ server: Server; base: string }> {
+  const server = createServer((req, res) => {
+    let path = join(dir, decodeURIComponent(new URL(req.url ?? '/', 'http://x').pathname));
+    if (existsSync(path) && statSync(path).isDirectory()) path = join(path, 'index.html');
+    if (!existsSync(path)) {
+      res.writeHead(404).end();
+      return;
+    }
+    res.writeHead(200, { 'content-type': TYPES[extname(path)] ?? 'application/octet-stream', 'cache-control': 'no-cache' });
+    res.end(readFileSync(path));
+  });
+  await new Promise<void>((done) => server.listen(0, '127.0.0.1', done));
+  return { server, base: `http://127.0.0.1:${(server.address() as AddressInfo).port}` };
+}
+
+// Its own copy of the build on its own server, so changing the worker touches no other test.
+test('an open page moves on to a new release by itself', async ({ page }) => {
   const dir = mkdtempSync(join(tmpdir(), 'merel-release-'));
   cpSync('dist', dir, { recursive: true });
-  const server = spawn('npx', ['vite', 'preview', '--outDir', dir, '--port', String(port), '--strictPort'], { stdio: 'ignore' });
+  const { server, base } = await serve(dir);
   try {
-    const base = `http://localhost:${port}`;
-    await expect.poll(async () => (await fetch(`${base}/en/`).catch(() => null))?.ok ?? false, { timeout: 15_000 }).toBe(true);
     await page.goto(`${base}/en/`);
     await page.evaluate(() => navigator.serviceWorker.ready);
     await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
@@ -59,7 +88,8 @@ test('an open page moves on to a new release by itself', async ({ page }, info) 
       .poll(() => page.evaluate(async () => (await caches.keys()).filter((k) => k.startsWith('merel-'))))
       .toEqual([expect.stringMatching(/-next$/)]);
   } finally {
-    server.kill();
+    server.closeAllConnections();
+    server.close();
     rmSync(dir, { recursive: true, force: true });
   }
 });
