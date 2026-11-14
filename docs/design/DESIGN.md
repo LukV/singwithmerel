@@ -64,7 +64,7 @@ Kalam is a free Google font that imitates marker handwriting; Print Club London'
 3. **Real notation first**: clef, time signature, stems, bar lines; colour marks what was played or sung.
 4. **Colour is never the only cue**: every note also shows its name, its letter where the language uses it, and its key.
 5. **Lines are hand-drawn, one weight**; the staff and the keys wobble slightly. Merel is the exception: built from geometry.
-6. **Touch targets at least 44 px.** Text contrast at least 4.5:1.
+6. **Touch targets at least 44 px**, the piano keys included: on a narrow phone the gutters give way, not the keys. Text contrast at least 4.5:1.
 
 ## Merel
 
@@ -78,6 +78,6 @@ A geometric blackbird of discs and rounded bars: black body and head, white shir
 | Listening | Your turn, recognition | cocks his head and holds it |
 | Bowing | a round or level completed | a small dip, held |
 
-Only Merel moves; nothing else animates. Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
+Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed (Luk, 2026-11-14). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
 
 A more naturalistic blackbird (long tail, level body, no shirt front) was tried on 2026-11-13 and dropped by Luk the same day; it is on the "Earlier rounds" page.

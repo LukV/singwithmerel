@@ -6,14 +6,14 @@ updated: 2026-11-14
 ---
 # Overview
 
-**In brief.** Merel is a static, installable web app (a PWA): HTML, CSS, JavaScript, fonts and audio clips, served over HTTPS at singwithmerel.com ([[010-hosting]]). Everything runs in the browser: the melody generator, the clip player, the pitch detector and the progress store. There is no server, no database and no third-party call at runtime. The stack below is a proposal to confirm with Luk before the first commit.
+**In brief.** Merel is a static, installable web app (a PWA): HTML, CSS, JavaScript, fonts and audio clips, served over HTTPS at singwithmerel.com ([[010-hosting]]). Everything runs in the browser: the melody generator, the clip player, the pitch detector and the progress store. There is no server, no database and no third-party call at runtime. The stack is [[012-stack]].
 
-## Proposed stack
+## Stack
 
-| Part | Proposal | Why |
+| Part | Choice | Why |
 |---|---|---|
 | Build | Vite + TypeScript | static output, fast, what Claude Code knows well |
-| UI | Preact or plain web components | small bundle on a phone; Merel and the staff are SVG |
+| UI | Preact with signals | small bundle on a phone; Merel and the staff are SVG |
 | Install, offline | a service worker via vite-plugin-pwa | caches the app and all clips |
 | Audio out | Web Audio API, one AudioContext | sample-accurate scheduling of clips |
 | Audio in | getUserMedia + an AudioWorklet | microphone frames off the main thread |

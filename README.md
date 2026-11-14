@@ -51,7 +51,7 @@ Coming with the first pitch: `npm install`, `npm run dev`, `npm run check`. [AGE
 
 ## How we work
 
-Merel is built by Luk with Claude and Claude Code, in blocks (a release each) and pitches (a large, shaped piece of a block). Each pitch ends with a test scenario a person runs; each block ends with one pull request that deploys on merge. The docs in [`docs/`](docs/_about.md) come first: product and design are settled there before code changes.
+Merel is built by Luk with Claude and Claude Code, in blocks (a release each) and pitches (a large, shaped piece of a block). Each pitch ends with a test scenario a person runs; each block ends with one pull request, and a release tag deploys it. The docs in [`docs/`](docs/_about.md) come first: product and design are settled there before code changes.
 
 Ideas and bug reports are welcome as issues.
 

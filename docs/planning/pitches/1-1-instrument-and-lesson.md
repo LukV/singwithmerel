@@ -1,9 +1,10 @@
 ---
 project: merel
 type: pitch
-status: ready
+status: in-cycle
 block: 1-sing-along
 created: 2026-11-14
+started: 2026-11-14
 ---
 # 1.1 The instrument and the lesson
 
@@ -15,7 +16,7 @@ Everything exists as a canvas mockup that only renders inside claude.ai. There i
 
 ## Sketch
 
-**The project.** The repository exists, with `main` tracking LukV/singwithmerel; the docs, README, `.gitignore` and `.cz.toml` are there but not yet committed. First commit them on `main` (`docs: ...`), push, then cut `block/1-sing-along`. Vite with TypeScript and the UI library confirmed at the start (decision 012). `package.json` starts at version `0.0.0`; commitizen reads and bumps it ([[011-versions-and-releases]]). Vitest for units, Playwright for one browser check. `npm run dev`, `npm test`, `npm run build`, `npm run check` (types, lint, tests) written into `AGENTS.md`.
+**The project.** The repository exists, with `main` tracking LukV/singwithmerel; the docs, README, `.gitignore` and `.cz.toml` are there but not yet committed. First commit them on `main` (`docs: ...`), push, then cut `block/1-sing-along`. Vite with TypeScript and Preact ([[012-stack]]). `package.json` starts at version `0.0.0`; commitizen reads and bumps it ([[011-versions-and-releases]]). Vitest for units, Playwright for one browser check. `npm run dev`, `npm test`, `npm run build`, `npm run check` (types, lint, tests) written into `AGENTS.md`.
 
 **CI.** `.github/workflows/ci.yml` runs on every push and pull request: install with the lockfile, `npm run check`, the Playwright check in a headless browser, `npm run build`, and on pull requests `cz check` over the branch's commit messages. Node version pinned in `.nvmrc` and used by both CI and local.
 
@@ -29,7 +30,7 @@ Everything exists as a canvas mockup that only renders inside claude.ai. There i
 
 **The instrument.** Real notation: the hand-drawn staff, the treble clef from `clef.svg`, notes placed by pitch with ledger line for low do, stems, a 4/4 bar line and final double bar. Under each note its name and, where the language uses them, its letter. Eight keys, black keys between, each with its colour dot, name, letter and keyboard key. Clicking a key or pressing A S D F G H J K plays a plain tone and shows the note's dot and the radiating dashes on the staff.
 
-**Layout.** Desktop and landscape: lesson left, scrolling; instrument right, fixed. Phone in portrait: lesson on top, instrument docked at the bottom at about 45% of the height, staff showing four to five notes and following the current one, keys at least 43 px wide, keycaps hidden.
+**Layout.** Desktop and landscape: lesson left, scrolling; instrument right, fixed. Phone in portrait: lesson on top, instrument docked at the bottom at about 45% of the height, staff showing four to five notes and following the current one, keys at least 44 px wide (the gutters narrow to make room), keycaps hidden. The instrument slides up when Start is pressed; under reduced motion it simply appears.
 
 **Languages.** Paths /en, /fr, /nl, a switch in the header, the choice remembered in local storage, the first visit following the browser. Strings per language in one file each; note names per [[0020-features#Languages]].
 
