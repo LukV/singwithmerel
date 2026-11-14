@@ -31,11 +31,13 @@ The exercises hang from a thin hand-drawn line, each on a numbered node.
 
 ## One round
 
-1. **Hear it.** Merel sings the notes alone.
-2. **Sing along.** You sing with Merel.
-3. **Your turn.** Merel is silent; you sing and the app listens.
+1. **Hear it.** Merel sings the notes alone, by name, while the staff marks each one.
+2. **Sing along.** A beat later he sings them again and you sing with him.
+3. **Your turn.** Merel is silent and listens; you sing alone, then press "next round". Until the app listens (block 2), Your turn is practice: the round is already complete.
 
-Recognition replaces step 3 with answering: first the direction of each step (up or down), then the notes on the keys. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round.
+Recognition (exercise 4) sings on "du" and replaces steps 2 and 3 with answering, while the staff stays empty: first the direction of each step (up or down, two big buttons), then the notes on the keys, which appear on the staff as you find them. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round. "Hear it" sings the melody again at any time.
+
+Merel acts the round out: singing while he sings, thinking over up or down, listening while you sing or search, bowing when a round completes, waiting otherwise.
 
 What makes a round "completed" grows per release, from sang along to the end, to a steady tone per note, to a match per note: [[architecture/0010-overview#Voice evaluation|voice evaluation]].
 
@@ -44,6 +46,8 @@ What makes a round "completed" grows per release, from sang along to the end, to
 - **One dot is one completed round.** Five dots per level (Luk, 2026-11-14).
 - **Five full dots open the next level.**
 - **Skip:** a quiet "skip this level" opens the next level without filling the dots, for teachers and confident singers.
+- A completed or skipped level turns quiet and grey; the next becomes active and the lesson scrolls to it. A completed level can be played again; an upcoming one can be heard, not started.
+- **Progress** stays in the browser. A short progress code, at the end of the lesson, copies it to another browser or phone and pastes it back.
 
 ## Exercises
 

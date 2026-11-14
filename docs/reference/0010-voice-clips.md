@@ -46,6 +46,10 @@ The pitches above are the written pitches. A lower voice may sing everything one
 
 The judge folds octaves, so the user's own octave never matters; the offset only keeps the staff honest.
 
+## Until the clips exist
+
+The app asks for each clip at `/voice/<syllable>-<pitch>.m4a` and sings any that is missing as a plain tone at its pitch, so a partial set works. To try one clip by hand, drop an `.m4a` straight into `public/voice/`.
+
 ## What the build does
 
 1. Measures each clip's pitch and refuses one more than 10 cents off its name.

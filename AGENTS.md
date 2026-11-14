@@ -42,7 +42,7 @@ Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwri
 
 | Command | Does |
 |---|---|
-| `npm run dev` | the app at http://localhost:5173, with the dev control for card states; `npm run dev -- --host` to open it from a phone on the same network |
+| `npm run dev` | the app at http://localhost:5173, with the dev control (fill a dot on a level, start over); `npm run dev -- --host` to open it from a phone on the same network |
 | `npm run check` | types (`tsc`), lint (ESLint) and unit tests (Vitest): what CI runs first |
 | `npm test` | the unit tests only |
 | `npm run test:e2e` | builds the site and runs the Playwright check against it, on a desktop and a phone viewport |
@@ -56,13 +56,15 @@ Still to come: `npm run voice` (pitch 1.3) and `npm run deploy` (pitch 1.3).
 ```
 src/
   main.tsx, app.tsx   # entry point; the split screen and the keyboard
-  state.ts            # the app's signals: language, started, the note played, card states
-  melody/             # the do major scale (and, from 1.2, the melodies); pure, tested
-  audio/              # the AudioContext and the plain tone
-  progress/           # the merel.v1 record in local storage
+  state.ts            # the app's signals: language, started, the note played, progress
+  melody/             # the do major scale, the scale exercises, the random melody; pure, tested
+  audio/              # the AudioContext, the plain tone, Merel's clips on the audio clock
+  round/              # one round as a state machine, and the controller that plays it
+  progress/           # the merel.v1 record, levels and dots, the progress code
   i18n/               # languages, paths, and one string file per language (en.ts, fr.ts, nl.ts)
   ui/                 # identity, header, lesson and cards, instrument (staff, keys), Merel, hand-drawn lines
   styles/             # tokens.css (DESIGN.md tokens) and app.css
+public/               # the icons (copied from docs/design/assets/icons/); voice/ for Merel's clips
 build/                # Vite plugins: the page per language, SVGs cleaned on import
 tests/e2e/            # the Playwright check
 docs/                 # the docs; Merel and the signs are imported from docs/design/assets/
