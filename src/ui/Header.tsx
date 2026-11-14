@@ -14,6 +14,7 @@ export function Header() {
       <nav aria-label={s.navLabel} class="header__nav">
         <a href="#c1">{s.navSing}</a>
         <a href="#c4">{s.navRecognise}</a>
+        <a href="#progress">{s.navProgress}</a>
       </nav>
       <nav aria-label={s.languageLabel} class="header__langs">
         {LANGS.map((l) => (

@@ -1,6 +1,7 @@
 import wordmark from '../../docs/design/assets/signs/wordmark.svg?clean&ink';
 import { unlock } from '../audio/tone';
-import { started, t } from '../state';
+import { preloadVoice } from '../audio/voice';
+import { lang, started, t } from '../state';
 import { Header } from './Header';
 import { HandRule } from './HandRule';
 import { Merel } from './merel/Merel';
@@ -10,6 +11,7 @@ export function Identity() {
   const s = t.value;
   const begin = () => {
     unlock();
+    preloadVoice(lang.value);
     started.value = true;
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.getElementById('c1')?.scrollIntoView({ block: 'start', behavior: still ? 'auto' : 'smooth' });

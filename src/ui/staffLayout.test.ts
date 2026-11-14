@@ -33,3 +33,11 @@ describe('the staff on a wide screen', () => {
     for (let note = 0; note < 8; note++) expect(staffLayout(640, 372, 8, false, note).offset).toBe(0);
   });
 });
+
+describe('a three-note melody', () => {
+  it('fills one 4/4 bar, with no bar line inside it', () => {
+    const l = staffLayout(600, 372, 4, false, null);
+    expect(l.barXs).toEqual([]);
+    expect(l.noteX(2)).toBeLessThan(l.endX);
+  });
+});

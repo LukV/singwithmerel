@@ -1,5 +1,6 @@
 import { playTone } from '../audio/tone';
 import { SCALE } from '../melody/scale';
+import { keyPressed } from '../round/controller';
 import { lit, plays } from '../state';
 
 /** Play a note of the scale on the instrument: its tone, its dot on the key, its mark on the staff. */
@@ -9,6 +10,7 @@ export function playNote(step: number): void {
   playTone(note.freq);
   lit.value = step;
   plays.value++;
+  keyPressed(step);
 }
 
 /** The scale step a key press plays: A S D F G H J K by letter, or by position on the keyboard. */

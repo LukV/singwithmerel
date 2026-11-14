@@ -1,5 +1,6 @@
 import { useRef } from 'preact/hooks';
 import { SCALE, noteColour } from '../melody/scale';
+import { round } from '../round/controller';
 import { dockOpen, lit, started, t } from '../state';
 import { Keys } from './Keys';
 import { Staff } from './Staff';
@@ -13,10 +14,12 @@ export function Instrument({ compact }: { compact: boolean }) {
   const note = current === null ? null : SCALE[current]!;
   const open = !compact || dockOpen.value;
   const startY = useRef<number | null>(null);
+  const r = round.value;
+  const label = r ? `${r.level} · ${s.exercises[r.level - 1]!.title}` : s.instrument;
 
   const head = (
     <>
-      <span class="instrument__label">{s.instrument}</span>
+      <span class="instrument__label">{label}</span>
       <span class="instrument__note lettering" aria-live="polite">
         {note && <span class="dot dot--on" style={{ '--dot': noteColour(note) }} aria-hidden="true" />}
         {note ? s.noteNames[note.step] : ''}

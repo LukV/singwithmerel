@@ -15,11 +15,12 @@ export interface StaffLayout {
   time: { x: number; y1: number; y2: number; size: number };
   /** Left edge of the notes area; notes are clipped to it when the staff scrolls. */
   notesLeft: number;
-  /** Distance between two notes. */
+  /** Distance between two beats. */
   spacing: number;
   /** How far the notes are scrolled to the left, to keep the current note in view. */
   offset: number;
-  noteX: (i: number) => number;
+  /** x of a note that starts on beat `beat` (0-based). */
+  noteX: (beat: number) => number;
   noteY: (step: number) => number;
   barXs: number[];
   endX: number;
@@ -34,7 +35,12 @@ export const COMPACT_UNITS = 18.4;
 const LEFT = 10.9;
 const RIGHT = 1.7;
 
-export function staffLayout(width: number, height: number, count: number, compact: boolean, current: number | null): StaffLayout {
+/**
+ * `beats` is the length of the music in beats (quarter notes); a bar is four. `focus` is the beat
+ * of the note to keep in view on a phone, or null.
+ */
+export function staffLayout(width: number, height: number, beats: number, compact: boolean, focus: number | null): StaffLayout {
+  const count = Math.max(1, beats);
   const units = compact ? COMPACT_UNITS : STAFF_UNITS;
   const s = Math.max(4, Math.min(height / units, width / (compact ? 30 : 33)));
   // Centred in its box when the width, not the height, sets the size.
@@ -49,13 +55,14 @@ export function staffLayout(width: number, height: number, count: number, compac
   const spacing = compact ? Math.max(fit, 5.6 * s) : fit;
   const content = spacing * count + tail;
   let offset = 0;
-  if (content > available && current !== null) {
-    const centre = spacing * (current + 0.5);
+  if (content > available && focus !== null) {
+    const centre = spacing * (focus + 0.5);
     // Keep the current note in the middle, as far as the ends of the staff allow.
     offset = Math.min(Math.max(centre - available / 2, 0), content - available);
   }
-  const noteX = (i: number) => notesLeft + spacing * (i + 0.5) - offset;
-  const half = Math.floor(count / 2);
+  const noteX = (beat: number) => notesLeft + spacing * (beat + 0.5) - offset;
+  const barXs: number[] = [];
+  for (let b = 4; b < count; b += 4) barXs.push(notesLeft + spacing * b - offset);
   return {
     s,
     top,
@@ -67,7 +74,7 @@ export function staffLayout(width: number, height: number, count: number, compac
     offset,
     noteX,
     noteY: (step) => top + 10 * s - step * s,
-    barXs: count > 4 ? [notesLeft + spacing * half - offset] : [],
+    barXs,
     endX: notesLeft + content - offset,
     nameY: top + (compact ? 12.3 : 12.6) * s,
     letterY: top + (compact ? 13.5 : 13.9) * s,

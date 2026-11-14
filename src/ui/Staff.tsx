@@ -1,35 +1,83 @@
 import clef from '../../docs/design/assets/signs/clef.svg?clean&ink';
 import { SCALE, noteColour } from '../melody/scale';
-import { lit, plays, t } from '../state';
+import { plays, t } from '../state';
 import { handLine } from './hand';
 import { staffLayout } from './staffLayout';
+import { staffView } from './staffView';
 import { useSize } from './useSize';
 
 const CLEF_INNER = clef.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
 const BURST_ANGLES = [30, 68, 112, 150, 210, 248, 292, 330];
 
+interface HeadProps {
+  x: number;
+  y: number;
+  u: number;
+  thin: number;
+  step: number;
+  beats: number;
+  colour: string;
+  ledger: boolean;
+  /** Draw the head filled even for a half note: the colour of a sung or found note is a dot. */
+  filled: boolean;
+}
+
+function Note({ x, y, u, thin, step, beats, colour, ledger, filled }: HeadProps) {
+  const up = step < 6;
+  const stemX = up ? x + 0.95 * u : x - 1.17 * u - thin;
+  const hollow = beats >= 2 && !filled;
+  return (
+    <>
+      {ledger && <rect x={x - 1.83 * u} y={y - thin / 2} width={3.67 * u} height={thin} rx={thin / 2} class="staff__ink" />}
+      <rect x={stemX} y={up ? y - 6.8 * u : y} width={thin} height={6.8 * u} rx={thin / 2} class="staff__ink" />
+      <ellipse
+        cx={x}
+        cy={y}
+        rx={hollow ? 0.94 * u : 1.04 * u}
+        ry={hollow ? 0.76 * u : 0.86 * u}
+        transform={`rotate(-12 ${x} ${y})`}
+        fill={hollow ? 'none' : colour}
+        stroke={colour}
+        stroke-width={hollow ? 0.36 * u : 0.28 * u}
+      />
+    </>
+  );
+}
+
+function Burst({ x, y, u, thin }: { x: number; y: number; u: number; thin: number }) {
+  return (
+    <g class="staff__burst" stroke-width={thin}>
+      {BURST_ANGLES.map((a) => {
+        const r = (a * Math.PI) / 180;
+        const r1 = 1.6 * u;
+        const r2 = 2.45 * u;
+        return <line key={a} x1={x + Math.cos(r) * r1} y1={y - Math.sin(r) * r1} x2={x + Math.cos(r) * r2} y2={y - Math.sin(r) * r2} />;
+      })}
+    </g>
+  );
+}
+
 /**
- * Real notation, drawn per size: five hand-drawn lines, the treble clef, 4/4, the scale of do
- * major in quarter notes with stems, a bar line and the final double bar. The note last played
- * shows its colour and the dashes around it. On a phone (`compact`) the notes keep their
- * spacing and the staff follows the current note.
+ * Real notation, drawn per size: five hand-drawn lines, the treble clef, 4/4, the notes with
+ * stems in their rhythm, bar lines and the final double bar. A note sounding or just played
+ * shows its colour and the dashes around it; found notes keep their colour. On a phone
+ * (`compact`) the notes keep their spacing and the staff follows the current note.
  */
 export function Staff({ compact }: { compact: boolean }) {
   const s = t.value;
+  const view = staffView.value;
   const [ref, { width, height }] = useSize<HTMLDivElement>();
-  const current = lit.value;
-  const notes = SCALE;
-  const names = s.noteNames;
-  const label = s.staffLabel(names.join(' '));
+  const shown = view.notes.filter((n) => n.mark !== 'hidden');
+  const label = shown.length ? s.staffLabel(shown.map((n) => s.noteNames[n.step]).join(' ')) : s.staffEmpty;
   if (!width || !height) return <div ref={ref} class="staff" role="img" aria-label={label} />;
 
-  const L = staffLayout(width, height, notes.length, compact, current);
+  const L = staffLayout(width, height, view.beats, compact, view.focus);
   const u = L.s;
   const thin = Math.max(1.5, 0.22 * u);
   const clipId = 'staff-notes';
 
   return (
-    <div ref={ref} class="staff" role="img" aria-label={label} data-lit={current ?? ''}>
+    <div ref={ref} class="staff" role="img" aria-label={label}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
         <defs>
           <clipPath id={clipId}>
@@ -50,30 +98,19 @@ export function Staff({ compact }: { compact: boolean }) {
           ))}
           <rect x={L.endX - 0.9 * u} y={L.lineYs[0]} width={thin} height={8 * u} rx={thin / 2} class="staff__ink" />
           <rect x={L.endX - 0.45 * u} y={L.lineYs[0]} width={0.45 * u} height={8 * u} rx={thin / 2} class="staff__ink" />
-          {notes.map((note, i) => {
-            const x = L.noteX(i);
-            const y = L.noteY(note.step);
-            const on = current === note.step;
-            const up = note.step < 6;
-            const stemX = up ? x + 0.95 * u : x - 1.17 * u - thin;
-            const colour = on ? noteColour(note) : 'var(--on-ink)';
+          {view.notes.map((n, i) => {
+            if (n.mark === 'hidden') return null;
+            const note = SCALE[n.step]!;
+            const x = L.noteX(n.beat);
+            const y = L.noteY(n.step);
+            const coloured = n.mark === 'on' || n.mark === 'found';
+            const colour = coloured ? noteColour(note) : 'var(--on-ink)';
             return (
-              <g key={i} class={`staff__note${on ? ' is-on' : ''}`} data-note={note.pitch}>
-                {note.step === 0 && <rect x={x - 1.83 * u} y={y - thin / 2} width={3.67 * u} height={thin} rx={thin / 2} class="staff__ink" />}
-                <rect x={stemX} y={up ? y - 6.8 * u : y} width={thin} height={6.8 * u} rx={thin / 2} class="staff__ink" />
-                <ellipse cx={x} cy={y} rx={1.04 * u} ry={0.86 * u} transform={`rotate(-12 ${x} ${y})`} fill={colour} stroke={colour} stroke-width={0.28 * u} />
-                {on && (
-                  <g key={plays.value} class="staff__burst" stroke-width={thin}>
-                    {BURST_ANGLES.map((a) => {
-                      const r = (a * Math.PI) / 180;
-                      const r1 = 1.6 * u;
-                      const r2 = 2.45 * u;
-                      return <line key={a} x1={x + Math.cos(r) * r1} y1={y - Math.sin(r) * r1} x2={x + Math.cos(r) * r2} y2={y - Math.sin(r) * r2} />;
-                    })}
-                  </g>
-                )}
+              <g key={i} class={`staff__note is-${n.mark}`} data-note={note.pitch}>
+                <Note x={x} y={y} u={u} thin={thin} step={n.step} beats={n.beats} colour={colour} ledger={n.step === 0} filled={coloured} />
+                {n.mark === 'on' && <Burst key={plays.value} x={x} y={y} u={u} thin={thin} />}
                 <text x={x} y={L.nameY} class="staff__name lettering" font-size={Math.max(12, 1.22 * u)}>
-                  {names[i]!.toUpperCase()}
+                  {s.noteNames[n.step]!.toUpperCase()}
                 </text>
                 {s.showLetters && (
                   <text x={x} y={L.letterY} class="staff__letter" font-size={Math.max(10, 0.83 * u)}>
@@ -83,6 +120,24 @@ export function Staff({ compact }: { compact: boolean }) {
               </g>
             );
           })}
+          {view.ghost && (
+            <g class="staff__ghost" data-note={SCALE[view.ghost.step]!.pitch}>
+              <Note
+                x={L.noteX(view.ghost.beat)}
+                y={L.noteY(view.ghost.step)}
+                u={u}
+                thin={thin}
+                step={view.ghost.step}
+                beats={1}
+                colour={noteColour(SCALE[view.ghost.step]!)}
+                ledger={view.ghost.step === 0}
+                filled
+              />
+              <text x={L.noteX(view.ghost.beat)} y={L.nameY} class="staff__name lettering" font-size={Math.max(12, 1.22 * u)}>
+                {s.noteNames[view.ghost.step]!.toUpperCase()}
+              </text>
+            </g>
+          )}
         </g>
       </svg>
     </div>
