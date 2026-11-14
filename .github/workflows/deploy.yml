@@ -1,0 +1,68 @@
+name: Deploy
+
+# Only a version tag deploys (docs/architecture/decisions/011-versions-and-releases.md):
+# v0.1.0-rc.0 goes to next.singwithmerel.com, v0.1.0 to singwithmerel.com with a GitHub release.
+# AWS is reached through GitHub's OIDC provider; the role accepts only this repository's v* tags.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Check, build and deploy ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # the GitHub release
+      id-token: write # the OIDC token for AWS
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Install the browser for the browser check
+        run: npx playwright install --with-deps chromium
+      - name: Browser check (builds the site first)
+        run: npm run test:e2e
+      - name: Build, with no warnings
+        run: |
+          npm run build 2>&1 | tee build.log
+          if grep -qiE '\(!\)|warn' build.log; then echo "::error::The build printed a warning"; exit 1; fi
+
+      - name: Where it goes
+        id: target
+        run: |
+          if [[ "$GITHUB_REF_NAME" == *-rc.* ]]; then echo "name=next" >> "$GITHUB_OUTPUT"; else echo "name=site" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: deploy-${{ github.run_id }}
+      - name: Who am I
+        run: aws sts get-caller-identity --query Arn --output text
+
+      - name: Upload and clear the cache
+        env:
+          SITE_BUCKET: ${{ vars.SITE_BUCKET }}
+          SITE_DISTRIBUTION: ${{ vars.SITE_DISTRIBUTION }}
+          NEXT_BUCKET: ${{ vars.NEXT_BUCKET }}
+          NEXT_DISTRIBUTION: ${{ vars.NEXT_DISTRIBUTION }}
+        run: bash deploy/deploy.sh ${{ steps.target.outputs.name }}
+
+      - name: GitHub release, from this version's CHANGELOG section
+        if: steps.target.outputs.name == 'site'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          awk -v tag="## $GITHUB_REF_NAME" 'index($0, tag) == 1 { on = 1; next } on && /^## / { exit } on' CHANGELOG.md > notes.md
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md --verify-tag
