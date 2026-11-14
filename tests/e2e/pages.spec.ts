@@ -52,3 +52,18 @@ test('the invitation to install comes after the first completed level, on an iPh
   await expect(page.locator('.invite')).toHaveCount(0);
   await context.close();
 });
+
+test('no invitation to install on a desktop, even when the browser could install', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'a desktop browser only');
+  await page.goto('/en/');
+  await page.evaluate(() => localStorage.setItem('merel.v1', JSON.stringify({ version: 1, lang: 'en', levels: { 1: { dots: 5, done: true } }, skipped: [] })));
+  await page.reload();
+  // What Chrome on a desktop does when the site can be installed.
+  await page.evaluate(() => {
+    const e = new Event('beforeinstallprompt');
+    Object.assign(e, { prompt: async () => undefined, userChoice: Promise.resolve({ outcome: 'dismissed' }) });
+    window.dispatchEvent(e);
+  });
+  await expect(page.locator('#c2')).toBeVisible();
+  await expect(page.locator('.invite')).toHaveCount(0);
+});

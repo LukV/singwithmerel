@@ -80,7 +80,11 @@ function bow(ms: number, then?: () => void): void {
 
 function scrollToLevel(level: number | null): void {
   if (level === null) return;
-  document.getElementById(`c${level}`)?.scrollIntoView({ block: 'start', behavior: still() ? 'auto' : 'smooth' });
+  const card = document.getElementById(`c${level}`);
+  // The invitation to install sits just before the next level, after the first one done: show it too.
+  const before = card?.previousElementSibling;
+  const target = before?.classList.contains('invite') ? before : card;
+  target?.scrollIntoView({ block: 'start', behavior: still() ? 'auto' : 'smooth' });
 }
 
 function dispatch(event: RoundEvent): void {
