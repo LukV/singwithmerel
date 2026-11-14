@@ -36,7 +36,7 @@ Read first: [[0010-vision]], [[0020-features]], [[DESIGN]], [[architecture/0010-
 
 Items marked *(after release)* become true only after Luk merges, bumps and tags; Luk checks them, and `finish-block` leaves them open when it opens the pull request (Luk, 2026-11-14).
 
-- [ ] *(after release)* https://singwithmerel.com serves release 1 over HTTPS; www redirects to it.
+- [x] *(after release)* https://singwithmerel.com serves release 1 over HTTPS; www redirects to it.
 - [x] /en, /fr and /nl work; the first visit follows the browser's language.
 - [ ] The four exercises are playable to the end on iPhone Safari, Android Chrome and a desktop browser. *(Checked in the browser check on a desktop and a phone viewport; Luk confirms on real phones with the candidate.)*
 - [x] Five completed rounds open the next level; "skip this level" works.
@@ -44,8 +44,8 @@ Items marked *(after release)* become true only after Luk merges, bumps and tags
 - [ ] The app installs to the home screen and works with no network after the first visit. *(The browser check covers the manifest and offline loads; Luk confirms the install on his phones with the candidate.)*
 - [x] Merel sings the note names from the clips when they are in place, and falls back to a plain tone when they are not.
 - [x] Unit tests and the browser check pass; the build has no errors or warnings; CI is green on the pull request.
-- [ ] *(after release)* A pushed candidate tag deploys to next.singwithmerel.com and a release tag to singwithmerel.com, through GitHub Actions, with no AWS keys stored in GitHub.
-- [ ] *(after release)* `v0.1.0` is tagged, with a `CHANGELOG.md` and a GitHub release; every commit on the block passes `cz check`.
+- [x] *(after release)* A pushed candidate tag deploys to next.singwithmerel.com and a release tag to singwithmerel.com, through GitHub Actions, with no AWS keys stored in GitHub.
+- [x] *(after release)* `v0.1.0` is tagged, with a `CHANGELOG.md` and a GitHub release; every commit on the block passes `cz check`.
 - [x] Every page in `docs/` is true for what was built.
 
 ## Test scenario
@@ -75,3 +75,5 @@ Luk runs this on the release candidate, after merging and `cz bump --prerelease 
 All three pitches shipped. Release 0.1.0 holds the lesson and the instrument with Merel, the four exercises with rounds, dots, levels, skip and the progress code, English, French and Dutch with their own paths, Merel's 17 clips sung in Synthesizer V with the tone as fallback, install and offline through a small service worker, a privacy and about page, phone tips, and the AWS hosting (S3 and CloudFront in eu-north-1, set up by `deploy/setup.sh`) that a version tag deploys through OIDC. After 1.2, recognition gained its "yes" and the trail of answers, and progress can be started over. Nothing moved to a later block; the two notes above are small. The live site, the candidate deploy and the release are Luk's, after the merge.
 
 After the first candidate (v0.1.0-rc.0), Luk's phone found three things, fixed before the release: on a phone the staff and keys came up only with the first screen's Start, now also when you scroll down or start any exercise; the invitation to install showed on a desktop and was scrolled past after the first level; and the keys played a plain tone, now a recorded grand piano ([[013-piano-samples]]). The deploy role also had to trust GitHub's new token subject, with the repository's name and id.
+
+Released as v0.1.0 on 2026-11-14, after three candidates. Lighthouse on the live site: 100 for performance, accessibility, best practices and SEO. A fourth fix went in with rc.2: an open app reloads itself onto a new release once no round is under way. CI no longer runs on tags, since the deploy runs the same checks.
