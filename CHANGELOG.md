@@ -1,3 +1,15 @@
+## v0.1.0-rc.1 (2026-11-14)
+
+### Feat
+
+- **instrument**: the keys play a recorded grand piano
+
+### Fix
+
+- **install**: invite only on a phone or tablet, and scroll to the invitation
+- **instrument**: on a phone, the staff and keys come up without the first Start
+- **deploy**: trust the token subject GitHub sends, repository name and id
+
 ## v0.1.0-rc.0 (2026-11-14)
 
 ### Feat
