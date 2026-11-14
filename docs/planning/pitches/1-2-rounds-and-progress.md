@@ -1,9 +1,10 @@
 ---
 project: merel
 type: pitch
-status: ready
+status: in-cycle
 block: 1-sing-along
 created: 2026-11-14
+started: 2026-11-14
 ---
 # 1.2 Rounds, melodies and progress
 
