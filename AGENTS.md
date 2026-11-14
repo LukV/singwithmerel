@@ -67,7 +67,7 @@ src/
   offline.ts          # registers the service worker
   install.ts          # the install prompt; iPhone and home-screen checks
 public/               # the icons (copied from docs/design/assets/icons/), the manifest, robots.txt; voice/ for Merel's clips
-voice/                # the clips' WAV sources, never published
+voice/                # the clips' WAV sources, never published; make/ holds how they are made in Synthesizer V
 scripts/              # npm run voice: WAV reading, pitch measuring, conversion
 build/                # Vite plugins: the pages per language, the service worker, SVGs cleaned on import, preview headers
 deploy/               # the one-time AWS setup, the upload, the CloudFront function and headers; README.md explains them

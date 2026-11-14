@@ -40,7 +40,7 @@ src/
   install.ts  # the install prompt, and whether Merel runs from the home screen
 build/        # Vite plugins: a static page per language, the service worker; design SVGs cleaned on import
 public/       # the icons, the manifest, robots.txt; voice/ holds Merel's clips and their list, voice.json
-voice/        # the clips' WAV sources, never published; npm run voice checks and converts them
+voice/        # the clips' WAV sources, never published; npm run voice checks and converts them; make/ is how they are made
 scripts/      # npm run voice: reads WAV, measures pitch (YIN), converts to AAC
 deploy/       # the one-time AWS setup, the upload, the CloudFront path function and response headers
 ```
