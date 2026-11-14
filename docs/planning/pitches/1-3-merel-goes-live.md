@@ -1,7 +1,8 @@
 ---
 project: merel
 type: pitch
-status: ready
+status: in-cycle
+started: 2026-11-14
 block: 1-sing-along
 created: 2026-11-14
 ---
