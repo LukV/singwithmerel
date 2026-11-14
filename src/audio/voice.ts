@@ -5,8 +5,9 @@ import { audioContext, scheduleTone } from './tone';
 
 /**
  * Merel's voice: the clips in public/voice/ (docs/reference/0010-voice-clips.md), sung on the
- * note's name or on "du". A clip that is missing, or does not decode, falls back to a plain tone
- * at that pitch, so Merel sings before any clip exists. Everything is scheduled on the audio
+ * note's name or on "du". `npm run voice` lists the clips that exist in public/voice/voice.json;
+ * a clip that is not listed, or does not decode, falls back to a plain tone at that pitch, in the
+ * clips' octave, so Merel sings before any clip exists. Everything is scheduled on the audio
  * clock, a beat at 90 per minute.
  */
 
@@ -25,6 +26,34 @@ export function clipName(step: number, set: VoiceSet, lang: Lang): string {
   return `${syllable}-${note.pitch}`;
 }
 
+export interface VoiceList {
+  /** -1 when the clips are sung an octave below the written pitch. */
+  octaveOffset: number;
+  clips: string[];
+}
+
+let list: Promise<VoiceList> | null = null;
+
+/** The clips that exist, read once from public/voice/voice.json; none if it cannot be read. */
+export function voiceList(): Promise<VoiceList> {
+  list ??= (async () => {
+    const none = { octaveOffset: 0, clips: [] };
+    if (typeof fetch !== 'function') return none;
+    try {
+      const res = await fetch('/voice/voice.json');
+      if (!res.ok) return none;
+      const data = (await res.json()) as Partial<VoiceList>;
+      return {
+        octaveOffset: [-1, 0, 1].includes(data.octaveOffset ?? 0) ? (data.octaveOffset ?? 0) : 0,
+        clips: Array.isArray(data.clips) ? data.clips.filter((c): c is string => typeof c === 'string') : [],
+      };
+    } catch {
+      return none;
+    }
+  })();
+  return list;
+}
+
 const clips = new Map<string, Promise<AudioBuffer | null>>();
 
 export function loadClip(name: string): Promise<AudioBuffer | null> {
@@ -33,6 +62,7 @@ export function loadClip(name: string): Promise<AudioBuffer | null> {
     clip = (async () => {
       const ac = audioContext();
       if (!ac || typeof fetch !== 'function') return null;
+      if (!(await voiceList()).clips.includes(name)) return null;
       try {
         const res = await fetch(`/voice/${name}.m4a`);
         const type = res.headers.get('content-type') ?? '';
@@ -69,7 +99,7 @@ export interface Performance {
 export async function sing(melody: Melody, set: VoiceSet, lang: Lang, delay = 0.12): Promise<Performance | null> {
   const ac = audioContext();
   if (!ac) return null;
-  const buffers = await Promise.all(melody.map((n) => loadClip(clipName(n.step, set, lang))));
+  const [{ octaveOffset }, ...buffers] = await Promise.all([voiceList(), ...melody.map((n) => loadClip(clipName(n.step, set, lang)))] as const);
   const t0 = ac.currentTime + delay;
   const sources: AudioScheduledSourceNode[] = [];
   const starts: number[] = [];
@@ -94,7 +124,7 @@ export async function sing(melody: Melody, set: VoiceSet, lang: Lang, delay = 0.
       src.stop(start + length + 0.06);
       sources.push(src);
     } else {
-      const src = scheduleTone(SCALE[note.step]!.freq, start, length * 0.92);
+      const src = scheduleTone(SCALE[note.step]!.freq * 2 ** octaveOffset, start, length * 0.92);
       if (src) sources.push(src);
     }
   });

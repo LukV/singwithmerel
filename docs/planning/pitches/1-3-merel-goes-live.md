@@ -62,7 +62,7 @@ The site live on https://singwithmerel.com in three languages, installable, work
 
 ## Test scenario
 
-1. `npm run voice` with no files: it says the folder is empty and exits cleanly. With Luk's clips in `public/voice/source/`: it lists each with its measured offset in cents, and refuses any over 10.
+1. `npm run voice` with no files: it says the folder is empty and exits cleanly. With Luk's clips in `voice/`: it lists each with its measured offset in cents, and refuses any over 10.
 2. On `main`, `cz bump --prerelease rc` and `git push --follow-tags`. The deploy run is green, its log shows the role it assumed, the sync and the invalidation, and https://next.singwithmerel.com serves the candidate. In the repository settings, no AWS secret exists.
 3. After the block's scenario passes on next, `cz bump` and `git push --follow-tags`. Open https://singwithmerel.com and https://www.singwithmerel.com on a laptop. Both land on the app over HTTPS, in your browser's language.
 4. Run Lighthouse on the live site: 90 or more on performance, accessibility, best practices and PWA.

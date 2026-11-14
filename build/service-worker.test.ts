@@ -4,9 +4,9 @@ import { precached, serviceWorkerSource } from './service-worker';
 const file = (path: string, content = path) => ({ path, content: Buffer.from(content) });
 
 describe('the service worker', () => {
-  it('keeps pages, scripts, woff2 fonts, icons and clips, not the worker, maps, woff or the clip sources', () => {
+  it('keeps pages, scripts, woff2 fonts, icons and clips, not the worker, maps or woff', () => {
     expect(['index.html', 'en/index.html', 'assets/a.js', 'assets/f.woff2', 'icon-192.png', 'voice/do-C4.m4a'].every(precached)).toBe(true);
-    expect(['sw.js', 'assets/a.js.map', 'assets/f.woff', 'voice/source/do-C4.wav'].some(precached)).toBe(false);
+    expect(['sw.js', 'assets/a.js.map', 'assets/f.woff'].some(precached)).toBe(false);
   });
 
   it('lists the files and changes its version only when a file changes', () => {

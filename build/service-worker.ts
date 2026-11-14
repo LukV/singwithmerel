@@ -13,7 +13,6 @@ import type { Plugin } from 'vite';
 export function precached(path: string): boolean {
   if (path === 'sw.js' || path.endsWith('.map')) return false;
   if (path.endsWith('.woff')) return false;
-  if (path.startsWith('voice/source/')) return false;
   return true;
 }
 
