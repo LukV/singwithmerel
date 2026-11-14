@@ -6,9 +6,9 @@
  * than 10 cents off its note, converts the others to AAC in public/voice/<name>.m4a, and writes
  * public/voice/voice.json, the list the app loads. Needs macOS (afconvert) or ffmpeg.
  */
-import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { converter } from './voice/convert.ts';
 import { CLIPS, LATEST_ONSET, TOLERANCE, type Verdict } from './voice/clips.ts';
 import { cents, measure } from './voice/pitch.ts';
 import { readWav } from './voice/wav.ts';
@@ -19,20 +19,6 @@ const SOURCE = 'voice';
 function writeList(octaveOffset: number, clips: string[]) {
   mkdirSync(VOICE, { recursive: true });
   writeFileSync(join(VOICE, 'voice.json'), `${JSON.stringify({ octaveOffset, clips }, null, 2)}\n`);
-}
-
-function converter(): (from: string, to: string) => void {
-  const has = (cmd: string) => {
-    try {
-      execFileSync('which', [cmd], { stdio: 'ignore' });
-      return true;
-    } catch {
-      return false;
-    }
-  };
-  if (has('afconvert')) return (from, to) => execFileSync('afconvert', ['-f', 'm4af', '-d', 'aac', '-b', '96000', '-c', '1', from, to]);
-  if (has('ffmpeg')) return (from, to) => execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', from, '-ac', '1', '-c:a', 'aac', '-b:a', '96k', to]);
-  throw new Error('Converting needs afconvert (macOS) or ffmpeg.');
 }
 
 const wavs = existsSync(SOURCE) ? readdirSync(SOURCE).filter((f) => f.toLowerCase().endsWith('.wav')) : [];

@@ -14,7 +14,7 @@
 | Response headers | `singwithmerel-site`, `singwithmerel-next` (`headers.json`) | HSTS, content security policy, no framing, no referrer, permissions; next adds `X-Robots-Tag: noindex` |
 | DNS | A and AAAA aliases for the apex, www and next | |
 | OIDC provider | token.actions.githubusercontent.com | audience sts.amazonaws.com |
-| Role | `singwithmerel-deploy` | trusted only by `repo:LukV/singwithmerel:ref:refs/tags/v*`; may list and write the two buckets and invalidate the two distributions, nothing else |
+| Role | `singwithmerel-deploy` | trusted only by `repo:LukV@859544/singwithmerel@1457480722:ref:refs/tags/v*` (GitHub names the repository by name and id, so a renamed or recreated repository is not trusted); may list and write the two buckets and invalidate the two distributions, nothing else |
 | Repository variables | `AWS_ROLE_ARN`, `AWS_REGION`, `SITE_BUCKET`, `SITE_DISTRIBUTION`, `NEXT_BUCKET`, `NEXT_DISTRIBUTION` | names and ids, no secrets |
 
 ## The one-time setup

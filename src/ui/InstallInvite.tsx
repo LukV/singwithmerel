@@ -2,15 +2,19 @@ import { answerInstall, install, installAnswered, installPrompt, isInstalled, is
 import { isDone } from '../progress/levels';
 import { LEVELS } from '../progress/store';
 import { progress, t } from '../state';
+import { useMedia } from './useMedia';
 
 /**
  * After the first completed level, once: an invitation to add Merel to the home screen, with why
- * (docs/product/0020-features.md). Shown only where it can be done: Safari on an iPhone or iPad,
- * or a browser that offered to install.
+ * (docs/product/0020-features.md). Shown only on a phone or tablet, where it can be done: Safari on
+ * an iPhone or iPad, or a browser that offered to install. A desktop browser may offer it too, but
+ * the invitation is about having Merel in your pocket.
  */
 export function InstallInvite() {
   const s = t.value;
   const p = progress.value;
+  const touch = useMedia('(pointer: coarse)');
+  if (!touch) return null;
   if (installAnswered.value || isInstalled() || !LEVELS.some((level) => isDone(p, level))) return null;
   const ios = isIos();
   if (!ios && !installPrompt.value) return null;

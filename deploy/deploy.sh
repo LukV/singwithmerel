@@ -28,9 +28,11 @@ aws s3 sync dist/assets "s3://$BUCKET/assets" --cache-control "public, max-age=3
 aws s3 sync dist "s3://$BUCKET" --exclude "assets/*" --cache-control "no-cache" --delete --only-show-errors
 # Types the upload may not guess.
 aws s3 cp dist/manifest.webmanifest "s3://$BUCKET/manifest.webmanifest" --content-type application/manifest+json --cache-control no-cache --only-show-errors
-if ls dist/voice/*.m4a >/dev/null 2>&1; then
-  aws s3 cp dist/voice "s3://$BUCKET/voice" --recursive --exclude "*" --include "*.m4a" --content-type audio/mp4 --cache-control no-cache --only-show-errors
-fi
+for dir in voice piano; do
+  if ls "dist/$dir"/*.m4a >/dev/null 2>&1; then
+    aws s3 cp "dist/$dir" "s3://$BUCKET/$dir" --recursive --exclude "*" --include "*.m4a" --content-type audio/mp4 --cache-control no-cache --only-show-errors
+  fi
+done
 # Old hashed files go last, so a page that is still open finds what it asked for while the upload runs.
 aws s3 sync dist/assets "s3://$BUCKET/assets" --delete --only-show-errors
 

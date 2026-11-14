@@ -3,7 +3,7 @@ import { audioContext, unlock } from '../audio/tone';
 import { BEAT, preloadVoice, sing, type Performance } from '../audio/voice';
 import type { Melody } from '../melody/melody';
 import { activeLevel, completeRound, skipLevel } from '../progress/levels';
-import { dockOpen, lang, progress, setProgress } from '../state';
+import { dockOpen, lang, progress, setProgress, started } from '../state';
 import { advance, isRecognition, melodyFor, newRound, type Round, type RoundEvent } from './round';
 
 /**
@@ -80,7 +80,11 @@ function bow(ms: number, then?: () => void): void {
 
 function scrollToLevel(level: number | null): void {
   if (level === null) return;
-  document.getElementById(`c${level}`)?.scrollIntoView({ block: 'start', behavior: still() ? 'auto' : 'smooth' });
+  const card = document.getElementById(`c${level}`);
+  // The invitation to install sits just before the next level, after the first one done: show it too.
+  const before = card?.previousElementSibling;
+  const target = before?.classList.contains('invite') ? before : card;
+  target?.scrollIntoView({ block: 'start', behavior: still() ? 'auto' : 'smooth' });
 }
 
 function dispatch(event: RoundEvent): void {
@@ -123,6 +127,9 @@ export function startRound(level: number): void {
   preloadVoice(lang.value);
   clearTimeout(bowTimer);
   bowing.value = false;
+  // A card's Start or Hear it brings the instrument up too, not only the first screen's Start:
+  // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
+  started.value = true;
   dockOpen.value = true;
   const melody = melodyFor(level, lastMelody[level] ?? null);
   lastMelody[level] = melody;
@@ -141,6 +148,9 @@ export function hear(level: number): void {
   }
   clearTimeout(bowTimer);
   bowing.value = false;
+  // A card's Start or Hear it brings the instrument up too, not only the first screen's Start:
+  // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
+  started.value = true;
   dockOpen.value = true;
   const melody = level <= 2 ? melodyFor(level) : (lastMelody[level] ??= melodyFor(level));
   const preview = newRound(level, melody, 'preview');

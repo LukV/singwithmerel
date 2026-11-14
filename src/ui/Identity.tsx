@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'preact/hooks';
 import wordmark from '../../docs/design/assets/signs/wordmark.svg?clean&ink';
 import { unlock } from '../audio/tone';
 import { preloadVoice } from '../audio/voice';
@@ -10,6 +11,22 @@ import { Tips } from './Tips';
 /** The first screen: the wordmark, "You play. He sings.", Start, and Merel singing on his line. */
 export function Identity() {
   const s = t.value;
+  const section = useRef<HTMLElement>(null);
+  // Scrolling past the first screen brings the instrument up too, as Start does: on a phone,
+  // someone who scrolls down to the lesson finds the staff and the keys waiting.
+  useEffect(() => {
+    const el = section.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    // The root is a band from a quarter to half the screen down: once the first screen has left it upwards, the lesson has the reader.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry && !entry.isIntersecting && entry.boundingClientRect.top < 0) started.value = true;
+      },
+      { rootMargin: '-25% 0px -50% 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const begin = () => {
     unlock();
     preloadVoice(lang.value);
@@ -18,7 +35,7 @@ export function Identity() {
     document.getElementById('c1')?.scrollIntoView({ block: 'start', behavior: still ? 'auto' : 'smooth' });
   };
   return (
-    <section class="identity" aria-labelledby="wordmark">
+    <section ref={section} class="identity" aria-labelledby="wordmark">
       <Header />
       <h1 id="wordmark" class="identity__wordmark">
         <span role="img" aria-label="Merel" dangerouslySetInnerHTML={{ __html: wordmark }} />
