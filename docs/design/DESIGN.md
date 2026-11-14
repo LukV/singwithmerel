@@ -30,6 +30,21 @@ The canvas lives on claude.ai and Claude Code cannot open it. Its sources are co
 
 Merel's parts are grouped for motion: `m-bob` (whole bird), `m-head`, `m-beak-u` and `m-beak-l`, `m-eye`, `m-tail`, `m-marks` (the dashes and note). Keep those groups when porting.
 
+## Icons
+
+Merel's head in profile on a paper tile: a black disc, the orange eye ring and the orange beak, nothing else (Luk, 2026-11-14: the tuft and bow tie were too busy at 16 px). The tile keeps it readable on dark tab bars as well as light ones, down to 16 px. The files are in `assets/icons/`; `preview.png` shows every size on light and dark.
+
+| File | Use |
+|---|---|
+| `favicon.svg` | the browser tab, modern browsers: `<link rel="icon" href="/favicon.svg" type="image/svg+xml">` |
+| `favicon.ico` | fallback with 16, 32 and 48 px: `<link rel="icon" href="/favicon.ico" sizes="any">` |
+| `apple-touch-icon.png` | 180 px, iOS home screen: `<link rel="apple-touch-icon" href="/apple-touch-icon.png">` |
+| `icon-192.png`, `icon-512.png` | the web app manifest, purpose `any` |
+| `icon-maskable-512.png` | the manifest, purpose `maskable`: full-bleed paper, the head inside the safe zone |
+| `icon-maskable.svg`, `icon-32.png` | sources and a small PNG for anything else |
+
+They are copied into `public/` as they are (all but the sources and the preview), with the favicon links in `index.html`; the manifest entries come in pitch 1.3.
+
 ## Tokens
 
 | Token | Value | Use |
