@@ -4,7 +4,7 @@ type: block
 status: draft
 updated: 2026-11-14
 ---
-# Block 2: Your turn
+	# Block 2: Your turn
 
 **In brief.** Merel starts listening. Release 2 hears a steady tone per note in Your turn; release 3 judges each note against the target, mildly, as [[architecture/0010-overview#Voice evaluation|the overview]] describes. Sketched only; shaped with Luk when block 1 is merged.
 
