@@ -4,19 +4,19 @@ import { writeWav } from '../../scripts/voice/wav.ts';
 
 /**
  * The sound Chromium's fake microphone plays, over and over, for the listening check, by a plain
- * voice-like tone, 0.6 s a note with a short breath between: twice the scale of do major with re
- * sung instead of mi, then the scale from mi, each followed by a pause longer than the judge's
- * silence. Wherever the loop is when Your turn starts, a try misses before the round completes.
+ * voice-like tone, 0.6 s a note with a short breath between: the scale of do major with re sung
+ * instead of mi, then the whole scale, each followed by a pause longer than the judge's silence.
+ * The held re is off key, so the try misses at once and starts again from do; the scale completes.
  */
 const WRONG = [0, 2, 2, 5, 7, 9, 11, 12];
-const FROM_MI = [4, 5, 7, 9, 11, 12];
+const SCALE = [0, 2, 4, 5, 7, 9, 11, 12];
 const PAUSE = 2;
 
 export function fakeMicFile(): string {
   const rate = 48_000;
   const note = 0.6;
   const breath = 0.15;
-  const parts = [WRONG, WRONG, FROM_MI];
+  const parts = [WRONG, SCALE];
   const notes: { hz: number; at: number }[] = [];
   let at = 0;
   for (const part of parts) {

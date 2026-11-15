@@ -95,9 +95,9 @@ describe('the mild judge', () => {
     expect(judge(track([[hz(0), 1]], JUDGE.gate / 2)).found).toBe(0);
   });
 
-  it('misses when you stop singing before the end, and keeps what was found', () => {
+  it('misses when you stop singing before the end, and starts again from do', () => {
     const { found, events, misses } = judge(track([...sing([0, 2]), [null, JUDGE.silence + 0.1]]));
-    expect(found).toBe(2);
+    expect(found).toBe(0);
     expect(misses).toBe(1);
     expect(events.at(-1)).toEqual({ type: 'miss' });
   });
@@ -107,12 +107,14 @@ describe('the mild judge', () => {
     expect(judge(track([...sing(SCALE), [null, 3]])).misses).toBe(0);
   });
 
-  it('misses when you sing on past the notes left', () => {
-    // Three wrong notes for a three-note melody: a miss without waiting for silence.
+  it('misses as soon as you hold a wrong note, without waiting for silence, and starts again from do', () => {
     const melody: Melody = [{ step: 0, beats: 1 }, { step: 2, beats: 1 }, { step: 4, beats: 2 }];
-    const { misses, found } = judge(track([...sing([7, 9, 7]), [null, 0.2]]), melody);
-    expect(found).toBe(0);
+    const { misses, found, events } = judge(track([...sing([0, 4, 6]), [null, 0.2]]), melody);
+    expect(events.filter((e) => e.type === 'found')).toHaveLength(2);
     expect(misses).toBe(1);
+    expect(found).toBe(0);
+    // From do again, the melody completes.
+    expect(judge(track([...sing([0, 4, 6]), [null, 0.3], ...sing([0, 4, 7])]), melody).found).toBe(3);
   });
 
   it('starts from a given note, and afresh after a rest', () => {

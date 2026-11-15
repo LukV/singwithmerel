@@ -6,7 +6,7 @@ updated: 2026-11-15
 ---
 # Block 2: Your turn
 
-**In brief.** Merel 0.2.0: Merel listens. In Your turn you sing alone, a soft dot on the staff follows your voice, and each note fills in its colour once you hold it close enough. The dot for the round comes from Your turn now, not from Sing along. Judging is mild: any octave, a semitone either way, notes you found stay found, and you try again as often as you like. Without a microphone Merel works as in 0.1.0. Two pitches, one branch, one pull request at the end.
+**In brief.** Merel 0.2.0: Merel listens. In Your turn you sing alone, a soft dot on the staff follows your voice, and each note fills in its colour once you hold it close enough. The dot for the round comes from Your turn now, not from Sing along. Judging is mild: any octave, a semitone either way, off key you start again from do, and you try again as often as you like. Without a microphone Merel works as in 0.1.0. Two pitches, one branch, one pull request at the end.
 
 ## Framing
 
@@ -24,7 +24,7 @@ Read first: [[0020-features]], [[architecture/0010-overview#Voice evaluation|voi
 | # | Pitch | Status | What Luk can try at the end |
 |---|---|---|---|
 | 2.1 | [[2-1-microphone-and-voice-dot\|The microphone and the voice dot]] | shipped | Your turn asks for the microphone once, a dot follows your voice on the staff, a steady tone per note completes the round; refusing the microphone keeps 0.1.0 |
-| 2.2 | [[2-2-the-mild-judge\|The mild judge]] | shipped | Each note fills when you hold it; a miss keeps what you found and you sing again; tuned on a child, a woman and a man |
+| 2.2 | [[2-2-the-mild-judge\|The mild judge]] | shipped | Each note fills when you hold it; off key you sing again from do; tuned on a child, a woman and a man |
 
 2.1 comes first; 2.2 builds on its detector and its listening Your turn.
 
@@ -36,7 +36,7 @@ Items marked *(after release)* become true only after Luk merges, bumps and tags
 - [ ] Refused, missing or failing microphone: the round completes after Sing along as in 0.1.0, the app says so once, and Merel can be asked to listen again later.
 - [ ] While you sing alone, a soft dot follows your voice on the staff, folded into the staff's octave, in no note's colour.
 - [ ] A note fills in its colour when you hold it within a semitone, in any octave, long enough (0.3 s planned; 0.2 s once tuned on the recordings), in order. The numbers live in one config object.
-- [ ] A miss keeps the notes found, says something mild, and starts Your turn again from the first note not yet found; after two tries Merel offers Hear it. Nothing resets a round, and Skip this level stays.
+- [ ] A miss (a wrong note held, or silence) says something mild and starts Your turn again from do; after two tries Merel offers Hear it. The round and its dots stay, and Skip this level stays.
 - [ ] Sing along is never judged; the microphone is open only during Your turn, and audio is analysed in memory only.
 - [ ] Recognition (exercise 4) works as in 0.1.0.
 - [ ] The judge, tuned on the three recorded voices, finds every note of their in-tune takes and not the wrong note of the off-key take; the numbers are in the pitch notes.
@@ -51,8 +51,8 @@ Luk runs this on the candidate at https://next.singwithmerel.com, after merging 
 
 1. On a laptop, start exercise 1 and let Hear it and Sing along play. At Your turn, Merel asks to listen, in one sentence. Allow it; the browser asks for the microphone.
 2. Sing the scale alone. A soft dot follows your voice on the staff, and each note fills in its colour as you hold it. When the last one fills, Merel bows and a dot fills on the card.
-3. Next round. This time sing re instead of mi, on purpose. Do and re fill, mi waits. Stop singing: Merel says something mild, do and re stay filled, and Your turn starts again from mi. Sing it right: the round completes.
-4. Miss twice. Merel offers Hear it; press it, then sing again. Nothing resets.
+3. Next round. This time sing re instead of mi, on purpose, and hold it. Do and re fill, then Merel says something mild, the notes empty, and he asks you to sing again from do. Sing the whole scale right: the round completes.
+4. Miss twice. Merel offers Hear it; press it, then sing again from do. The round and its dots stay.
 5. Sing the scale an octave lower (or higher) than written. It counts.
 6. Do one round of exercise 3. The three notes fill as you sing them back.
 7. Do one round of exercise 4. It works as before; Merel does not ask for the microphone.

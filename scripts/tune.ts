@@ -113,7 +113,7 @@ export function labelTake(take: string, sung: Sung[], melody: Melody): Label {
 }
 
 export interface Judged {
-  /** The times (seconds) each note was found, in order. */
+  /** The times (seconds) each note was found, in order, in the last try. */
   times: number[];
   misses: number;
 }
@@ -127,7 +127,11 @@ export function judgeTake(frames: Frame[], melody: Melody, shift: number): Judge
   for (const f of frames) {
     const e = judge.hear({ ...f, hz: f.hz === null ? null : f.hz * factor });
     if (e?.type === 'found') times.push(f.time);
-    if (e?.type === 'miss') misses++;
+    if (e?.type === 'miss') {
+      // A miss starts again from do: only the last try's notes count.
+      misses++;
+      times.length = 0;
+    }
   }
   return { times, misses };
 }

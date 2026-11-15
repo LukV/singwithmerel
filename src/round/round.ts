@@ -5,8 +5,7 @@ import { SCALE_DOWN, SCALE_UP, randomMelody, type Melody } from '../melody/melod
  *
  * Singing (levels 1 to 3): hear → along → turn. When Merel listens (`listen`), Your turn earns
  * the dot: each note found counts (`sung`), and the last one completes the round (done). A try
- * that ends before (`missed`) keeps the notes found; you sing again from the next one, as often as
- * you like. When he
+ * that ends before (`missed`) starts again from do, as often as you like. When he
  * does not, or stops being able to (`deaf`), the round completes after Sing along, and Your turn
  * is practice (docs/architecture/decisions/014-your-turn-earns-the-dot.md).
  * Recognition (level 4): hear → direction (up or down, per step) → find (the notes on the keys)
@@ -75,7 +74,7 @@ export function advance(round: Round, event: RoundEvent): { round: Round; comple
     case 'turn': {
       if (!round.listen) return stay;
       if (event.type === 'deaf') return { round: { ...round, listen: false }, completed: true };
-      if (event.type === 'missed') return { round: { ...round, tries: round.tries + 1, missed: true }, completed: false };
+      if (event.type === 'missed') return { round: { ...round, sung: 0, tries: round.tries + 1, missed: true }, completed: false };
       if (event.type !== 'sung') return stay;
       const sung = round.sung + 1;
       const done = sung >= round.melody.length;

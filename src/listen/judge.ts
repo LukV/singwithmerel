@@ -7,9 +7,9 @@ import { cents } from './yin.ts';
  * The mild judge: which notes of the melody you have found, from a pitch track. Each pitch is
  * folded into one octave and compared with the next note not yet found, in Merel's key (do is C):
  * close enough and held long enough, that note is found and the judge waits for the next. Notes
- * in order; rhythm and timing are not judged; a wrong note simply does not count. A try ends in a
- * miss when you stop singing, or sing on past the notes left, before all are found; the found
- * notes stay found. Tuned on a child, a woman and a man (`npm run tune`, pitch 2.2).
+ * in order; rhythm and timing are not judged. A try ends in a miss when you hold a wrong note
+ * (off key) or stop singing before all are found; you start again from do, as a teacher would
+ * have you. Tuned on a child, a woman and a man (`npm run tune`, pitch 2.2).
  */
 
 /** The numbers Merel judges with, in one place. */
@@ -36,6 +36,8 @@ export const JUDGE = {
   silence: 1.5,
   /** A tone that counts as sung but missed stays within this many cents of its own average. */
   steady: 50,
+  /** Steady tones held that found nothing, in one try, before it ends: off key. */
+  strikes: 1,
 };
 
 export type Judging = typeof JUDGE;
@@ -93,7 +95,6 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
   let sang = false;
   let lastVoiced = 0;
   let missed = 0;
-  let left = melody.length - found;
 
   const target = () => SEMITONES[melody[found]!.step]! * 100;
   const close = (c: number, t: number) => Math.abs(fold(c - t)) < settings.tolerance;
@@ -101,9 +102,16 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
   function newTry(): void {
     sang = false;
     missed = 0;
-    left = melody.length - found;
     hold = null;
     tone = null;
+  }
+
+  /** A try ends before the melody does: you start again from do. */
+  function miss(): JudgeEvent {
+    found = 0;
+    leave = null;
+    newTry();
+    return { type: 'miss' };
   }
 
   /** The tone ends: held but no note found during it, it was sung and missed. */
@@ -111,7 +119,7 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
     const t = tone;
     tone = null;
     if (!t || t.used || t.last - t.start < settings.hold) return false;
-    return ++missed >= left;
+    return ++missed >= settings.strikes;
   }
 
   function follow(c: number, time: number): boolean {
@@ -146,24 +154,15 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
       previous = time;
       if (!voiced) {
         if (hold && time - hold.last > settings.gap) hold = null;
-        if (tone && time - tone.last > settings.gap && endTone()) {
-          newTry();
-          return { type: 'miss' };
-        }
+        if (tone && time - tone.last > settings.gap && endTone()) return miss();
         if (leave !== null && time - lastVoiced > settings.gap) leave = null;
-        if (sang && time - lastVoiced >= settings.silence) {
-          newTry();
-          return { type: 'miss' };
-        }
+        if (sang && time - lastVoiced >= settings.silence) return miss();
         return null;
       }
       const c = centsOf(frame.hz!);
       sang = true;
       lastVoiced = time;
-      if (follow(c, time)) {
-        newTry();
-        return { type: 'miss' };
-      }
+      if (follow(c, time)) return miss();
       const t = target();
       if (leave !== null) {
         if (Math.abs(fold(c - t)) >= Math.abs(fold(c - leave))) return null;
