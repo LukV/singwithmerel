@@ -73,6 +73,11 @@ describe('the mild judge', () => {
     expect(judge(track(drift)).found).toBe(8);
   });
 
+  it('follows a singer who sinks going down, a quarter of a semitone each note', () => {
+    const sink: [number, number][] = [...SCALE].reverse().map((s, i) => [hz(s - 12, -25 * i), 0.5]);
+    expect(judge(track(sink), SCALE_DOWN).found).toBe(8);
+  });
+
   it('takes a new do after a miss', () => {
     const j = judgeFor(SCALE_UP);
     for (const f of track([...sing([0, 2, 6]), [null, 0.3], ...sing(SCALE.map((s) => s + 3))])) j.hear(f);

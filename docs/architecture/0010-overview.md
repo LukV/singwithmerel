@@ -68,7 +68,7 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 **The mild judge** (`listen/judge.ts`, `judgeFor`) turns the frames into notes found:
 
-- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key while you stay nearer to it than to the next note (so a glide from high do down to si moves on to si, not do along with it). Each note found moves the key to the average of where the notes were sung, so do follows a singer who drifts. The judge compares each pitch with the next note not yet found, in that key.
+- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key while you stay nearer to it than to the next note (so a glide from high do down to si moves on to si, not do along with it). Each note after is judged from the one before: once found, it sets where do is, so do follows a singer who drifts, as voices sink going down. The judge compares each pitch with the next note not yet found, in that key.
 - **Octave folded.** Each pitch becomes a pitch class before comparing, so a bass and a child both sing do.
 - **Tolerance.** Less than a semitone (100 cents) from the note.
 - **Hold.** A note is found once you have been close to it for 0.2 s in all; a pause or a wobble off the note under 0.15 s does not break it. Sound under the level gate is silence.
@@ -78,7 +78,7 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 The numbers live in one object, `JUDGE`, with why each was chosen.
 
-**Tuning.** Recordings of a child, a woman and a man (scale up, scale down, do mi sol, and an off-key take) sit in `tuning/`, never committed. They are untrained and were sung without hearing Merel, each in the singer's own key, so `npm run tune` first measures and labels them: each note matched to the note meant, the key of the take, and how far off each note is in that key (`npm run tune -- --label` writes `tuning/labels.json`, to correct by hand). It then judges each take as sung, its first note as do, with the notes' distance from that first note as the measure: the judge must find every note of the in-tune takes, stop at a wrong note while it is sung (a note under 120 cents off may go either way), and complete no off-key take.
+**Tuning.** Recordings of a child, a woman and a man (scale up, scale down, do mi sol, and an off-key take) sit in `tuning/`, never committed. They are untrained and were sung without hearing Merel, each in the singer's own key, so `npm run tune` first measures and labels them: each note matched to the note meant, the key of the take, and how far off each note is in that key (`npm run tune -- --label` writes `tuning/labels.json`, to correct by hand). It then judges each take as sung, its first note as do, with how far off each step is from the note before as the measure: the judge must find every note of the in-tune takes, stop at a wrong note while it is sung (a note under 120 cents off may go either way), and complete no off-key take.
 
 | Release | A round completes when | Fallback |
 |---|---|---|

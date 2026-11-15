@@ -8,11 +8,12 @@
  * tune: each note matched in order to the note meant, the key the take was sung in, and how far
  * off each note is in that key (`npm run tune -- --label` writes this to tuning/labels.json, to
  * read and correct by hand; later runs use that file). Do is movable: the judge takes a try's first
- * note as do, wherever it is sung, so each take is judged as it was sung, and what counts is how
- * far each note is from the first one: uneven steps, drift, scoops, short notes.
+ * note as do, wherever it is sung, and judges each note from the one before, so each take is
+ * judged as it was sung, and what counts is how far off each step is: uneven steps, scoops, short
+ * notes; a slow drift is followed.
  *
- * An in-tune take should find every note. A take with a wrong note (a semitone or more off from
- * its first note's key) should find the notes before it, not the wrong one while it is sung, and not complete. Takes: `up` and `down` (the scale), `do-mi-sol`, and `offkey`, sung a little off and with
+ * An in-tune take should find every note. A take with a wrong note (a step a semitone or more
+ * off) should find the notes before it, not the wrong one while it is sung, and not complete. Takes: `up` and `down` (the scale), `do-mi-sol`, and `offkey`, sung a little off and with
  * a wrong note, whose melody is not known: it is judged as the scale up and down from its first
  * note, and must complete neither.
  */
@@ -202,10 +203,12 @@ function report(file: string, labels: Record<string, Label>, made: Label[]): boo
   if (melody) {
     const l = labels[name] ?? labelTake(name, notesOf(frames), melody);
     made.push(l);
-    // From the first note, which the judge takes as do: how far off each note is.
-    const notes = l.notes.map((n) => {
-      const off = n.off - l.notes[0]!.off;
-      return { ...n, off, verdict: verdictOf(off) };
+    // As the judge hears it: the first note is do, and each note after is judged from the one
+    // before (JUDGE.follow), so how far off each step is.
+    const notes = l.notes.map((n, i) => {
+      const back = l.notes.slice(Math.max(0, i - JUDGE.follow), i);
+      const off = i === 0 ? 0 : n.off - back.reduce((a, b) => a + b.off, 0) / back.length;
+      return { ...n, off: Math.round(off), verdict: verdictOf(off) };
     });
     const wrong = notes.findIndex((n) => n.verdict === 'wrong note');
     const j = judgeTake(frames, melody, 0);
@@ -244,7 +247,7 @@ function report(file: string, labels: Record<string, Label>, made: Label[]): boo
 if (import.meta.main) {
   const j = JUDGE;
   console.log(`Judge: under ${j.tolerance} cents from the note in any octave, held ${j.hold} s in all (pauses up to ${j.gap} s), above level ${j.gate}; a try ends after ${j.silence} s of silence.`);
-  console.log('Each take as sung, its first note taken as do: how far off each note is from there (! a wrong note), then what the judge finds.\n');
+  console.log('Each take as sung, its first note taken as do: how far off each step is from the note before (! a wrong note), then what the judge finds.\n');
   const takes = existsSync('tuning') ? readdirSync('tuning').filter((f) => AUDIO.test(f)).sort() : [];
   if (!takes.length) console.log('No recordings in tuning/ yet (docs/planning/blocks/2-your-turn.md says how to make them).');
   const relabel = process.argv.includes('--label');

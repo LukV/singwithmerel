@@ -37,6 +37,13 @@ export const JUDGE = {
   silence: 1.5,
   /** A tone that counts as sung but missed stays within this many cents of its own average. */
   steady: 50,
+  /**
+   * Do follows the notes you sing: it sits where the last this many notes found put it, so each
+   * note is judged from the one before. Singing down, voices sink a little each note; an average
+   * of every note lags behind, until a flat fa passes for mi. 2 lost a scale 25 cents flatter each
+   * note; 1 keeps it.
+   */
+  follow: 1,
   /** The first note, which sets do, stays within this many cents of the median of its last frames: a wobble is fine. */
   first: 60,
   /** Steady tones held that found nothing, in one try, before it ends: off key. */
@@ -103,8 +110,8 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
   /** The first note while it is held, also after it is found: its pitches, how long, and the last frame. */
   let opening: { cents: number[]; held: number; last: number } | null = null;
   /**
-   * Where each note found was sung, as do's place it implies: the key is their average, so do
-   * follows a singer who drifts a little, and a first note sung a bit off does not bend the rest.
+   * Where each note found was sung, as do's place it implies: the key is the average of the last
+   * few, so do follows a singer who drifts, and a first note sung a bit off does not bend the rest.
    */
   let places: number[] = [];
   let previous: number | null = null;
@@ -235,7 +242,8 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
       if (!hold || hold.held < settings.hold) return null;
       const index = found++;
       places.push(key + fold(median(hold.cents) - t));
-      key = places.reduce((a, b) => a + b, 0) / places.length;
+      const recent = places.slice(-settings.follow);
+      key = recent.reduce((a, b) => a + b, 0) / recent.length;
       hold = null;
       if (tone) tone.used = true;
       if (found < melody.length) leave = t;
