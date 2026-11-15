@@ -14,8 +14,12 @@ import { cents } from './yin.ts';
 
 /** The numbers Merel judges with, in one place. */
 export const JUDGE = {
-  /** A frame quieter than this (root mean square) is silence. */
-  gate: 0.01,
+  /**
+   * A frame quieter than this (root mean square) is silence; a frame with no clear pitch is too.
+   * The recordings sing around 0.05, through a phone's automatic gain; a laptop's raw microphone
+   * hears a voice 3 to 7 times quieter. 0.01 lost most notes at that level; 0.002 finds them all.
+   */
+  gate: 0.002,
   /** How far from the note, in cents, folded into one octave, still counts: less than a semitone. */
   tolerance: 100,
   /**
