@@ -1,10 +1,11 @@
 ---
 project: merel
 type: pitch
-status: in-cycle
+status: shipped
 block: 2-your-turn
 created: 2026-11-14
 started: 2026-11-15
+shipped_on: 2026-11-15
 ---
 # 2.1 The microphone and the voice dot
 
@@ -48,14 +49,14 @@ The microphone asked for once, the detector in a worklet, the steady-tone rule c
 
 ## Definition of done
 
-- [ ] YIN lives in `src/listen/`, tested, shared with `npm run voice`.
-- [ ] The microphone is asked for at the first Your turn, after one sentence, and is open only during Your turn.
-- [ ] A steady tone per note, in order, completes the round when listening is on; otherwise the round completes after Sing along.
-- [ ] Refused or missing microphone: said once, the release 1 rule, and a way to ask again.
-- [ ] The voice dot follows the voice on the staff, calm, in no note's colour.
-- [ ] Decision 015 records the detector and its settings, measured on Merel's clips and the recordings that exist.
-- [ ] The docs this pitch made wrong are true again: features, overview, DESIGN (the voice dot), privacy page.
-- [ ] Every machine-runnable step of the test scenario passes.
+- [x] YIN lives in `src/listen/`, tested, shared with `npm run voice`.
+- [x] The microphone is asked for at the first Your turn, after one sentence, and is open only during Your turn.
+- [x] A steady tone per note, in order, completes the round when listening is on; otherwise the round completes after Sing along.
+- [x] Refused or missing microphone: said once, the release 1 rule, and a way to ask again.
+- [x] The voice dot follows the voice on the staff, calm, in no note's colour.
+- [x] Decision 015 records the detector and its settings, measured on Merel's clips and the recordings that exist.
+- [x] The docs this pitch made wrong are true again: features, overview, DESIGN (the voice dot), privacy page.
+- [x] Every machine-runnable step of the test scenario passes.
 
 ## Test scenario
 
@@ -72,4 +73,4 @@ The microphone asked for once, the detector in a worklet, the steady-tone rule c
 
 ## What actually happened
 
-*(At the end: one paragraph on what landed, what was cut, what surprised us.)*
+Everything landed, above the cut line too: the ask and the remembered answer (`merel.mic`), YIN moved to `src/listen/yin.ts` and shared with `npm run voice`, a pure tracker that the worklet and `npm run tune` both run, the steady-tone rule behind `listenFor` in `src/listen/ear.ts`, the voice dot, and the fallback with a quiet "Let Merel listen" that asks the browser again (he listens from the next round). Routine choices: the worklet halves the sample rate and reads 1024 samples every 240 (43 ms every 10 ms), which costs under 2% of a Mac core ([[015-pitch-detector]]); a note counts as soon as it has been held for 0.3 s, not when it ends, so the staff fills while you sing; the notes heard already fill in their colour now, the same mark 2.2 needs; the voice dot sits in the column of the note to sing, folded into the octave around it; listening ignores the first 0.25 s, anything while Merel sings Hear it, and for 2 s only the pitch of a key just pressed, so singing another note right after a key still counts; "Not now" and a refused microphone are both remembered as no. The browser check now has a third project, `listening`, where Chromium's fake microphone sings a generated scale; it runs on CI too. Two surprises: a phone reaches `npm run dev -- --host` over plain http, where browsers give no microphone, so `npm run dev:phone` serves HTTPS with a self-signed certificate made by openssl (adding Vite's SSL plugin was refused by the permission check, and openssl needs no dependency); and Merel's own clips are heard up to 32 cents flat at the moment they count, because a sung note scoops into its pitch, which is well inside 2.2's semitone. Not done by machine: the iPhone, the calm of the dot, and a key press during Your turn (steps 5, 6 and 8), which need a person. The recordings in `tuning/` do not exist yet; 2.2 needs them.
