@@ -52,7 +52,8 @@ export const JUDGE = {
 
 export type Judging = typeof JUDGE;
 
-export type JudgeEvent = { type: 'found'; index: number } | { type: 'miss' };
+/** A miss says why, for the dev listening log: silence, or a steady wrong note. */
+export type JudgeEvent = { type: 'found'; index: number } | { type: 'miss'; why: 'silence' | 'wrong' };
 
 export interface Judge {
   /** Feed one frame; returns what it made Merel hear, if anything. */
@@ -134,13 +135,13 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
   }
 
   /** A try ends before the melody does: you start again from do. */
-  function miss(): JudgeEvent {
+  function miss(why: 'silence' | 'wrong'): JudgeEvent {
     found = 0;
     key = null;
     places = [];
     just = null;
     newTry();
-    return { type: 'miss' };
+    return { type: 'miss', why };
   }
 
   /** The tone ends: held but no note found during it, it was sung and missed. */
@@ -204,14 +205,14 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
       previous = time;
       if (!voiced) {
         if (hold && time - hold.last > settings.gap) hold = null;
-        if (tone && time - tone.last > settings.gap && endTone()) return miss();
-        if (sang && time - lastVoiced >= settings.silence) return miss();
+        if (tone && time - tone.last > settings.gap && endTone()) return miss('wrong');
+        if (sang && time - lastVoiced >= settings.silence) return miss('silence');
         return null;
       }
       const c = centsOf(frame.hz!);
       sang = true;
       lastVoiced = time;
-      if (follow(c, time)) return miss();
+      if (follow(c, time)) return miss('wrong');
       if (key === null) {
         // The first note: any pitch held long enough, wherever it is, sets the key. It may
         // wander while it is held (a scoop, a wobble).

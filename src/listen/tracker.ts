@@ -23,6 +23,9 @@ export interface Frame {
   clarity: number;
   /** Root mean square of the frame. */
   level: number;
+  /** The deepest dip of the frame, clear or not (YIN's difference, 0 is a perfect period), for the dev log. */
+  dip?: number;
+  dipHz?: number;
 }
 
 export class Tracker {
@@ -68,7 +71,8 @@ export class Tracker {
   private frame(): Frame {
     const start = this.filled - LENGTH;
     const level = rms(this.buffer, start, LENGTH);
-    const pitch = level > 0 ? yin(this.buffer, start, LENGTH, this.rate, MIN_HZ, MAX_HZ) : null;
-    return { time: this.seen / this.inputRate, hz: pitch?.hz ?? null, clarity: pitch?.clarity ?? 0, level };
+    const deepest = { hz: 0, depth: 1 };
+    const pitch = level > 0 ? yin(this.buffer, start, LENGTH, this.rate, MIN_HZ, MAX_HZ, undefined, deepest) : null;
+    return { time: this.seen / this.inputRate, hz: pitch?.hz ?? null, clarity: pitch?.clarity ?? 0, level, dip: deepest.depth, dipHz: deepest.hz };
   }
 }

@@ -150,7 +150,7 @@ describe('the mild judge', () => {
     const { found, events, misses } = judge(track([...sing([0, 2]), [null, JUDGE.silence + 0.1]]));
     expect(found).toBe(0);
     expect(misses).toBe(1);
-    expect(events.at(-1)).toEqual({ type: 'miss' });
+    expect(events.at(-1)).toEqual({ type: 'miss', why: 'silence' });
   });
 
   it('does not miss before you sing, nor after the last note', () => {

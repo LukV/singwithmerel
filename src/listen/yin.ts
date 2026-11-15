@@ -18,7 +18,13 @@ export interface Pitch {
  * has no clear pitch. The difference is summed over `length` minus the longest period, so the
  * frame must hold at least about two periods of the lowest pitch.
  */
-export function yin(x: ArrayLike<number>, start: number, length: number, rate: number, minHz: number, maxHz: number, threshold = THRESHOLD): Pitch | null {
+/** The deepest dip found, clear or not: what the dev listening log shows for a frame with no pitch. */
+export interface Dip {
+  hz: number;
+  depth: number;
+}
+
+export function yin(x: ArrayLike<number>, start: number, length: number, rate: number, minHz: number, maxHz: number, threshold = THRESHOLD, deepest?: Dip): Pitch | null {
   const maxLag = Math.min(Math.floor(rate / minHz), Math.floor(length / 2));
   const minLag = Math.max(2, Math.floor(rate / maxHz));
   const window = length - maxLag;
@@ -35,6 +41,12 @@ export function yin(x: ArrayLike<number>, start: number, length: number, rate: n
     }
     running += sum;
     cmnd[lag] = running === 0 ? 1 : (sum * lag) / running;
+  }
+  if (deepest) {
+    let best = minLag;
+    for (let lag = minLag; lag < maxLag; lag++) if (cmnd[lag]! < cmnd[best]!) best = lag;
+    deepest.hz = rate / best;
+    deepest.depth = cmnd[best]!;
   }
   for (let lag = minLag; lag < maxLag; lag++) {
     if (cmnd[lag]! < threshold) {

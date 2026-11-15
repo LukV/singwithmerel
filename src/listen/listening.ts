@@ -101,15 +101,57 @@ export async function listen(melody: Melody, onSung: () => void, onMissed: () =>
       // Nothing heard while Merel sings, or a key rings, counts, not even as a pause: the try starts after.
       s.judge.rest();
       calm(s, null, frame.time);
+      if (import.meta.env.DEV) devLog(frame, melody, s.judge, null, piano ? 'key rings' : 'Merel');
       return;
     }
+    const wants = s.judge.found;
     const event = s.judge.hear(frame);
+    if (import.meta.env.DEV) devLog(frame, melody, s.judge, event, null, wants);
     const key = s.judge.key;
     calm(s, c === null ? null : key === null ? first : c - key, frame.time);
     if (event?.type === 'found') onSung();
     else if (event?.type === 'miss') onMissed();
   }
   return true;
+}
+
+const NOTE_NAMES = ['do', 're', 'mi', 'fa', 'sol', 'la', 'si', 'do'];
+const SEMIS = [0, 2, 4, 5, 7, 9, 11, 12];
+const LETTERS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+const letter = (hz: number) => {
+  const m = Math.round(12 * Math.log2(hz / 440) + 69);
+  return `${LETTERS[((m % 12) + 12) % 12]}${Math.floor(m / 12) - 1}`;
+};
+let devLines: string[] = [];
+let devLastVoiced: number | null = null;
+
+/**
+ * The dev listening log (`npm run dev` only; the built site has none): every frame, what was
+ * heard and what the judge wants, kept in `window.merelLog`; on each note found or missed, a line
+ * in the console, and on a miss the last three seconds of frames.
+ */
+function devLog(frame: Frame, melody: Melody, judge: Judge, event: ReturnType<Judge['hear']>, skipped: string | null, wants = judge.found): void {
+  const f = (n: number, d = 3) => n.toFixed(d);
+  const heard = frame.hz === null ? `no pitch (dip ${f(frame.dip ?? 1, 2)} at ${Math.round(frame.dipHz ?? 0)} Hz)` : `${f(frame.hz, 1)} Hz ${letter(frame.hz)} clarity ${f(frame.clarity, 2)}`;
+  if (frame.hz !== null) devLastVoiced = centsOf(frame.hz);
+  let want = 'done';
+  if (wants < melody.length) {
+    const step = melody[wants]!.step;
+    const key = judge.key;
+    if (key === null) want = `${NOTE_NAMES[step]} (first note: any pitch)`;
+    else {
+      const t = SEMIS[step]! * 100 + key;
+      const near = devLastVoiced === null ? t : devLastVoiced - fold(devLastVoiced - t);
+      want = `${NOTE_NAMES[step]} near ${f(SCALE[0]!.freq * 2 ** (near / 1200), 1)} Hz ${letter(SCALE[0]!.freq * 2 ** (near / 1200))}`;
+    }
+  }
+  const quiet = frame.level < JUDGE.gate ? ' QUIET' : '';
+  const line = `${f(frame.time, 2)}s level ${f(frame.level, 4)}${quiet} ${heard} | wants ${want}${skipped ? ` | skipped: ${skipped}` : ''}${event ? ` | ${event.type === 'found' ? `FOUND ${NOTE_NAMES[melody[event.index]!.step]}` : `MISS (${event.why})`}` : ''}`;
+  devLines.push(line);
+  if (devLines.length > 3000) devLines = devLines.slice(-2000);
+  (globalThis as { merelLog?: string[] }).merelLog = devLines;
+  if (event?.type === 'found') console.log(`[merel] found ${NOTE_NAMES[melody[event.index]!.step]} (${event.index + 1}/${melody.length}) at ${f(frame.time, 2)}s; do now at ${f(judge.key ?? 0, 0)} cents from C`);
+  if (event?.type === 'miss') console.log(`[merel] miss (${event.why}) at ${f(frame.time, 2)}s, waiting for ${want.split(' ')[0]}. Last 3 s:\n${devLines.slice(-300).join('\n')}`);
 }
 
 function calm(s: Session, c: number | null, time: number): void {
