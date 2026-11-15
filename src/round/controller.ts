@@ -19,6 +19,8 @@ export const round = signal<Round | null>(null);
 export const sounding = signal<number | null>(null);
 /** Merel bows for a moment when a round completes. */
 export const bowing = signal(false);
+/** Merel nods, softly, at each note you find. */
+export const nodding = signal(false);
 /** Whether Merel is singing now. */
 export const singing = signal(false);
 /** Your turn is waiting for the answer to Merel's ask to listen. */
@@ -30,6 +32,7 @@ const lastMelody: Record<number, Melody | null> = {};
 let performance: Performance | null = null;
 let token = 0;
 let bowTimer: ReturnType<typeof setTimeout> | undefined;
+let nodTimer: ReturnType<typeof setTimeout> | undefined;
 
 const now = () => audioContext()?.currentTime ?? globalThis.performance.now() / 1000;
 const still = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -75,6 +78,12 @@ async function perform(r: Round, delay = 0.12): Promise<boolean> {
   });
 }
 
+function nod(): void {
+  clearTimeout(nodTimer);
+  nodding.value = true;
+  nodTimer = setTimeout(() => (nodding.value = false), 400);
+}
+
 function bow(ms: number, then?: () => void): void {
   clearTimeout(bowTimer);
   bowing.value = true;
@@ -100,6 +109,7 @@ function dispatch(event: RoundEvent): void {
   round.value = next;
   // Finding the notes needs the keys: on a phone, bring the instrument back if it is tucked away.
   if (next.phase === 'find' && r.phase !== 'find') dockOpen.value = true;
+  if (event.type === 'sung' && next.phase === 'turn') nod();
   if (completed) complete(next);
   else if (next.phase === 'along' && r.phase === 'hear') void playAlong(next);
   if (next.phase === 'turn' && r.phase === 'along' && next.listen) beginListening();
@@ -114,7 +124,12 @@ function beginListening(): void {
 async function listenNow(): Promise<void> {
   const r = round.value;
   if (!r) return;
-  const ok = await listen(r.melody, () => dispatch({ type: 'sung' }), () => singing.value);
+  const ok = await listen(
+    r.melody,
+    () => dispatch({ type: 'sung' }),
+    () => dispatch({ type: 'missed' }),
+    () => singing.value,
+  );
   if (ok || round.value?.phase !== 'turn' || round.value.level !== r.level || round.value.melody !== r.melody) return;
   // Refused, missing or failing: the release 1 rule, said once.
   setMicChoice('no');

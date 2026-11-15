@@ -1,4 +1,4 @@
-import { fold } from '../listen/ear';
+import { fold } from '../listen/judge';
 
 /** Semitones above do of each scale step, and high do. */
 const SEMITONES = [0, 2, 4, 5, 7, 9, 11, 12];

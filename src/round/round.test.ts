@@ -32,6 +32,21 @@ describe('a singing round', () => {
     expect(sung.completed).toBe(1);
   });
 
+  it('keeps the notes found after a miss, counts the tries, and completes on the last note', () => {
+    const { round } = run(newRound(1, melodyFor(1), 'hear', true), [{ type: 'played' }, { type: 'played' }, { type: 'sung' }, { type: 'sung' }]);
+    const missed = run(round, [{ type: 'missed' }, { type: 'missed' }]);
+    expect(missed.round.sung).toBe(2);
+    expect(missed.round.tries).toBe(2);
+    expect(missed.round.missed).toBe(true);
+    expect(missed.round.phase).toBe('turn');
+    expect(missed.completed).toBe(0);
+    const again = run(missed.round, [{ type: 'sung' }]);
+    expect(again.round.missed).toBe(false);
+    const rest = run(again.round, Array.from({ length: 5 }, () => ({ type: 'sung' }) as const));
+    expect(rest.round.phase).toBe('done');
+    expect(rest.completed).toBe(1);
+  });
+
   it('falls back to the release 1 rule when Merel cannot listen after all', () => {
     const along = run(newRound(3, melodyFor(3), 'hear', true), [{ type: 'played' }, { type: 'played' }, { type: 'sung' }]);
     const { round, completed } = run(along.round, [{ type: 'deaf' }]);

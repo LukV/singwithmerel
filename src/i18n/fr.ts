@@ -35,6 +35,8 @@ const fr: Strings = {
     wrongDirection: 'Pas dans ce sens. Réécoute.',
     find: (found) => (found === 0 ? 'Oui. Trouve maintenant la première note sur le clavier.' : found === 1 ? 'Oui. Maintenant la deuxième.' : 'Oui. Et la dernière.'),
     wrongNote: (name) => `Pas ${name}. Essaie une autre touche.`,
+    missed: (name) => `Presque. Rechante à partir de ${name}.`,
+    hearAgain: (name) => `Presque. Réécoute-le, puis chante à partir de ${name}.`,
     bravo: 'Bravo.',
     levelDone: 'Niveau réussi.',
   },

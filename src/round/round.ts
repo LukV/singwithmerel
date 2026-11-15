@@ -4,7 +4,9 @@ import { SCALE_DOWN, SCALE_UP, randomMelody, type Melody } from '../melody/melod
  * One round, as a small state machine (docs/product/0020-features.md#One round).
  *
  * Singing (levels 1 to 3): hear → along → turn. When Merel listens (`listen`), Your turn earns
- * the dot: each note heard counts (`sung`), and the last one completes the round (done). When he
+ * the dot: each note found counts (`sung`), and the last one completes the round (done). A try
+ * that ends before (`missed`) keeps the notes found; you sing again from the next one, as often as
+ * you like. When he
  * does not, or stops being able to (`deaf`), the round completes after Sing along, and Your turn
  * is practice (docs/architecture/decisions/014-your-turn-earns-the-dot.md).
  * Recognition (level 4): hear → direction (up or down, per step) → find (the notes on the keys)
@@ -24,8 +26,11 @@ export interface Round {
   found: number;
   /** Singing: whether Merel listens in Your turn. */
   listen: boolean;
-  /** Singing, while Merel listens: how many notes of the melody were heard so far. */
+  /** Singing, while Merel listens: how many notes of the melody were found so far. */
   sung: number;
+  /** Singing, while Merel listens: the tries that ended in a miss, and whether the last one did. */
+  tries: number;
+  missed: boolean;
   /** The last wrong answer, shown until the next answer. */
   wrong: null | { kind: 'direction' } | { kind: 'note'; step: number };
 }
@@ -36,6 +41,8 @@ export type RoundEvent =
   | { type: 'key'; step: number }
   /** Merel heard the next note of the melody. */
   | { type: 'sung' }
+  /** A try ended before all notes were found. */
+  | { type: 'missed' }
   /** Merel cannot listen after all: refused, missing or failing microphone. */
   | { type: 'deaf' };
 
@@ -49,7 +56,7 @@ export function melodyFor(level: number, previous: Melody | null = null, random?
 }
 
 export function newRound(level: number, melody: Melody, phase: Phase = 'hear', listen = false): Round {
-  return { level, melody, phase, dir: 0, found: 0, listen: listen && !isRecognition(level), sung: 0, wrong: null };
+  return { level, melody, phase, dir: 0, found: 0, listen: listen && !isRecognition(level), sung: 0, tries: 0, missed: false, wrong: null };
 }
 
 /** Whether the step after note `i` goes up. */
@@ -68,10 +75,11 @@ export function advance(round: Round, event: RoundEvent): { round: Round; comple
     case 'turn': {
       if (!round.listen) return stay;
       if (event.type === 'deaf') return { round: { ...round, listen: false }, completed: true };
+      if (event.type === 'missed') return { round: { ...round, tries: round.tries + 1, missed: true }, completed: false };
       if (event.type !== 'sung') return stay;
       const sung = round.sung + 1;
       const done = sung >= round.melody.length;
-      return { round: { ...round, sung, phase: done ? 'done' : 'turn' }, completed: done };
+      return { round: { ...round, sung, missed: false, phase: done ? 'done' : 'turn' }, completed: done };
     }
     case 'direction': {
       if (event.type !== 'answer') return stay;

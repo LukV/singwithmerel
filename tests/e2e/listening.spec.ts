@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-// Merel listening, with Chromium's fake microphone singing the scale over and over
-// (playwright.config.ts, project `listening`). A round takes real time on the audio clock.
-test.setTimeout(90_000);
+// Merel listening, with Chromium's fake microphone singing the scale over and over, once in a
+// while with re instead of mi (fake-mic.ts; playwright.config.ts, project `listening`). A round
+// takes real time on the audio clock.
+test.setTimeout(150_000);
 test.use({ viewport: { width: 1280, height: 860 } });
 
-test('Merel asks once, listens in Your turn, the voice dot follows, and the eighth steady note completes the round', async ({ page }) => {
+test('Merel asks once, listens in Your turn, the voice dot follows, a miss keeps the notes found, and the last note completes the round', async ({ page }) => {
   // Keep the microphone's tracks, to see that they are closed after Your turn.
   await page.addInitScript(() => {
     const tracks: MediaStreamTrack[] = [];
@@ -33,13 +34,22 @@ test('Merel asks once, listens in Your turn, the voice dot follows, and the eigh
   await expect(card.locator('.merel')).toHaveAttribute('data-pose', 'listening');
   await expect.poll(liveTracks, { timeout: 10_000 }).toBe(1);
 
-  // The voice dot shows on the staff, and the notes heard fill in their colour.
-  await expect(page.locator('.staff__voice:not(.is-silent)')).toHaveCount(1, { timeout: 5_000 });
-  await expect(page.locator('.staff__note.is-found')).not.toHaveCount(0, { timeout: 5_000 });
+  // The notes to sing are outlined; the voice dot shows on the staff, and the notes found fill in their colour.
+  await expect(page.locator('.staff__note.is-next')).toHaveCount(1);
+  await expect(page.locator('.staff__voice:not(.is-silent)')).toHaveCount(1, { timeout: 10_000 });
+  await expect(page.locator('.staff__note.is-found')).not.toHaveCount(0, { timeout: 10_000 });
   await expect(card.locator('.dot--on')).toHaveCount(0);
 
-  // The eighth steady note completes the round: a dot, Merel bows, the microphone is closed.
-  await expect(card.locator('.dot--on')).toHaveCount(1, { timeout: 20_000 });
+  // A try misses: Merel says so mildly, names the note to sing from, and the notes found stay.
+  await expect(card.locator('.card__status')).toContainText('Almost. Sing it again from', { timeout: 30_000 });
+  const found = await page.locator('.staff__note.is-found').count();
+  const from = (await card.locator('.card__status').textContent())!.replace(/.*from (\S+)\.$/, '$1');
+  expect(from).toBe(['do', 're', 'mi', 'fa', 'sol', 'la', 'si', 'do'][found]);
+  await expect(page.locator('.staff__note.is-found')).toHaveCount(found);
+  await expect(card.locator('.dot--on')).toHaveCount(0);
+
+  // The last note completes the round: a dot, Merel bows, the microphone is closed.
+  await expect(card.locator('.dot--on')).toHaveCount(1, { timeout: 30_000 });
   await expect(card.locator('.merel')).toHaveAttribute('data-pose', 'bowing');
   await expect(page.locator('.staff__note.is-found')).toHaveCount(8);
   await expect(page.locator('.staff__voice')).toHaveCount(0);
@@ -49,7 +59,7 @@ test('Merel asks once, listens in Your turn, the voice dot follows, and the eigh
   await card.getByRole('button', { name: 'Next round' }).click({ timeout: 5_000 });
   await expect(card.locator('.card__status')).toHaveText('Your turn. Sing it alone; Merel listens.', { timeout: 30_000 });
   await expect(card.locator('.card__ask')).toHaveCount(0);
-  await expect(card.locator('.dot--on')).toHaveCount(2, { timeout: 20_000 });
+  await expect(card.locator('.dot--on')).toHaveCount(2, { timeout: 40_000 });
 });
 
 test('recognition does not ask for the microphone', async ({ page }) => {

@@ -24,12 +24,14 @@ interface HeadProps {
   ledger: boolean;
   /** Draw the head filled even for a half note: the colour of a sung or found note is a dot. */
   filled: boolean;
+  /** Draw the head as an outline even for a quarter note: a note still to sing. */
+  outline?: boolean;
 }
 
-function Note({ x, y, u, thin, step, beats, colour, ledger, filled }: HeadProps) {
+function Note({ x, y, u, thin, step, beats, colour, ledger, filled, outline = false }: HeadProps) {
   const up = step < 6;
   const stemX = up ? x + 0.95 * u : x - 1.17 * u - thin;
-  const hollow = beats >= 2 && !filled;
+  const hollow = outline || (beats >= 2 && !filled);
   return (
     <>
       {ledger && <rect x={x - 1.83 * u} y={y - thin / 2} width={3.67 * u} height={thin} rx={thin / 2} class="staff__ink" />}
@@ -91,7 +93,8 @@ function VoiceDot({ L, u, thin }: { L: StaffLayout; u: number; thin: number }) {
 /**
  * Real notation, drawn per size: five hand-drawn lines, the treble clef, 4/4, the notes with
  * stems in their rhythm, bar lines and the final double bar. A note sounding or just played
- * shows its colour and the dashes around it; found notes keep their colour. On a phone
+ * shows its colour and the dashes around it; found notes keep their colour; while Merel listens,
+ * the notes still to sing are outlined, the next one brighter. On a phone
  * (`compact`) the notes keep their spacing and the staff follows the current note.
  */
 export function Staff({ compact }: { compact: boolean }) {
@@ -138,7 +141,7 @@ export function Staff({ compact }: { compact: boolean }) {
             const colour = coloured ? noteColour(note) : 'var(--on-ink)';
             return (
               <g key={i} class={`staff__note is-${n.mark}`} data-note={note.pitch}>
-                <Note x={x} y={y} u={u} thin={thin} step={n.step} beats={n.beats} colour={colour} ledger={n.step === 0} filled={coloured} />
+                <Note x={x} y={y} u={u} thin={thin} step={n.step} beats={n.beats} colour={colour} ledger={n.step === 0} filled={coloured} outline={n.mark === 'next' || n.mark === 'waiting'} />
                 {n.mark === 'on' && <Burst key={plays.value} x={x} y={y} u={u} thin={thin} />}
                 <text x={x} y={L.nameY} class="staff__name lettering" font-size={Math.max(12, 1.22 * u)}>
                   {s.noteNames[n.step]!.toUpperCase()}

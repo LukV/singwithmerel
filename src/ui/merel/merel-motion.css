@@ -12,6 +12,7 @@
 .live.p-thinking .m-head{animation:m-ponder 3.6s ease-in-out infinite}
 .live.p-waiting .m-head{animation:m-look 5s ease-in-out infinite}
 .live.p-bowing .m-bob{animation:m-bow 2.4s ease-in-out infinite}
+.live.p-listening.is-nodding .m-head{animation:m-nod .4s ease-out}
 @keyframes m-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes m-hop{0%,100%{transform:translateY(0) scaleY(1)}12%{transform:translateY(0) scaleY(.96)}45%{transform:translateY(-12px) scaleY(1.02)}}
 @keyframes m-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
@@ -23,5 +24,6 @@
 @keyframes m-ponder{0%,100%{transform:rotate(0)}40%,60%{transform:rotate(-8deg)}}
 @keyframes m-look{0%,40%,100%{transform:rotate(0)}50%,85%{transform:rotate(-10deg)}}
 @keyframes m-bow{0%,100%{transform:translateY(0)}50%{transform:translateY(2px)}}
+@keyframes m-nod{0%,100%{transform:rotate(0)}40%{transform:rotate(9deg)}}
 @keyframes m-marks{0%{opacity:1}50%{opacity:0}100%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.live *{animation:none !important}}

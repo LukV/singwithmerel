@@ -645,6 +645,11 @@ a {
   letter-spacing: 0.06em;
 }
 
+/* While Merel listens: the notes still to sing are outlined, the next one brighter. */
+.staff__note.is-waiting {
+  opacity: 0.5;
+}
+
 .staff__voice {
   transition:
     transform 0.12s ease-out,

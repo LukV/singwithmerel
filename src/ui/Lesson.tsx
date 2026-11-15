@@ -4,7 +4,7 @@ import { dotsOf, isDone, isSkipped, type LevelState } from '../progress/levels';
 import { DOTS } from '../progress/store';
 import { canListen } from '../listen/mic';
 import { micChoice } from '../listen/listening';
-import { answer, answerAsk, askAgain, asking, bowing, hear, listenNote, round, skip, startRound, stop } from '../round/controller';
+import { answer, answerAsk, askAgain, asking, bowing, hear, listenNote, nodding, round, skip, startRound, stop } from '../round/controller';
 import { goesUp, isRecognition, type Round } from '../round/round';
 import { cards, progress, t } from '../state';
 import { HandRule } from './HandRule';
@@ -15,6 +15,8 @@ import { pathFor } from '../i18n/langs';
 import { lang } from '../state';
 
 const CARD_VIEWBOX = '20 -40 280 378';
+/** After this many tries that missed, Merel offers Hear it. */
+const OFFER_HEAR = 2;
 
 export function Lesson() {
   return (
@@ -55,7 +57,13 @@ function statusFor(mine: Round | null, levelDone: boolean): string {
     case 'along':
       return s.status.along;
     case 'turn':
-      return bowing.value ? s.status.bravo : mine.listen && !asking.value ? s.status.turnListening : s.status.turn;
+      if (bowing.value) return s.status.bravo;
+      if (!mine.listen || asking.value) return s.status.turn;
+      if (mine.missed) {
+        const name = s.noteNames[mine.melody[mine.sung]!.step]!;
+        return mine.tries >= OFFER_HEAR ? s.status.hearAgain(name) : s.status.missed(name);
+      }
+      return s.status.turnListening;
     case 'direction':
       return mine.wrong ? s.status.wrongDirection : s.status.direction(mine.dir);
     case 'find':
@@ -86,6 +94,8 @@ function Card({ level, state }: { level: number; state: LevelState }) {
   const note = running && singing ? listenNote.value : null;
   // After a no, a quiet way to let Merel listen after all, on the card you are on.
   const again = singing && (running || active) && micChoice.value === 'no' && note !== 'later' && canListen();
+  // Two tries missed: Hear it is the button to press.
+  const offerHear = running && mine.phase === 'turn' && mine.listen && mine.missed && mine.tries >= OFFER_HEAR;
 
   return (
     <section id={`c${level}`} class={`card card--${state}${running ? ' is-running' : ''}`} data-state={state} aria-labelledby={`c${level}-title`}>
@@ -110,7 +120,7 @@ function Card({ level, state }: { level: number; state: LevelState }) {
             </div>
             <p class="card__text">{ex.text}</p>
           </div>
-          <Merel class="card__merel" pose={pose} live={active || !!mine} viewBox={CARD_VIEWBOX} />
+          <Merel class={`card__merel${mine && nodding.value ? ' is-nodding' : ''}`} pose={pose} live={active || !!mine} viewBox={CARD_VIEWBOX} />
         </div>
         <div class="card__dots">
           <span class="visually-hidden">{s.dotsLabel(dots, DOTS)}</span>
@@ -169,7 +179,7 @@ function Card({ level, state }: { level: number; state: LevelState }) {
               {completed ? s.cardAgain : s.cardStart}
             </button>
           )}
-          <button type="button" class="button" onClick={() => hear(level)}>
+          <button type="button" class={`button${offerHear ? ' button--filled' : ''}`} onClick={() => hear(level)}>
             {s.hearIt}
           </button>
         </div>
