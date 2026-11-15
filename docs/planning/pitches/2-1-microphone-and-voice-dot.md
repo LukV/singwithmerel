@@ -1,9 +1,10 @@
 ---
 project: merel
 type: pitch
-status: ready
+status: in-cycle
 block: 2-your-turn
 created: 2026-11-14
+started: 2026-11-15
 ---
 # 2.1 The microphone and the voice dot
 
