@@ -2,7 +2,9 @@ import { Fragment } from 'preact';
 import { SCALE, noteColour } from '../melody/scale';
 import { dotsOf, isDone, isSkipped, type LevelState } from '../progress/levels';
 import { DOTS } from '../progress/store';
-import { answer, bowing, hear, round, skip, startRound, stop } from '../round/controller';
+import { canListen } from '../listen/mic';
+import { micChoice } from '../listen/listening';
+import { answer, answerAsk, askAgain, asking, bowing, hear, listenNote, round, skip, startRound, stop } from '../round/controller';
 import { goesUp, isRecognition, type Round } from '../round/round';
 import { cards, progress, t } from '../state';
 import { HandRule } from './HandRule';
@@ -53,7 +55,7 @@ function statusFor(mine: Round | null, levelDone: boolean): string {
     case 'along':
       return s.status.along;
     case 'turn':
-      return bowing.value ? s.status.bravo : s.status.turn;
+      return bowing.value ? s.status.bravo : mine.listen && !asking.value ? s.status.turnListening : s.status.turn;
     case 'direction':
       return mine.wrong ? s.status.wrongDirection : s.status.direction(mine.dir);
     case 'find':
@@ -78,7 +80,12 @@ function Card({ level, state }: { level: number; state: LevelState }) {
   const dots = dotsOf(p, level);
   const pose = poseFor(state, mine);
   const status = running ? statusFor(mine, done) : completed ? (done ? s.done : s.skipped) : '';
-  const between = running && (mine.phase === 'turn' || (mine.phase === 'done' && !bowing.value));
+  const between = running && ((mine.phase === 'turn' && !mine.listen) || (mine.phase === 'done' && !bowing.value));
+  const singing = !isRecognition(level);
+  const ask = running && singing && mine.phase === 'turn' && asking.value;
+  const note = running && singing ? listenNote.value : null;
+  // After a no, a quiet way to let Merel listen after all, on the card you are on.
+  const again = singing && (running || active) && micChoice.value === 'no' && note !== 'later' && canListen();
 
   return (
     <section id={`c${level}`} class={`card card--${state}${running ? ' is-running' : ''}`} data-state={state} aria-labelledby={`c${level}-title`}>
@@ -114,6 +121,24 @@ function Card({ level, state }: { level: number; state: LevelState }) {
             {status}
           </span>
         </div>
+        {ask && (
+          <div class="card__ask">
+            <p class="card__ask-text">{s.listen.ask}</p>
+            <div class="card__ask-buttons">
+              <button type="button" class="button button--filled" onClick={() => answerAsk(true)}>
+                {s.listen.yes}
+              </button>
+              <button type="button" class="button" onClick={() => answerAsk(false)}>
+                {s.listen.no}
+              </button>
+            </div>
+          </div>
+        )}
+        {note && (
+          <p class="card__note" role="status">
+            {s.listen[note]}
+          </p>
+        )}
         {running && isRecognition(level) && mine.phase !== 'hear' && <Trail r={mine} />}
         {running && mine.phase === 'direction' && (
           <div class="card__answers">
@@ -148,10 +173,19 @@ function Card({ level, state }: { level: number; state: LevelState }) {
             {s.hearIt}
           </button>
         </div>
-        {active && !isSkipped(p, level) && (
-          <button type="button" class="card__skip" onClick={() => skip(level)}>
-            {s.skip}
-          </button>
+        {(again || (active && !isSkipped(p, level))) && (
+          <div class="card__quiet">
+            {active && !isSkipped(p, level) && (
+              <button type="button" class="card__skip" onClick={() => skip(level)}>
+                {s.skip}
+              </button>
+            )}
+            {again && (
+              <button type="button" class="card__skip" onClick={() => void askAgain()}>
+                {s.listen.again}
+              </button>
+            )}
+          </div>
         )}
       </div>
     </section>

@@ -31,6 +31,8 @@ export interface Strings {
     listen: string;
     along: string;
     turn: string;
+    /** Your turn while Merel listens. */
+    turnListening: string;
     direction: (step: number) => string;
     wrongDirection: string;
     /** Recognition, finding the notes: `found` notes are found so far. */
@@ -38,6 +40,19 @@ export interface Strings {
     wrongNote: (name: string) => string;
     bravo: string;
     levelDone: string;
+  };
+  /** Merel's microphone: the one-sentence ask before the browser's, and what follows a no. */
+  listen: {
+    ask: string;
+    yes: string;
+    no: string;
+    /** Said once, when Merel will not listen: refused, missing or failing. */
+    off: string;
+    /** The quiet link on a card to ask again. */
+    again: string;
+    later: string;
+    /** The browser still refuses after asking again. */
+    blocked: string;
   };
   up: string;
   down: string;

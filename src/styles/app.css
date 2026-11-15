@@ -416,6 +416,31 @@ a {
   gap: 10px;
 }
 
+.card__ask {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card__ask-text,
+.card__note {
+  margin: 0;
+  max-width: 420px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.card__note {
+  color: var(--quiet);
+}
+
+.card__ask-buttons,
+.card__quiet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
 .card__skip {
   align-self: flex-start;
   min-height: var(--touch);
@@ -618,6 +643,27 @@ a {
   font-family: var(--font-text);
   font-weight: 500;
   letter-spacing: 0.06em;
+}
+
+.staff__voice {
+  transition:
+    transform 0.12s ease-out,
+    opacity 0.3s ease-out;
+}
+
+.staff__voice.is-silent {
+  opacity: 0;
+}
+
+.staff__voice-dot {
+  fill: var(--paper);
+  fill-opacity: 0.9;
+}
+
+.staff__voice-ring {
+  fill: none;
+  stroke: var(--paper);
+  stroke-opacity: 0.35;
 }
 
 .staff__burst line {
@@ -977,6 +1023,10 @@ a {
   .instrument,
   .instrument.is-up {
     transition: none;
+  }
+
+  .staff__voice {
+    transition: opacity 0.3s ease-out;
   }
 }
 

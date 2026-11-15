@@ -20,12 +20,40 @@ test('one full round of exercise 1 fills a dot, and a reload keeps it', async ({
   // The staff marks the notes as Merel sings them.
   await expect(page.locator('.staff__note.is-on')).toHaveCount(1, { timeout: 5_000 });
   await expect(card(page, 1).locator('.card__status')).toHaveText('Sing along.', { timeout: 15_000 });
-  await expect(filledDots(page, 1)).toHaveCount(1, { timeout: 15_000 });
+  // At the first Your turn Merel asks to listen, in one sentence; no dot yet.
+  await expect(card(page, 1).locator('.card__ask')).toContainText('Merel listens while you sing.', { timeout: 15_000 });
+  await expect(filledDots(page, 1)).toHaveCount(0);
+  await card(page, 1).getByRole('button', { name: 'Not now' }).click();
+  // Not now: said once, and the round counts after Sing along, as in 0.1.0.
+  await expect(card(page, 1).locator('.card__note')).toHaveText('Merel will not listen this time: the round counts after Sing along.');
+  await expect(filledDots(page, 1)).toHaveCount(1);
   await expect(card(page, 1).getByRole('button', { name: 'Next round' })).toBeVisible({ timeout: 5_000 });
   await expect(card(page, 1).locator('.merel')).toHaveAttribute('data-pose', 'listening');
 
+  await expect(card(page, 1).getByRole('button', { name: 'Let Merel listen' })).toBeVisible();
+
   await page.reload();
   await expect(filledDots(page, 1)).toHaveCount(1);
+  // The answer is remembered: the next round does not ask again.
+  await card(page, 1).getByRole('button', { name: 'Start' }).click();
+  await expect(card(page, 1).locator('.card__status')).toHaveText('Sing along.', { timeout: 15_000 });
+  await expect(filledDots(page, 1)).toHaveCount(2, { timeout: 15_000 });
+  await expect(card(page, 1).locator('.card__ask')).toHaveCount(0);
+});
+
+test('a microphone that cannot be opened: Merel says so once, and the round counts after Sing along', async ({ page }) => {
+  // The browser refuses the microphone, as when someone says no to its question.
+  await page.addInitScript(() => {
+    navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError'));
+  });
+  await begin(page);
+  await card(page, 1).getByRole('button', { name: 'Start' }).click();
+  await card(page, 1).getByRole('button', { name: 'Let him listen' }).click({ timeout: 30_000 });
+  await expect(card(page, 1).locator('.card__note')).toHaveText('Merel will not listen this time: the round counts after Sing along.');
+  await expect(filledDots(page, 1)).toHaveCount(1);
+  // Asking again from the card: the browser is asked again, and still refuses.
+  await card(page, 1).getByRole('button', { name: 'Let Merel listen' }).click();
+  await expect(card(page, 1).locator('.card__note')).toContainText('The browser keeps the microphone closed.');
 });
 
 test('skip opens the next level; the progress code brings progress back in a cleared browser', async ({ page, context }) => {
