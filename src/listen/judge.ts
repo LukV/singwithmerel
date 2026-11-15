@@ -190,7 +190,15 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
       // The first note: any pitch held long enough, wherever it is, sets the key; held on, it
       // keeps setting it, so the scoop into it weighs less.
       const o = opening;
-      const same = o && time - o.last <= settings.gap && Math.abs(fold(c - median(o.cents.slice(-8)))) <= settings.first;
+      // Before it is found, a note may wander (a scoop, a wobble). After, it is the same note while
+      // nearer to the do it set than to the next note, or a glide down a semitone to si would drag
+      // do along and never find si.
+      const same =
+        o &&
+        time - o.last <= settings.gap &&
+        (key === null
+          ? Math.abs(fold(c - median(o.cents.slice(-8)))) <= settings.first
+          : found < melody.length && Math.abs(fold(c - semitones(0) - key)) < Math.abs(fold(c - target())));
       if (same) {
         o.cents.push(c);
         o.held += step;

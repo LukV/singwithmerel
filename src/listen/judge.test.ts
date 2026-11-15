@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SCALE_UP, type Melody } from '../melody/melody';
+import { SCALE_DOWN, SCALE_UP, type Melody } from '../melody/melody';
 import { freqFromC4 } from '../melody/scale';
 import { JUDGE, fold, judgeFor } from './judge';
 import type { Frame } from './tracker';
@@ -53,6 +53,19 @@ describe('the mild judge', () => {
     for (const f of track(sing(SCALE.map((s) => s - 15), 0.5, 30))) j.hear(f);
     expect(j.found).toBe(8);
     expect(j.key).toBeCloseTo(-270, 0);
+  });
+
+  it('finds the scale down sung legato, each note gliding into the next', () => {
+    // No breath between notes: 0.4 s on each, 0.1 s gliding to the next, from a man's low do.
+    const glide = (semis: number[]): [number, number][] =>
+      semis.flatMap((s, i) => {
+        const next = semis[i + 1];
+        const held: [number, number][] = [[hz(s - 15), 0.4]];
+        if (next === undefined) return held;
+        return [...held, ...Array.from({ length: 10 }, (_, k): [number, number] => [hz(s - 15 + ((next - s) * (k + 1)) / 10), 0.01])];
+      });
+    expect(judge(track(glide([...SCALE].reverse())), SCALE_DOWN).found).toBe(8);
+    expect(judge(track(glide(SCALE))).found).toBe(8);
   });
 
   it('follows a singer who drifts sharp, a little each note', () => {

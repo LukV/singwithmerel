@@ -68,7 +68,7 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 **The mild judge** (`listen/judge.ts`, `judgeFor`) turns the frames into notes found:
 
-- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key. Each note found moves the key to the average of where the notes were sung, so do follows a singer who drifts. The judge compares each pitch with the next note not yet found, in that key.
+- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key while you stay nearer to it than to the next note (so a glide from high do down to si moves on to si, not do along with it). Each note found moves the key to the average of where the notes were sung, so do follows a singer who drifts. The judge compares each pitch with the next note not yet found, in that key.
 - **Octave folded.** Each pitch becomes a pitch class before comparing, so a bass and a child both sing do.
 - **Tolerance.** Less than a semitone (100 cents) from the note.
 - **Hold.** A note is found once you have been close to it for 0.2 s in all; a pause or a wobble off the note under 0.15 s does not break it. Sound under the level gate is silence.
