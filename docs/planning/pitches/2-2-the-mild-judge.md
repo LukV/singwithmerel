@@ -1,8 +1,9 @@
 ---
 project: merel
 type: pitch
-status: in-cycle
+status: shipped
 started: 2026-11-15
+shipped_on: 2026-11-15
 block: 2-your-turn
 created: 2026-11-14
 ---
@@ -46,11 +47,11 @@ The judge with the found notes filling and a mild retry. The offer of Hear it af
 
 ## Definition of done
 
-- [ ] The judge folds octaves, allows a semitone, needs 0.3 s, and goes in order; the numbers are in one config object.
-- [ ] Notes fill as they are found; a miss keeps them and starts again from the first not found; after two tries Hear it is offered.
-- [ ] Tuned on the three voices: every note of the in-tune takes found, not the wrong note of the off-key take; results noted.
-- [ ] The docs this pitch made wrong are true again: features (one round), overview (voice evaluation), decision 005 if the numbers changed.
-- [ ] Every machine-runnable step of the test scenario passes.
+- [x] The judge folds octaves, allows a semitone, needs 0.3 s (0.2 s once tuned), and goes in order; the numbers are in one config object.
+- [x] Notes fill as they are found; a miss keeps them and starts again from the first not found; after two tries Hear it is offered.
+- [x] Tuned on the three voices: every note of the in-tune takes found, not the wrong note of the off-key take; results noted.
+- [x] The docs this pitch made wrong are true again: features (one round), overview (voice evaluation), decision 005 if the numbers changed.
+- [x] Every machine-runnable step of the test scenario passes.
 
 ## Test scenario
 
@@ -67,4 +68,4 @@ The judge with the found notes filling and a mild retry. The offer of Hear it af
 
 ## What actually happened
 
-*(At the end: one paragraph on what landed, what was cut, what surprised us.)*
+Everything landed, the cut line and above it: the judge (`src/listen/judge.ts`, replacing the steady-tone rule of 2.1 and `ear.ts`), the notes outlined on the staff and filling as found, a mild miss that names where to sing from and keeps what was found, Hear it offered as the filled button after two tries, and Merel's soft nod at each note. The recordings were the surprise. They are untrained and were sung without hearing Merel first, so nobody sang in C: the child in about A♭ and G, the woman in F♯, the man in E and D. Luk chose to keep Merel's C for the judge (2026-11-15), so `npm run tune` now measures and labels each take before anything is tuned (each note matched to the one meant, the key of the take, how far off each note is in that key; `npm run tune -- --label` writes `tuning/labels.json`), then moves the take into Merel's key and judges it. The labels show what the singers did: the scales mostly within 50 cents of their own key, a few steps a quarter tone or more off, the man's scale down stretched by about 170 cents with its first note 117 cents sharp, and the woman's and the child's do mi sol coming back down instead of up to sol. Tuning on them changed two numbers: the hold is 0.2 s, not 0.3 (some notes last only 0.25 s), counted as time close to the note in all, and the gap is 0.15 s, not 0.08 (scoops and wobbles broke the man's notes). Tolerance stays under 100 cents. With those, all 11 takes behave as their labels say: every note of the six in-tune scales and the man's do mi sol, the woman's and the child's do mi sol stop at their wrong sol, the man's scale down stops at its sharp first note, and neither off-key take completes. Routine choices: a next note counts only once you move nearer to it than to the note just found (one tone between mi and fa is not both, and high do then low do needs a pause); a miss is 1.5 s of silence after singing, or as many steady tones that found nothing as notes were left; while Merel sings Hear it or a key rings, the try starts afresh; the browser check's fake microphone now sings the scale with re instead of mi twice, then the scale from mi, so every run sees a miss before the round completes. The off-key takes' melodies are not known, so they are judged as the scale up and down from their first note; there is no woman off-key take. Two loose ends from the plain-Node unit tests are fixed on the way: `listening.ts` and `store.ts` no longer touch Node's warning `localStorage`. Whether 0.2 s and a semitone feel mild is the person's step of the scenario.
