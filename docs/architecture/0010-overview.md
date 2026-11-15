@@ -17,7 +17,7 @@ updated: 2026-11-14
 | Install, offline | a web app manifest and a small service worker written by the build (`build/service-worker.ts`) | keeps the app and all clips at the first visit; no plugin to follow |
 | Audio out | Web Audio API, one AudioContext | sample-accurate scheduling of clips; the keys play recorded piano notes ([[013-piano-samples]]) |
 | Audio in | getUserMedia + an AudioWorklet | microphone frames off the main thread |
-| Pitch | a small open-source detector (candidate: pitchy, McLeod method) | no AI, runs on the device |
+| Pitch | YIN, our own small implementation (`src/listen/yin.ts`), in the AudioWorklet ([[015-pitch-detector]]) | no AI, no dependency, runs on the device; the same code checks Merel's clips |
 | Hosting | S3 (eu-north-1) and CloudFront behind Route 53 ([[010-hosting]]); the setup is in `deploy/README.md` | the domain is already in Route 53 |
 | CI and deploy | GitHub Actions: checks on every push; a release tag deploys through OIDC, candidates to next.singwithmerel.com | no keys in GitHub; only a tag goes live |
 | Versions | semantic versioning, Conventional Commits, commitizen ([[011-versions-and-releases]]) | a changelog and real releases |
@@ -31,7 +31,7 @@ src/
   melody/     # the do major scale, the scale exercises, the random three-note melody; pure functions, tested
   audio/      # the AudioContext, the plain tone, the piano notes, Merel's clips scheduled on the audio clock
   round/      # one round as a small state machine (round.ts), and the controller that plays it
-  listen/     # block 2: microphone, pitch detection, the mild judge
+  listen/     # YIN, the pitch tracker and its worklet, the microphone, the listening rule, Merel listening in Your turn
   progress/   # the merel.v1 record in local storage, levels and dots, the progress code
   i18n/       # languages and paths; EN, FR, NL strings and note names, one file each
   ui/         # identity, lesson (path, cards), instrument (staff, keys), Merel (SVG poses, CSS motion)
@@ -41,7 +41,7 @@ src/
 build/        # Vite plugins: a static page per language, the service worker; design SVGs cleaned on import
 public/       # the icons, the manifest, robots.txt; voice/ holds Merel's clips and their list, voice.json; piano/ the eight piano notes
 voice/        # the clips' WAV sources, never published; npm run voice checks and converts them; make/ is how they are made
-scripts/      # npm run voice: reads WAV, measures pitch (YIN), converts to AAC; npm run piano makes the piano notes
+scripts/      # npm run voice: reads WAV, measures pitch (YIN), converts to AAC; npm run piano makes the piano notes; npm run tune prints what Merel hears in a recording
 deploy/       # the one-time AWS setup, the upload, the CloudFront path function and response headers
 ```
 
@@ -57,14 +57,18 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 1. A card's Start asks `round` for a new round; it takes its notes from `melody`: a fixed scale, or a random shape, never the one before.
 2. **Hear it:** `audio` loads the named clips (or "du" in recognition) and schedules them a beat apart at 90 per minute on the audio clock; a clip that is missing or does not decode is a plain tone at its pitch. The controller follows the audio clock frame by frame, so the staff marks the note that sounds; Merel sings.
-3. **Sing along:** the same playback, a beat later; in release 1 the round completes when it ends, and Your turn follows as practice. In recognition, the answers move the state machine instead, and the round completes when the third note is found.
-4. **Your turn:** `listen` opens the microphone (permission asked here the first time), runs the detector on each frame, and passes pitches to the judge.
-5. The judge returns, per note, matched or not; the round completes when every note matched.
+3. **Sing along:** the same playback, a beat later. When Merel does not listen, the round completes when it ends, and Your turn follows as practice. In recognition, the answers move the state machine instead, and the round completes when the third note is found.
+4. **Your turn:** if Merel never asked, the card asks first (`merel.mic` in local storage keeps the answer). Then `listen/mic.ts` opens the microphone with echo cancelling, noise suppression and automatic gain off, into the one AudioContext and through the pitch worklet; the worklet posts a frame (pitch, clarity, level) about every 10 ms. `listen/listening.ts` skips the first 0.25 s (Merel's last note may ring), anything while Merel sings Hear it, and a pressed key's note for 2 s, calms the voice for the dot (a median of five frames), and gives each frame to the listening rule. A frame that makes a note heard moves the round on (`sung`); the last one completes it. When the round leaves Your turn, the microphone closes.
+5. If the microphone is refused, missing or fails, the round gets `deaf` and completes as after Sing along.
 6. `progress` fills a dot and saves the record; at five dots the level is done, Merel bows, the next level opens and the lesson scrolls to it.
 
 ## Voice evaluation
 
-The judge is deliberately mild:
+**Hearing.** The microphone's sound goes to an AudioWorklet that halves the sample rate (to 22 or 24 kHz), and every 240 samples (10 ms) runs YIN on the last 1024 (about 43 ms), between 70 Hz (a low man) and 1100 Hz (a child's high notes); the page gets the pitch and the level, never the sound ([[015-pitch-detector]]). `npm run tune` runs the same code over recordings.
+
+**The listening rule now** (`listen/ear.ts`, `listenFor`): a tone that stays within a quarter tone of its own average for 0.3 s, louder than the level gate, counts as the next note of the melody; the next one needs a change of pitch or a pause. One stray frame or a gap under 80 ms does not break a tone. The numbers are in one object, `LISTEN`.
+
+**The mild judge** (pitch 2.2) takes the rule's place behind the same function:
 
 - **Octave folded.** Each pitch becomes a pitch class before comparing, so a bass and a child both sing do.
 - **Tolerance.** Within one semitone (100 cents) of the target.
@@ -76,11 +80,10 @@ The numbers live in one config object, so they can be tuned without touching cod
 
 | Release | A round completes when | Fallback |
 |---|---|---|
-| 1 | you sang along to the end | none needed |
-| 2 | Your turn produced a steady tone per note | release 1 rule |
-| 3 | Your turn matched every note, mildly | release 1 rule |
+| 0.1.0 | you sang along to the end | none needed |
+| 0.2.0 | Your turn matched every note, mildly (a steady tone per note while pitch 2.2 is under way) | the 0.1.0 rule |
 
-Microphone refused, missing or too noisy: the app falls back to the release 1 rule and says so once.
+Microphone refused, missing or failing: the app falls back to the 0.1.0 rule and says so once ([[014-your-turn-earns-the-dot]]).
 
 ## Progress
 
@@ -102,9 +105,10 @@ Safari deletes a site's stored data after about seven days without a visit unles
 
 - Audio starts only after a tap: Start creates and resumes the AudioContext.
 - The silent switch on an iPhone can mute web audio; on an iPhone the first screen says so in one line, and every phone gets a line about headphones.
-- Bluetooth headphones add delay: fine for listening and judging, sing-along may feel slightly late.
+- Bluetooth headphones add delay: fine for listening and judging, sing-along may feel slightly late. A Bluetooth headset may switch to its own, poorer microphone while Merel listens; Merel does not fight it.
+- The microphone works only on a secure page: the live site, `localhost`, or `npm run dev:phone` (HTTPS with a certificate of its own, which the phone warns about once). Plain `npm run dev -- --host` reaches a phone without the microphone, and Merel works as in 0.1.0 there.
 - Eight keys on a 390 px phone are about 43 px each, at the limit for touch; test early.
 
 ## Privacy
 
-The microphone is asked for only at the first Your turn, with one sentence on why. Frames are analysed in memory and discarded at once. No analytics, no cookies, fonts self-hosted, no request to any host but our own; the content security policy enforces it. CloudFront keeps no access logs. The privacy and about page says the same to the user.
+The microphone is asked for only at the first Your turn, with one sentence on why, and is open only during Your turn. The sound is analysed in the worklet as it comes and dropped; only pitch and level reach the page, and nothing is kept. The response headers allow the microphone for our own origin only (`Permissions-Policy: microphone=(self)`). No analytics, no cookies, fonts self-hosted, no request to any host but our own; the content security policy enforces it. CloudFront keeps no access logs. The privacy and about page says the same to the user.

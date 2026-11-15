@@ -663,7 +663,7 @@ a {
 .staff__voice-ring {
   fill: none;
   stroke: var(--paper);
-  stroke-opacity: 0.35;
+  stroke-opacity: 0.55;
 }
 
 .staff__burst line {

@@ -33,7 +33,7 @@ Every round is **Hear it**, **Sing along**, **Your turn**. Five rounds fill five
 
 ## How it is built
 
-A static, installable web app (a PWA): TypeScript and Preact, built with Vite, served from S3 and CloudFront at singwithmerel.com. Everything runs in the browser: the melodies, Merel's recorded voice, the progress (in local storage) and, from block 2, pitch detection without AI. GitHub Actions checks every push; a release tag deploys. Versions follow semantic versioning and Conventional Commits, with commitizen; each release has a [changelog](CHANGELOG.md).
+A static, installable web app (a PWA): TypeScript and Preact, built with Vite, served from S3 and CloudFront at singwithmerel.com. Everything runs in the browser: the melodies, Merel's recorded voice, the progress (in local storage) and pitch detection, without AI. GitHub Actions checks every push; a release tag deploys. Versions follow semantic versioning and Conventional Commits, with commitizen; each release has a [changelog](CHANGELOG.md).
 
 | | |
 |---|---|

@@ -24,3 +24,4 @@ updated: 2026-11-14
 | [[012-stack]] | Vite, TypeScript and Preact; Vitest and Playwright; static page per language | 2026-11-14 |
 | [[013-piano-samples]] | The keys play a recorded grand piano, the Iowa samples, self-hosted | 2026-11-14 |
 | [[014-your-turn-earns-the-dot]] | With a microphone, the dot comes from Your turn; found notes stay, unlimited tries, a voice dot on the staff | 2026-11-14 |
+| [[015-pitch-detector]] | YIN in an AudioWorklet, our own code, 70 to 1100 Hz, a 43 ms frame every 10 ms | 2026-11-15 |
