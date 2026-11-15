@@ -38,7 +38,7 @@ export function setMicChoice(choice: MicChoice): void {
 /** Your voice now, in cents above C4, calmed; null when you are silent or Merel is not listening. */
 export const voice = signal<number | null>(null);
 
-/** Merel's last note may still ring when Your turn starts: listening starts a moment later. */
+/** Merel's last note may still ring when Your turn starts, or after Hear it: listening starts a moment later. */
 const SETTLE = 0.25;
 /** A key pressed during Your turn: its piano note does not count as your voice for this long. */
 const KEY_RING = 2;
@@ -90,7 +90,9 @@ export async function listen(melody: Melody, onSung: () => void, quiet: () => bo
     const c = voiced ? centsOf(frame.hz!) : null;
     const now = performance.now() / 1000;
     const piano = c !== null && keyMute && now < keyMute.until && Math.abs(fold(c - keyMute.cents)) < LISTEN.steady;
-    if (frame.time < s.from || quiet() || piano) {
+    // While Merel sings (Hear it), and a moment after, his voice is not yours.
+    if (quiet()) s.from = frame.time + SETTLE;
+    if (frame.time < s.from || piano) {
       calm(s, null, frame.time);
       return;
     }

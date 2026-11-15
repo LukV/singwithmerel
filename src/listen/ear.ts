@@ -1,7 +1,7 @@
 import type { Melody } from '../melody/melody';
-import { SCALE } from '../melody/scale';
+import { SCALE } from '../melody/scale.ts';
 import type { Frame } from './tracker';
-import { cents } from './yin';
+import { cents } from './yin.ts';
 
 /**
  * What Merel counts as a sung note, from a pitch track. Behind one function, `listenFor`, so the

@@ -1,4 +1,4 @@
-import { rms, yin } from './yin';
+import { rms, yin } from './yin.ts';
 
 /**
  * Turns a stream of samples into a pitch track: a frame of about 43 ms every 10 ms or so, each
@@ -34,8 +34,10 @@ export class Tracker {
   private pending = 0;
   private pendingCount = 0;
   private seen = 0;
+  private readonly inputRate: number;
 
-  constructor(private readonly inputRate: number) {
+  constructor(inputRate: number) {
+    this.inputRate = inputRate;
     this.factor = inputRate >= DECIMATE_FROM ? 2 : 1;
     this.rate = inputRate / this.factor;
   }
