@@ -2,7 +2,7 @@ import { signal } from '@preact/signals';
 import type { Melody } from '../melody/melody';
 import { SCALE } from '../melody/scale';
 import { centsOf, fold, JUDGE, judgeFor, type Judge } from './judge';
-import { openMic, type Mic } from './mic';
+import { openMic, type Mic, type MicTrouble } from './mic';
 import type { Frame } from './tracker';
 
 /**
@@ -75,7 +75,7 @@ export async function listen(melody: Melody, onSung: () => void, onMissed: () =>
   const mine = ++opening;
   const judge = judgeFor(melody);
   const mic = await openMic((frame) => hear(frame));
-  if (!mic) return false;
+  if (typeof mic === 'string') return false;
   if (mine !== opening) {
     mic.close();
     return false;
@@ -130,8 +130,9 @@ export function stopListening(): void {
 }
 
 /** Asks the browser for the microphone and closes it at once: "Let Merel listen" on a card. */
-export async function askMic(): Promise<boolean> {
+export async function askMic(): Promise<'ok' | MicTrouble> {
   const mic = await openMic(() => undefined);
-  mic?.close();
-  return !!mic;
+  if (typeof mic === 'string') return mic;
+  mic.close();
+  return 'ok';
 }

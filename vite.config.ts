@@ -7,7 +7,14 @@ import { serviceWorker } from './build/service-worker.ts';
 import { previewHeaders } from './build/headers.ts';
 
 export default defineConfig({
-  plugins: [svgClean(), preact(), languagePages(), serviceWorker()],
+  plugins: [
+    svgClean(),
+    // Hot reloading wraps each module in code that needs a window; the pitch worklet imports
+    // src/listen/ and runs where there is none, so in dev it would load but never register.
+    preact({ exclude: [/\/src\/listen\//, /node_modules/] }),
+    languagePages(),
+    serviceWorker(),
+  ],
   server: {
     fs: { allow: ['.'] },
     // npm run dev:phone: HTTPS on the local network, so a phone may use the microphone.

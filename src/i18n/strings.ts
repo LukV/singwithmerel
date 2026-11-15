@@ -57,6 +57,8 @@ export interface Strings {
     later: string;
     /** The browser still refuses after asking again. */
     blocked: string;
+    /** The microphone is missing or failed to open, not refused. */
+    failed: string;
   };
   up: string;
   down: string;

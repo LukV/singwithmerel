@@ -24,10 +24,13 @@ export interface Mic {
 
 let loaded: Promise<void> | null = null;
 
-/** Opens the microphone; resolves to null when it is refused, missing or fails. */
-export async function openMic(onFrame: (frame: Frame) => void): Promise<Mic | null> {
+/** Why the microphone did not open: the browser or the person refused it, or it is missing or failed. */
+export type MicTrouble = 'refused' | 'failed';
+
+/** Opens the microphone; resolves to why not when it is refused, missing or fails. */
+export async function openMic(onFrame: (frame: Frame) => void): Promise<Mic | MicTrouble> {
   const ac = audioContext();
-  if (!ac || !canListen() || !ac.audioWorklet) return null;
+  if (!ac || !canListen() || !ac.audioWorklet) return 'failed';
   let stream: MediaStream | null = null;
   try {
     stream = await navigator.mediaDevices.getUserMedia({
@@ -56,8 +59,9 @@ export async function openMic(onFrame: (frame: Frame) => void): Promise<Mic | nu
         for (const track of open.getTracks()) track.stop();
       },
     };
-  } catch {
+  } catch (error) {
     for (const track of stream?.getTracks() ?? []) track.stop();
-    return null;
+    const name = (error as { name?: string } | null)?.name;
+    return !stream && (name === 'NotAllowedError' || name === 'SecurityError') ? 'refused' : 'failed';
   }
 }

@@ -48,6 +48,7 @@ const nl: Strings = {
     again: 'Laat Merel luisteren',
     later: 'Hij luistert vanaf de volgende ronde.',
     blocked: 'De browser houdt de microfoon dicht. Sta hem toe voor deze site in de instellingen van de browser.',
+    failed: 'De microfoon ging niet open op dit toestel. Merel luistert voorlopig niet.',
   },
   up: 'Omhoog',
   down: 'Omlaag',

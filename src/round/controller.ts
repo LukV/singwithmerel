@@ -25,8 +25,8 @@ export const nodding = signal(false);
 export const singing = signal(false);
 /** Your turn is waiting for the answer to Merel's ask to listen. */
 export const asking = signal(false);
-/** What the card says about listening, once: he will not listen, he will from the next round, the browser refuses. */
-export const listenNote = signal<'off' | 'later' | 'blocked' | null>(null);
+/** What the card says about listening, once: he will not listen, he will from the next round, the browser refuses, the microphone failed. */
+export const listenNote = signal<'off' | 'later' | 'blocked' | 'failed' | null>(null);
 
 const lastMelody: Record<number, Melody | null> = {};
 let performance: Performance | null = null;
@@ -151,9 +151,9 @@ export function answerAsk(yes: boolean): void {
 /** "Let Merel listen" on a card, after a no: the browser asks again; he listens from the next round. */
 export async function askAgain(): Promise<void> {
   unlock();
-  const ok = await askMic();
-  if (ok) setMicChoice('yes');
-  listenNote.value = ok ? 'later' : 'blocked';
+  const result = await askMic();
+  if (result === 'ok') setMicChoice('yes');
+  listenNote.value = result === 'ok' ? 'later' : result === 'refused' ? 'blocked' : 'failed';
 }
 
 // The microphone is open only during a Your turn that listens.

@@ -48,6 +48,7 @@ const fr: Strings = {
     again: 'Laisser Merel écouter',
     later: 'Il écoute à partir de la prochaine manche.',
     blocked: 'Le navigateur garde le micro fermé. Autorise-le pour ce site dans les réglages du navigateur.',
+    failed: 'Le micro ne s’est pas ouvert sur cet appareil. Merel n’écoutera pas pour l’instant.',
   },
   up: 'Ça monte',
   down: 'Ça descend',

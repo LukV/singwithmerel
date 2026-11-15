@@ -48,6 +48,7 @@ const en: Strings = {
     again: 'Let Merel listen',
     later: 'He listens from the next round.',
     blocked: 'The browser keeps the microphone closed. Allow it for this site in the browser’s settings.',
+    failed: 'The microphone did not open on this device. Merel will not listen for now.',
   },
   up: 'Up',
   down: 'Down',
