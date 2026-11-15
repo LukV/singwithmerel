@@ -64,7 +64,7 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 ## Voice evaluation
 
-**Hearing.** The microphone's sound goes to an AudioWorklet that halves the sample rate (to 22 or 24 kHz), and every 240 samples (10 ms) runs YIN on the last 1024 (about 43 ms), between 70 Hz (a low man) and 1100 Hz (a child's high notes); the page gets the pitch and the level, never the sound ([[015-pitch-detector]]). `npm run tune` runs the same code over recordings.
+**Hearing.** The microphone's sound goes to an AudioWorklet that halves the sample rate (to 22 or 24 kHz), and every 240 samples (10 ms) runs YIN on the last 1536 (about 64 ms), between 50 Hz (a bass's low do) and 1100 Hz (a child's high notes); the page gets the pitch and the level, never the sound ([[015-pitch-detector]]). `npm run tune` runs the same code over recordings.
 
 **The mild judge** (`listen/judge.ts`, `judgeFor`) turns the frames into notes found:
 

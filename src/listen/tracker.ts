@@ -1,18 +1,21 @@
 import { rms, yin } from './yin.ts';
 
 /**
- * Turns a stream of samples into a pitch track: a frame of about 43 ms every 10 ms or so, each
+ * Turns a stream of samples into a pitch track: a frame of about 64 ms every 10 ms or so, each
  * with its pitch, clarity and level. Pure, so the worklet (pitch-worklet.ts) and `npm run tune`
  * hear the same thing. Settings: docs/architecture/decisions/015-pitch-detector.md.
  */
 
-/** The lowest and highest pitch heard: a low man's voice to a child's high notes. */
-export const MIN_HZ = 70;
+/**
+ * The lowest and highest pitch heard: a bass's low do to a child's high notes. 70 Hz missed
+ * Luk's low do (63 Hz, the scale down from a do near C3).
+ */
+export const MIN_HZ = 50;
 export const MAX_HZ = 1100;
 /** At 44.1 or 48 kHz every second sample is enough for a voice, and halves the work. */
 const DECIMATE_FROM = 32_000;
-/** Frame and hop, in samples after decimation (about 22 to 24 kHz). */
-export const LENGTH = 1024;
+/** Frame and hop, in samples after decimation (about 22 to 24 kHz): 64 ms, three periods at 50 Hz, every 10 ms. */
+export const LENGTH = 1536;
 export const HOP = 240;
 
 export interface Frame {
