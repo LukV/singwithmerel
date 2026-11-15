@@ -23,7 +23,7 @@ Read first: [[0020-features]], [[architecture/0010-overview#Voice evaluation|voi
 
 | # | Pitch | Status | What Luk can try at the end |
 |---|---|---|---|
-| 2.1 | [[2-1-microphone-and-voice-dot\|The microphone and the voice dot]] | in-cycle | Your turn asks for the microphone once, a dot follows your voice on the staff, a steady tone per note completes the round; refusing the microphone keeps 0.1.0 |
+| 2.1 | [[2-1-microphone-and-voice-dot\|The microphone and the voice dot]] | shipped | Your turn asks for the microphone once, a dot follows your voice on the staff, a steady tone per note completes the round; refusing the microphone keeps 0.1.0 |
 | 2.2 | [[2-2-the-mild-judge\|The mild judge]] | ready | Each note fills when you hold it; a miss keeps what you found and you sing again; tuned on a child, a woman and a man |
 
 2.1 comes first; 2.2 builds on its detector and its listening Your turn.
