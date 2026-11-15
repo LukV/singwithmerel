@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals';
 import type { Melody } from '../melody/melody';
 import { SCALE } from '../melody/scale';
-import { centsOf, fold, LISTEN, listenFor, type Ear } from './ear';
+import { centsOf, fold, JUDGE, judgeFor, type Judge } from './judge';
 import { openMic, type Mic } from './mic';
 import type { Frame } from './tracker';
 
@@ -23,7 +23,7 @@ function readChoice(): MicChoice {
 }
 
 /** The answer to "Let him listen": asked once, then remembered. */
-export const micChoice = signal<MicChoice>(typeof localStorage === 'undefined' ? null : readChoice());
+export const micChoice = signal<MicChoice>(typeof window === 'undefined' ? null : readChoice());
 
 export function setMicChoice(choice: MicChoice): void {
   micChoice.value = choice;
@@ -49,7 +49,7 @@ const FADE = 0.15;
 
 interface Session {
   mic: Mic;
-  ear: Ear;
+  judge: Judge;
   from: number | null;
   recent: number[];
   lastVoiced: number;
@@ -66,38 +66,42 @@ export function muteKey(step: number): void {
 }
 
 /**
- * Opens the microphone and listens for `melody`. `onSung` is called for each note heard;
- * `quiet()` says when to hear nothing (Merel is singing). Resolves false if the microphone
- * could not be opened, or listening was stopped meanwhile.
+ * Opens the microphone and judges `melody` (judge.ts). `onSung` is called for each note found,
+ * `onMissed` when a try ends before all are found; `quiet()` says when to hear nothing (Merel is
+ * singing). Resolves false if the microphone could not be opened, or listening was stopped meanwhile.
  */
-export async function listen(melody: Melody, onSung: () => void, quiet: () => boolean): Promise<boolean> {
+export async function listen(melody: Melody, onSung: () => void, onMissed: () => void, quiet: () => boolean): Promise<boolean> {
   stopListening();
   const mine = ++opening;
-  const ear = listenFor(melody);
+  const judge = judgeFor(melody);
   const mic = await openMic((frame) => hear(frame));
   if (!mic) return false;
   if (mine !== opening) {
     mic.close();
     return false;
   }
-  session = { mic, ear, from: null, recent: [], lastVoiced: 0 };
+  session = { mic, judge, from: null, recent: [], lastVoiced: 0 };
 
   function hear(frame: Frame): void {
     const s = session;
     if (!s || mine !== opening) return;
     s.from ??= frame.time + SETTLE;
-    const voiced = frame.hz !== null && frame.level >= LISTEN.gate;
+    const voiced = frame.hz !== null && frame.level >= JUDGE.gate;
     const c = voiced ? centsOf(frame.hz!) : null;
     const now = performance.now() / 1000;
-    const piano = c !== null && keyMute && now < keyMute.until && Math.abs(fold(c - keyMute.cents)) < LISTEN.steady;
+    const piano = c !== null && keyMute && now < keyMute.until && Math.abs(fold(c - keyMute.cents)) < JUDGE.steady;
     // While Merel sings (Hear it), and a moment after, his voice is not yours.
     if (quiet()) s.from = frame.time + SETTLE;
     if (frame.time < s.from || piano) {
+      // Nothing heard while Merel sings, or a key rings, counts, not even as a pause: the try starts after.
+      s.judge.rest();
       calm(s, null, frame.time);
       return;
     }
     calm(s, c, frame.time);
-    if (s.ear.hear(frame)) onSung();
+    const event = s.judge.hear(frame);
+    if (event?.type === 'found') onSung();
+    else if (event?.type === 'miss') onMissed();
   }
   return true;
 }
