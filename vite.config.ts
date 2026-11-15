@@ -16,7 +16,8 @@ export default defineConfig({
   // The preview sends the live site's headers, so the browser check runs under the same rules.
   preview: { headers: previewHeaders() },
   test: {
-    environment: 'jsdom',
+    // Plain Node by default; a test file that needs a browser says so in its first line (@vitest-environment jsdom).
+    environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'build/**/*.test.ts', 'deploy/**/*.test.ts', 'scripts/**/*.test.ts'],
   },
 });
