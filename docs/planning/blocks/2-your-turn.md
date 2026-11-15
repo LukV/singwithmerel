@@ -1,8 +1,9 @@
 ---
 project: merel
 type: block
-status: in-cycle
+status: shipped
 updated: 2026-11-15
+shipped_on: 2026-11-15
 ---
 # Block 2: Your turn
 
@@ -32,17 +33,17 @@ Read first: [[0020-features]], [[architecture/0010-overview#Voice evaluation|voi
 
 Items marked *(after release)* become true only after Luk merges, bumps and tags; `finish-block` leaves them open.
 
-- [ ] Your turn asks for the microphone once, with one sentence on why, before the browser's own question.
-- [ ] Refused, missing or failing microphone: the round completes after Sing along as in 0.1.0, the app says so once, and Merel can be asked to listen again later.
-- [ ] While you sing alone, a soft dot follows your voice on the staff, folded into the staff's octave, in no note's colour.
-- [ ] A note fills in its colour when you hold it within a semitone, in any octave, long enough (0.3 s planned; 0.2 s once tuned on the recordings), in order. The numbers live in one config object.
-- [ ] A miss (a wrong note held, or silence) says something mild and starts Your turn again from do; after two tries Merel offers Hear it. The round and its dots stay, and Skip this level stays.
-- [ ] Sing along is never judged; the microphone is open only during Your turn, and audio is analysed in memory only.
-- [ ] Recognition (exercise 4) works as in 0.1.0.
-- [ ] The judge, tuned on the three recorded voices, finds every note of their in-tune takes and not the wrong note of the off-key take; the numbers are in the pitch notes.
-- [ ] Works on iPhone Safari, Android Chrome and a desktop browser, installed and in the browser.
-- [ ] Unit tests and the browser check pass, with a fake microphone; the build has no errors or warnings; CI is green on the pull request.
-- [ ] Every page in `docs/` is true for what was built.
+- [x] Your turn asks for the microphone once, with one sentence on why, before the browser's own question.
+- [x] Refused, missing or failing microphone: the round completes after Sing along as in 0.1.0, the app says so once, and Merel can be asked to listen again later.
+- [x] While you sing alone, a soft dot follows your voice on the staff, folded into the staff's octave, in no note's colour.
+- [x] A note fills in its colour when you hold it within a semitone, in any octave, long enough (0.3 s planned; 0.2 s once tuned on the recordings), in order. The numbers live in one config object.
+- [x] A miss (a wrong note held, or silence) says something mild and starts Your turn again from do; after two tries Merel offers Hear it. The round and its dots stay, and Skip this level stays.
+- [x] Sing along is never judged; the microphone is open only during Your turn, and audio is analysed in memory only.
+- [x] Recognition (exercise 4) works as in 0.1.0.
+- [x] The judge, tuned on the three recorded voices, finds every note of their in-tune takes and not the wrong note of the off-key take; the numbers are in the pitch notes.
+- [ ] Works on iPhone Safari, Android Chrome and a desktop browser, installed and in the browser. *(Desktop by the browser check and Luk's run, his phone by his run of step 9; the other phone browser is tried on the candidate.)*
+- [x] Unit tests and the browser check pass, with a fake microphone; the build has no errors or warnings; CI is green on the pull request.
+- [x] Every page in `docs/` is true for what was built.
 - [ ] *(after release)* `v0.2.0` is live on singwithmerel.com with its GitHub release.
 
 ## Test scenario
@@ -63,3 +64,11 @@ Luk runs this on the candidate at https://next.singwithmerel.com, after merging 
 ## Later
 
 *(Things that turn up during the block and wait for a later one.)*
+
+- A scale up that scoops a whole semitone into a note after a breath can end as a wrong note (seen only in synthetic voices, not by a person).
+- Merel sings in C only; a voice that finds C too low or too high sings in its own key (decision 016), but hears Merel in another. A lower or higher Merel would be his own block.
+- Android Chrome, tried by a person.
+
+## What actually happened
+
+Merel 0.2.0 listens. Your turn asks for the microphone once, a soft dot follows your voice on the staff, and each note fills in its colour as you hold it; the last one earns the round's dot. Without a microphone the app works as in 0.1.0. Both pitches shipped. The block changed most after Luk sang it himself, on 2026-11-15, in five steps, each recorded in the pitch notes: the level gate came down to 0.002 (a laptop microphone is far quieter than the phone recordings); off key, you start again from do instead of keeping the notes found; do is where you start, not Merel's C (decision 016), and follows a voice that drifts, judging each note from the one before; a note's scoop no longer sets where do is nor counts as a wrong note; and the pitch detector hears down to 50 Hz with a 64 ms frame (decision 015), after a listening log in `npm run dev` showed Luk's low do at 63 Hz. All 11 tuning takes behave as they should. Luk ran the whole scenario on his laptop and phone with `npm run dev`; the candidate run on next.singwithmerel.com comes after the merge. Three things moved to *Later*.

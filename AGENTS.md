@@ -42,7 +42,7 @@ Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwri
 
 | Command | Does |
 |---|---|
-| `npm run dev` | the app at http://localhost:5173, with the dev control (fill a dot on a level, start over); `npm run dev -- --host` to open it from a phone on the same network |
+| `npm run dev` | the app at http://localhost:5173, with the dev control (fill a dot on a level, start over) and the listening log (`window.merelLog`, a console line per note and miss); `npm run dev -- --host` to open it from a phone on the same network |
 | `npm run dev:phone` | the same on the local network over HTTPS (a self-signed certificate in `.cert/`), so a phone may use the microphone |
 | `npm run check` | types (`tsc`), lint (ESLint) and unit tests (Vitest): what CI runs first |
 | `npm test` | the unit tests only |
