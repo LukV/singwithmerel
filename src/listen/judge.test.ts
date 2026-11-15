@@ -73,6 +73,17 @@ describe('the mild judge', () => {
     expect(judge(track(drift)).found).toBe(8);
   });
 
+  it('finds the scale down sung from above into each note, sinking, with a flat low do', () => {
+    // Each note glides in from 70 cents above over 0.25 s, then holds; 10 cents flatter each note,
+    // the low do 70 cents flatter still. A note split into a scoop and a hold is not a wrong note.
+    const parts: [number | null, number][] = [...SCALE].reverse().flatMap((s, i): [number | null, number][] => {
+      const base = s - 15 + (-10 * i - (i === 7 ? 70 : 0)) / 100;
+      const scoop = Array.from({ length: 25 }, (_, k): [number, number] => [hz(base + (0.7 * (25 - k)) / 25), 0.01]);
+      return [...scoop, [hz(base), 0.25], [null, 0.08]];
+    });
+    expect(judge(track(parts), SCALE_DOWN).found).toBe(8);
+  });
+
   it('follows a singer who sinks going down, a quarter of a semitone each note', () => {
     const sink: [number, number][] = [...SCALE].reverse().map((s, i) => [hz(s - 12, -25 * i), 0.5]);
     expect(judge(track(sink), SCALE_DOWN).found).toBe(8);

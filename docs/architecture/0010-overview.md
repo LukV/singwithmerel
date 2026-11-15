@@ -68,12 +68,12 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 **The mild judge** (`listen/judge.ts`, `judgeFor`) turns the frames into notes found:
 
-- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key while you stay nearer to it than to the next note (so a glide from high do down to si moves on to si, not do along with it). Each note after is judged from the one before: once found, it sets where do is, so do follows a singer who drifts, as voices sink going down. The judge compares each pitch with the next note not yet found, in that key.
+- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key while you stay nearer to it than to the next note (so a glide from high do down to si moves on to si, not do along with it). Every note found does the same while you stay on it, so the scoop into a note weighs less than where it settles. Each note after is judged from the one before: once found, it sets where do is, so do follows a singer who drifts, as voices sink going down. The judge compares each pitch with the next note not yet found, in that key.
 - **Octave folded.** Each pitch becomes a pitch class before comparing, so a bass and a child both sing do.
 - **Tolerance.** Less than a semitone (100 cents) from the note.
 - **Hold.** A note is found once you have been close to it for 0.2 s in all; a pause or a wobble off the note under 0.15 s does not break it. Sound under the level gate is silence.
 - **Order, not timing.** Notes come in order; a wrong note does not count, and the judge waits for the right one. Rhythm is not judged. Right after a note is found, the next counts only once you move nearer to it, or pause, so one long tone between two neighbours is not both.
-- **A miss.** A steady tone held 0.2 s that found nothing (off key), or 1.5 s of silence after singing, ends the try. The next try starts from do.
+- **A miss.** A steady tone held 0.2 s that was never on the note just found nor close to the next (off key), or 1.5 s of silence after singing, ends the try. The next try starts from do.
 - **Sing-along is never judged**: Merel's voice reaches the microphone too. Headphones solve it; the app suggests them.
 
 The numbers live in one object, `JUDGE`, with why each was chosen.

@@ -92,7 +92,7 @@ interface Tone {
   n: number;
   start: number;
   last: number;
-  /** A note was found while it sounded. */
+  /** It was on a note: the one just found, or close to the next. A tone that never was is a wrong note. */
   used: boolean;
 }
 
@@ -101,14 +101,15 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
   /** Starting further on (a test), do is C. */
   let key: number | null = found > 0 ? 0 : null;
   let hold: Hold | null = null;
+  let tone: Tone | null = null;
+  /** The first note while it is held, before it is found: its pitches, how long, and the last frame. */
+  let opening: { cents: number[]; held: number; last: number } | null = null;
   /**
-   * The note just found: the next counts only once you move nearer to it than to this one, or
+   * The note just found, while you stay on it: it goes on setting where do is, so the scoop into
+   * it weighs less, and the next note counts only once you move nearer to it than to this one, or
    * pause, so one long tone between two neighbours is not both. High do, then low do, needs a pause.
    */
-  let leave: number | null = null;
-  let tone: Tone | null = null;
-  /** The first note while it is held, also after it is found: its pitches, how long, and the last frame. */
-  let opening: { cents: number[]; held: number; last: number } | null = null;
+  let just: { index: number; cents: number[]; last: number; base: number } | null = null;
   /**
    * Where each note found was sung, as do's place it implies: the key is the average of the last
    * few, so do follows a singer who drifts, and a first note sung a bit off does not bend the rest.
@@ -137,7 +138,7 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
     found = 0;
     key = null;
     places = [];
-    leave = null;
+    just = null;
     newTry();
     return { type: 'miss' };
   }
@@ -166,6 +167,24 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
     return false;
   }
 
+  /** Where do is, from the note just found and the ones before it. */
+  function place(): void {
+    const j = just!;
+    places[j.index] = j.base + fold(median(j.cents) - semitones(j.index) - j.base);
+    const recent = places.slice(Math.max(0, j.index + 1 - settings.follow), j.index + 1);
+    key = recent.reduce((a, b) => a + b, 0) / recent.length;
+  }
+
+  /** The next note is found, sung at `cents`, with do at `base` until now. */
+  function foundNote(cents: number[], time: number, base: number): JudgeEvent {
+    const index = found++;
+    opening = null;
+    just = found < melody.length ? { index, cents: [...cents], last: time, base } : null;
+    if (just) place();
+    if (tone) tone.used = true;
+    return { type: 'found', index };
+  }
+
   return {
     get found() {
       return found;
@@ -186,7 +205,6 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
       if (!voiced) {
         if (hold && time - hold.last > settings.gap) hold = null;
         if (tone && time - tone.last > settings.gap && endTone()) return miss();
-        if (leave !== null && time - lastVoiced > settings.gap) leave = null;
         if (sang && time - lastVoiced >= settings.silence) return miss();
         return null;
       }
@@ -194,44 +212,34 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
       sang = true;
       lastVoiced = time;
       if (follow(c, time)) return miss();
-      // The first note: any pitch held long enough, wherever it is, sets the key; held on, it
-      // keeps setting it, so the scoop into it weighs less.
-      const o = opening;
-      // Before it is found, a note may wander (a scoop, a wobble). After, it is the same note while
-      // nearer to the do it set than to the next note, or a glide down a semitone to si would drag
-      // do along and never find si.
-      const same =
-        o &&
-        time - o.last <= settings.gap &&
-        (key === null
-          ? Math.abs(fold(c - median(o.cents.slice(-8)))) <= settings.first
-          : found < melody.length && Math.abs(fold(c - semitones(0) - key)) < Math.abs(fold(c - target())));
-      if (same) {
-        o.cents.push(c);
-        o.held += step;
-        o.last = time;
-      } else opening = key === null ? { cents: [c], held: step, last: time } : null;
       if (key === null) {
+        // The first note: any pitch held long enough, wherever it is, sets the key. It may
+        // wander while it is held (a scoop, a wobble).
+        const o = opening;
+        if (o && time - o.last <= settings.gap && Math.abs(fold(c - median(o.cents.slice(-8)))) <= settings.first) {
+          o.cents.push(c);
+          o.held += step;
+          o.last = time;
+        } else opening = { cents: [c], held: step, last: time };
         if (opening!.held < settings.hold) return null;
-        places = [fold(median(opening!.cents) - semitones(0))];
-        key = places[0]!;
-        if (tone) tone.used = true;
-        found = 1;
-        if (found < melody.length) leave = semitones(0) + key;
-        return { type: 'found', index: 0 };
-      }
-      if (same && places.length === 1) {
-        places[0] = fold(median(o.cents) - semitones(0));
-        key = places[0];
-        if (leave !== null) leave = semitones(0) + key;
-        return null;
+        return foundNote(opening!.cents, time, 0);
       }
       const t = target();
-      if (leave !== null) {
-        if (Math.abs(fold(c - t)) >= Math.abs(fold(c - leave))) return null;
-        leave = null;
+      if (just) {
+        // Still on the note just found: nearer to it than to the next, with no pause.
+        const on = time - just.last <= settings.gap && Math.abs(fold(c - semitones(just.index) - key)) <= Math.abs(fold(c - t));
+        if (on) {
+          if (tone) tone.used = true;
+          just.cents.push(c);
+          just.last = time;
+          place();
+          return null;
+        }
+        just = null;
       }
       if (close(c, t)) {
+        // Close to the next note: whatever this tone is, it is not a wrong note.
+        if (tone) tone.used = true;
         if (!hold || time - hold.last > settings.gap) hold = { held: step, last: time, cents: [c] };
         else {
           hold.held += step;
@@ -240,14 +248,9 @@ export function judgeFor(melody: Melody, settings: Judging = JUDGE, from = 0): J
         }
       }
       if (!hold || hold.held < settings.hold) return null;
-      const index = found++;
-      places.push(key + fold(median(hold.cents) - t));
-      const recent = places.slice(-settings.follow);
-      key = recent.reduce((a, b) => a + b, 0) / recent.length;
+      const cents = hold.cents;
       hold = null;
-      if (tone) tone.used = true;
-      if (found < melody.length) leave = t;
-      return { type: 'found', index };
+      return foundNote(cents, time, key);
     },
   };
 }
