@@ -47,11 +47,33 @@ describe('the mild judge', () => {
     expect(judge(track(sing(SCALE.map((s) => s + 12)))).found).toBe(8);
   });
 
-  it('allows up to a semitone off, not more', () => {
+  it('takes the first steady note as do, wherever it is, and judges the rest from it', () => {
+    const j = judgeFor(SCALE_UP);
+    // A low man's scale from A2, a little sharp: do is A, 330 cents below C.
+    for (const f of track(sing(SCALE.map((s) => s - 15), 0.5, 30))) j.hear(f);
+    expect(j.found).toBe(8);
+    expect(j.key).toBeCloseTo(-270, 0);
+  });
+
+  it('follows a singer who drifts sharp, a little each note', () => {
+    const drift: [number, number][] = SCALE.map((s, i) => [hz(s, 20 * i), 0.5]);
+    expect(judge(track(drift)).found).toBe(8);
+  });
+
+  it('takes a new do after a miss', () => {
+    const j = judgeFor(SCALE_UP);
+    for (const f of track([...sing([0, 2, 6]), [null, 0.3], ...sing(SCALE.map((s) => s + 3))])) j.hear(f);
+    expect(j.found).toBe(8);
+    expect(j.key).toBeCloseTo(300, 0);
+  });
+
+  it('allows up to a semitone off from your do, not more', () => {
     const doReMi: Melody = [0, 1, 2].map((step) => ({ step, beats: 1 }));
-    expect(judge(track(sing([0, 2, 4], 0.5, 90)), doReMi).found).toBe(3);
-    expect(judge(track(sing([0, 2, 4], 0.5, -90)), doReMi).found).toBe(3);
-    expect(judge(track(sing([0, 2, 4], 0.5, 140)), doReMi).found).toBe(0);
+    const off = (cents: number): [number, number][] => [[hz(0), 0.5], [hz(2, cents), 0.5], [hz(4, cents), 0.5]];
+    expect(judge(track(off(90)), doReMi).found).toBe(3);
+    expect(judge(track(off(-90)), doReMi).found).toBe(3);
+    expect(judge(track([...off(140), [null, 0.2]]), doReMi).events[0]).toEqual({ type: 'found', index: 0 });
+    expect(judge(track([...off(140), [null, 0.2]]), doReMi).misses).toBe(1);
   });
 
   it('needs the note held for the hold time', () => {

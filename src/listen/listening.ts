@@ -35,7 +35,11 @@ export function setMicChoice(choice: MicChoice): void {
   }
 }
 
-/** Your voice now, in cents above C4, calmed; null when you are silent or Merel is not listening. */
+/**
+ * Your voice now, calmed, as if your do were Merel's C (cents above C4): so the dot sits on the
+ * staff where the judge hears you. Before the first note sets the key, it sits on that note.
+ * Null when you are silent or Merel is not listening.
+ */
 export const voice = signal<number | null>(null);
 
 /** Merel's last note may still ring when Your turn starts, or after Hear it: listening starts a moment later. */
@@ -74,6 +78,7 @@ export async function listen(melody: Melody, onSung: () => void, onMissed: () =>
   stopListening();
   const mine = ++opening;
   const judge = judgeFor(melody);
+  const first = centsOf(SCALE[melody[0]!.step]!.freq);
   const mic = await openMic((frame) => hear(frame));
   if (typeof mic === 'string') return false;
   if (mine !== opening) {
@@ -98,8 +103,9 @@ export async function listen(melody: Melody, onSung: () => void, onMissed: () =>
       calm(s, null, frame.time);
       return;
     }
-    calm(s, c, frame.time);
     const event = s.judge.hear(frame);
+    const key = s.judge.key;
+    calm(s, c === null ? null : key === null ? first : c - key, frame.time);
     if (event?.type === 'found') onSung();
     else if (event?.type === 'miss') onMissed();
   }

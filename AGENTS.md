@@ -51,7 +51,7 @@ Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwri
 | `npm run preview` | serves `dist/` at http://localhost:4173, with the live site's security headers |
 | `npm run voice` | checks the WAV clips in `voice/` (pitch within 10 cents) and converts them to `public/voice/*.m4a` with `voice.json` |
 | `npm run piano` | downloads the Iowa piano notes C4 to C5, trims and checks them, and writes `public/piano/*.m4a` (run once; the clips are in git) |
-| `npm run tune` | for each recording in `tuning/` (never committed): how far off each note was sung, in the take's own key, and what the judge finds; `-- --label` writes `tuning/labels.json` |
+| `npm run tune` | for each recording in `tuning/` (never committed): how far off each note was sung from its first, and what the judge finds; `-- --label` writes `tuning/labels.json` |
 | `npm run deploy -- next\|site` | the manual fallback: uploads `dist/` and clears CloudFront's cache; a version tag normally does this (`deploy/README.md`) |
 
 ## Layout

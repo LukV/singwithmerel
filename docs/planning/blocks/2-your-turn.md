@@ -6,7 +6,7 @@ updated: 2026-11-15
 ---
 # Block 2: Your turn
 
-**In brief.** Merel 0.2.0: Merel listens. In Your turn you sing alone, a soft dot on the staff follows your voice, and each note fills in its colour once you hold it close enough. The dot for the round comes from Your turn now, not from Sing along. Judging is mild: any octave, a semitone either way, off key you start again from do, and you try again as often as you like. Without a microphone Merel works as in 0.1.0. Two pitches, one branch, one pull request at the end.
+**In brief.** Merel 0.2.0: Merel listens. In Your turn you sing alone, a soft dot on the staff follows your voice, and each note fills in its colour once you hold it close enough. The dot for the round comes from Your turn now, not from Sing along. Judging is mild: do is where you start, any octave, a semitone either way, off key you start again from do, and you try again as often as you like. Without a microphone Merel works as in 0.1.0. Two pitches, one branch, one pull request at the end.
 
 ## Framing
 
@@ -53,7 +53,7 @@ Luk runs this on the candidate at https://next.singwithmerel.com, after merging 
 2. Sing the scale alone. A soft dot follows your voice on the staff, and each note fills in its colour as you hold it. When the last one fills, Merel bows and a dot fills on the card.
 3. Next round. This time sing re instead of mi, on purpose, and hold it. Do and re fill, then Merel says something mild, the notes empty, and he asks you to sing again from do. Sing the whole scale right: the round completes.
 4. Miss twice. Merel offers Hear it; press it, then sing again from do. The round and its dots stay.
-5. Sing the scale an octave lower (or higher) than written. It counts.
+5. Sing the scale from a do of your own, where your voice is comfortable, not Merel's. It counts.
 6. Do one round of exercise 3. The three notes fill as you sing them back.
 7. Do one round of exercise 4. It works as before; Merel does not ask for the microphone.
 8. In a private window, start exercise 1 and refuse the microphone. Merel says once that he will not listen, and the round completes after Sing along, as in 0.1.0. Ask him to listen again from the card: the browser asks again.

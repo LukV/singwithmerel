@@ -33,7 +33,7 @@ The exercises hang from a thin hand-drawn line, each on a numbered node.
 
 1. **Hear it.** Merel sings the notes alone, by name, while the staff marks each one.
 2. **Sing along.** A beat later he sings them again and you sing with him.
-3. **Your turn.** Merel is silent and listens; you sing alone. The notes on the staff are outlined, the next one to sing brighter, and a soft dot follows your voice. Each note fills in its colour when you hold it close enough, in any octave, and Merel nods. When every note is found, Merel bows and the dot fills; then "next round".
+3. **Your turn.** Merel is silent and listens; you sing alone. The notes on the staff are outlined, the next one to sing brighter, and a soft dot follows your voice. Each note fills in its colour when you hold it close enough, in any octave, and Merel nods. Do is where you start: your first note, sung in your own range, is do, and the rest are judged from it. When every note is found, Merel bows and the dot fills; then "next round".
 
 **A miss.** When you hold a wrong note, or stop singing before every note is found, Merel says something mild ("Almost. Sing it again from do."). The notes empty again, and you sing the melody from do, as a teacher would have you do, as often as you like. After two such tries he offers Hear it, which turns into the filled button; the round goes on, its dots stay, and Skip this level stays. Judging is mild: less than a semitone off counts, rhythm and timing are not judged, and there is no score.
 

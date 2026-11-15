@@ -4,11 +4,11 @@ import { writeWav } from '../../scripts/voice/wav.ts';
 
 /**
  * The sound Chromium's fake microphone plays, over and over, for the listening check, by a plain
- * voice-like tone, 0.6 s a note with a short breath between: the scale of do major with re sung
- * instead of mi, then the whole scale, each followed by a pause longer than the judge's silence.
- * The held re is off key, so the try misses at once and starts again from do; the scale completes.
+ * voice-like tone, 0.6 s a note with a short breath between: do, re, and sol where mi should be,
+ * then the whole scale, each followed by a pause longer than the judge's silence. The held sol is
+ * off key, so the try misses at once and starts again from do; the scale completes.
  */
-const WRONG = [0, 2, 2, 5, 7, 9, 11, 12];
+const WRONG = [0, 2, 7];
 const SCALE = [0, 2, 4, 5, 7, 9, 11, 12];
 const PAUSE = 2;
 

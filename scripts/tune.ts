@@ -7,13 +7,12 @@
  * The takes are untrained and a bit off, so they are measured and labelled first, not taken as in
  * tune: each note matched in order to the note meant, the key the take was sung in, and how far
  * off each note is in that key (`npm run tune -- --label` writes this to tuning/labels.json, to
- * read and correct by hand; later runs use that file). The takes were sung without hearing Merel
- * first, each in the singer's own key, and the judge listens in Merel's (do is C): so each take is
- * moved into it by its key. What the singer did inside that key, uneven steps, drift, scoops,
- * short notes, is left as it was.
+ * read and correct by hand; later runs use that file). Do is movable: the judge takes a try's first
+ * note as do, wherever it is sung, so each take is judged as it was sung, and what counts is how
+ * far each note is from the first one: uneven steps, drift, scoops, short notes.
  *
- * An in-tune take should find every note. A take with a wrong note (a semitone or more off)
- * should find the notes before it, not the wrong one while it is sung, and not complete. Takes: `up` and `down` (the scale), `do-mi-sol`, and `offkey`, sung a little off and with
+ * An in-tune take should find every note. A take with a wrong note (a semitone or more off from
+ * its first note's key) should find the notes before it, not the wrong one while it is sung, and not complete. Takes: `up` and `down` (the scale), `do-mi-sol`, and `offkey`, sung a little off and with
  * a wrong note, whose melody is not known: it is judged as the scale up and down from its first
  * note, and must complete neither.
  */
@@ -21,7 +20,7 @@ import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { basename, extname, join } from 'node:path';
 import { SCALE_DOWN, SCALE_UP, type Melody } from '../src/melody/melody.ts';
-import { centsOf, fold, JUDGE, judgeFor } from '../src/listen/judge.ts';
+import { centsOf, JUDGE, judgeFor } from '../src/listen/judge.ts';
 import { Tracker, type Frame } from '../src/listen/tracker.ts';
 import { toWav } from './voice/convert.ts';
 import { readWav } from './voice/wav.ts';
@@ -33,6 +32,9 @@ const DO_MI_SOL: Melody = [0, 2, 4].map((step) => ({ step, beats: 1 }));
 const LABELS = join('tuning', 'labels.json');
 const LABELS_ABOUT =
   'Each note of a take, matched in order to the note meant, in the key the take was sung in (key: cents above C4). off: cents from the note meant in that key; in tune within 50, a bit off under 100, else a wrong note. Made by npm run tune -- --label; correct by hand.';
+
+/** A note less than this many cents off, though past the tolerance, may count or not. */
+const DOUBT = 120;
 
 const median = (a: number[]) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)]!;
 
@@ -113,7 +115,7 @@ export function labelTake(take: string, sung: Sung[], melody: Melody): Label {
 }
 
 export interface Judged {
-  /** The times (seconds) each note was found, in order, in the last try. */
+  /** The times (seconds) each note was found, in order, in the try that got furthest. */
   times: number[];
   misses: number;
 }
@@ -123,17 +125,19 @@ export function judgeTake(frames: Frame[], melody: Melody, shift: number): Judge
   const judge = judgeFor(melody);
   const factor = 2 ** (shift / 1200);
   const times: number[] = [];
+  let best: number[] = [];
   let misses = 0;
   for (const f of frames) {
     const e = judge.hear({ ...f, hz: f.hz === null ? null : f.hz * factor });
     if (e?.type === 'found') times.push(f.time);
     if (e?.type === 'miss') {
-      // A miss starts again from do: only the last try's notes count.
+      // A miss starts again from do: the try that got furthest is the one reported.
       misses++;
+      if (times.length > best.length) best = [...times];
       times.length = 0;
     }
   }
-  return { times, misses };
+  return { times: times.length >= best.length ? times : best, misses };
 }
 
 function read(file: string): { rate: number; samples: Float32Array } {
@@ -198,27 +202,35 @@ function report(file: string, labels: Record<string, Label>, made: Label[]): boo
   if (melody) {
     const l = labels[name] ?? labelTake(name, notesOf(frames), melody);
     made.push(l);
-    const wrong = l.notes.findIndex((n) => n.verdict === 'wrong note');
-    const j = judgeTake(frames, melody, -fold(l.key));
+    // From the first note, which the judge takes as do: how far off each note is.
+    const notes = l.notes.map((n) => {
+      const off = n.off - l.notes[0]!.off;
+      return { ...n, off, verdict: verdictOf(off) };
+    });
+    const wrong = notes.findIndex((n) => n.verdict === 'wrong note');
+    const j = judgeTake(frames, melody, 0);
     // With a wrong note: every note before it found, the take not complete, and the wrong note not
-    // found while it was sung (a later note may yet stand in for it, as a singer would do).
+    // found while it was sung (a later note may yet stand in for it, as a singer would do). A note
+    // just past the tolerance (under DOUBT) may go either way: the judge measures it on its own frames.
     const at = wrong < 0 ? undefined : j.times[wrong];
-    const span = wrong < 0 ? null : l.notes[wrong]!;
-    const ok =
+    const span = wrong < 0 ? null : notes[wrong]!;
+    const complete = j.times.length === melody.length;
+    const stops = j.times.length >= wrong && !complete && !(at !== undefined && span && at >= span.start && at <= span.end + JUDGE.gap);
+    const doubtful = wrong >= 0 && Math.abs(notes[wrong]!.off) < DOUBT;
+    const ok = wrong < 0 ? complete : stops || (doubtful && complete);
+    const offs = notes.map((n) => `${n.meant}${n.off >= 0 ? '+' : ''}${n.off}${n.verdict === 'wrong note' ? '!' : ''}`).join(' ');
+    console.log(`${ok ? 'ok ' : 'NO '} ${name.padEnd(18)} do at ${keyName(l.key + l.notes[0]!.off).padEnd(6)} ${offs}`);
+    const should =
       wrong < 0
-        ? j.times.length === melody.length
-        : j.times.length >= wrong && j.times.length < melody.length && !(at !== undefined && span && at >= span.start && at <= span.end + JUDGE.gap);
-    const offs = l.notes.map((n) => `${n.meant}${n.off >= 0 ? '+' : ''}${n.off}${n.verdict === 'wrong note' ? '!' : ''}`).join(' ');
-    console.log(`${ok ? 'ok ' : 'NO '} ${name.padEnd(18)} in ${keyName(l.key).padEnd(6)} ${offs}`);
-    const should = wrong < 0 ? 'every note' : `the notes before its wrong ${l.notes[wrong]!.meant}, not that one, and not complete`;
+        ? 'every note'
+        : `the notes before its wrong ${notes[wrong]!.meant}, not that one, and not complete${doubtful ? ` (or every note: it is under ${DOUBT} off)` : ''}`;
     console.log(`    ${''.padEnd(18)} should find ${should}: ${describe(melody, j)}`);
     return ok;
   }
   if (take === 'offkey') {
-    // Its first note as do: low do for the scale up, high do for the scale down.
-    const first = notesOf(frames)[0]?.cents ?? 0;
-    const up = judgeTake(frames, SCALE_UP, -fold(first));
-    const down = judgeTake(frames, SCALE_DOWN, -fold(first));
+    // Its first note is do, as the judge takes it: low do for the scale up, high do for the scale down.
+    const up = judgeTake(frames, SCALE_UP, 0);
+    const down = judgeTake(frames, SCALE_DOWN, 0);
     const ok = up.times.length < 8 && down.times.length < 8;
     console.log(`${ok ? 'ok ' : 'NO '} ${name.padEnd(18)} melody not known; should complete neither scale`);
     console.log(`    ${''.padEnd(18)} as the scale up: ${describe(SCALE_UP, up)}`);
@@ -232,7 +244,7 @@ function report(file: string, labels: Record<string, Label>, made: Label[]): boo
 if (import.meta.main) {
   const j = JUDGE;
   console.log(`Judge: under ${j.tolerance} cents from the note in any octave, held ${j.hold} s in all (pauses up to ${j.gap} s), above level ${j.gate}; a try ends after ${j.silence} s of silence.`);
-  console.log("Each take in the key it was sung in: how far off each note is (! a wrong note), then what the judge finds once the take is moved into Merel's key.\n");
+  console.log('Each take as sung, its first note taken as do: how far off each note is from there (! a wrong note), then what the judge finds.\n');
   const takes = existsSync('tuning') ? readdirSync('tuning').filter((f) => AUDIO.test(f)).sort() : [];
   if (!takes.length) console.log('No recordings in tuning/ yet (docs/planning/blocks/2-your-turn.md says how to make them).');
   const relabel = process.argv.includes('--label');
