@@ -33,13 +33,15 @@ The exercises hang from a thin hand-drawn line, each on a numbered node.
 
 1. **Hear it.** Merel sings the notes alone, by name, while the staff marks each one.
 2. **Sing along.** A beat later he sings them again and you sing with him.
-3. **Your turn.** Merel is silent and listens; you sing alone. A soft dot follows your voice on the staff, and each note you hold steady fills in its colour. When every note of the melody is heard, Merel bows and the dot fills; then "next round". For now any steady tone counts, one per note, in order; the mild judge (pitch 2.2) makes it a match.
+3. **Your turn.** Merel is silent and listens; you sing alone. The notes on the staff are outlined, the next one to sing brighter, and a soft dot follows your voice. Each note fills in its colour when you hold it close enough, in any octave, and Merel nods. When every note is found, Merel bows and the dot fills; then "next round".
+
+**A miss.** When you stop singing before every note is found, or sing on past the notes left, Merel says something mild that names where to go on ("Almost. Sing it again from mi."). The notes found stay filled, and you sing again from the first one not found, as often as you like. After two such tries he offers Hear it, which turns into the filled button; nothing resets, and Skip this level stays. Judging is mild: less than a semitone off counts, rhythm and timing are not judged, and there is no score.
 
 **The microphone.** At the first Your turn Merel asks in one sentence ("Merel listens while you sing. Your voice stays on this device."), with "Let him listen" and "Not now"; only then does the browser ask. The answer is remembered. The microphone is open only during Your turn. Said no, or the microphone is refused, missing or fails: Merel says once that he will not listen this time, the round counts after Sing along as in 0.1.0, and Your turn is practice. A quiet "Let Merel listen" on the card asks the browser again; he listens from the next round. Pressing a key during Your turn does not count as your voice: the piano note is ignored while it rings.
 
 Recognition (exercise 4) sings on "du" and replaces steps 2 and 3 with answering, while the staff stays empty: first the direction of each step (up or down, two big buttons), then the notes on the keys, which appear on the staff as you find them. Each right answer says yes and stays on the card: the directions with a tick, then the three notes, filled in their colour and name as you find them, with the next one outlined. On a phone the keys come back up when it is time to find the notes. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round. "Hear it" sings the melody again at any time.
 
-Merel acts the round out: singing while he sings, thinking over up or down, listening while you sing or search, bowing when a round completes, waiting otherwise.
+Merel acts the round out: singing while he sings, thinking over up or down, listening while you sing or search, nodding softly at each note you find, bowing when a round completes, waiting otherwise.
 
 With Merel listening, a round completes in Your turn; without, after Sing along ([[014-your-turn-earns-the-dot]], [[architecture/0010-overview#Voice evaluation|voice evaluation]]). Recognition never uses the microphone.
 

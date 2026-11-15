@@ -35,7 +35,7 @@ Items marked *(after release)* become true only after Luk merges, bumps and tags
 - [ ] Your turn asks for the microphone once, with one sentence on why, before the browser's own question.
 - [ ] Refused, missing or failing microphone: the round completes after Sing along as in 0.1.0, the app says so once, and Merel can be asked to listen again later.
 - [ ] While you sing alone, a soft dot follows your voice on the staff, folded into the staff's octave, in no note's colour.
-- [ ] A note fills in its colour when you hold it within a semitone, in any octave, for 0.3 s, in order. The numbers live in one config object.
+- [ ] A note fills in its colour when you hold it within a semitone, in any octave, long enough (0.3 s planned; 0.2 s once tuned on the recordings), in order. The numbers live in one config object.
 - [ ] A miss keeps the notes found, says something mild, and starts Your turn again from the first note not yet found; after two tries Merel offers Hear it. Nothing resets a round, and Skip this level stays.
 - [ ] Sing along is never judged; the microphone is open only during Your turn, and audio is analysed in memory only.
 - [ ] Recognition (exercise 4) works as in 0.1.0.

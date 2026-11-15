@@ -79,7 +79,7 @@ Kalam is a free Google font that imitates marker handwriting; Print Club London'
 3. **Real notation first**: clef, time signature, stems, bar lines; colour marks what was played or sung.
 4. **Colour is never the only cue**: every note also shows its name, its letter where the language uses it, and its key.
 5. **Lines are hand-drawn, one weight**; the staff and the keys wobble slightly. Merel is the exception: built from geometry.
-6. **Your voice is never a note's colour.** While Merel listens, a soft dot follows your voice on the staff: paper-coloured, 0.8 of a line space across, with a faint paper ring, in the column of the note to sing and at the height of your pitch, folded into the octave around that note. It is a guide, not a score: no needle, no number. It fades when you are silent.
+6. **Your voice is never a note's colour.** While Merel listens, a soft dot follows your voice on the staff: paper-coloured, 0.8 of a line space across, with a faint paper ring, in the column of the note to sing and at the height of your pitch, folded into the octave around that note. It is a guide, not a score: no needle, no number. It fades when you are silent. The notes still to sing are outlined, the next one in full white and the others at half, and each fills in its colour when found, so filled or outlined says it as well as colour does.
 7. **Touch targets at least 44 px**, the piano keys included: on a narrow phone the gutters give way, not the keys. Text contrast at least 4.5:1.
 
 ## Merel

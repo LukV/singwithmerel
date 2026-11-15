@@ -51,7 +51,7 @@ Node 26, pinned in `.nvmrc`. After cloning: `npm install`, and once `npx playwri
 | `npm run preview` | serves `dist/` at http://localhost:4173, with the live site's security headers |
 | `npm run voice` | checks the WAV clips in `voice/` (pitch within 10 cents) and converts them to `public/voice/*.m4a` with `voice.json` |
 | `npm run piano` | downloads the Iowa piano notes C4 to C5, trims and checks them, and writes `public/piano/*.m4a` (run once; the clips are in git) |
-| `npm run tune` | what Merel hears in each recording in `tuning/` (never committed) and in his own clips: the notes, in order, and how far off |
+| `npm run tune` | for each recording in `tuning/` (never committed): how far off each note was sung, in the take's own key, and what the judge finds; `-- --label` writes `tuning/labels.json` |
 | `npm run deploy -- next\|site` | the manual fallback: uploads `dist/` and clears CloudFront's cache; a version tag normally does this (`deploy/README.md`) |
 
 ## Layout
@@ -63,7 +63,7 @@ src/
   melody/             # the do major scale, the scale exercises, the random melody; pure, tested
   audio/              # the AudioContext, the plain tone, the piano notes for the keys, Merel's clips on the audio clock
   round/              # one round as a state machine, and the controller that plays it
-  listen/             # YIN, the pitch tracker and its AudioWorklet, the microphone, the listening rule, Merel listening
+  listen/             # YIN, the pitch tracker and its AudioWorklet, the microphone, the mild judge, Merel listening
   progress/           # the merel.v1 record, levels and dots, the progress code
   i18n/               # languages, paths, and one string file per language (en.ts, fr.ts, nl.ts)
   ui/                 # identity, header, lesson and cards, instrument (staff, keys), Merel, hand-drawn lines
@@ -72,7 +72,7 @@ src/
   install.ts          # the install prompt; iPhone and home-screen checks
 public/               # the icons (copied from docs/design/assets/icons/), the manifest, robots.txt; voice/ for Merel's clips, piano/ for the keys
 voice/                # the clips' WAV sources, never published; make/ holds how they are made in Synthesizer V
-scripts/              # npm run voice, piano and tune: WAV reading, pitch measuring, conversion, what Merel hears
+scripts/              # npm run voice, piano and tune: WAV reading, pitch measuring, conversion, what the judge finds
 build/                # Vite plugins: the pages per language, the service worker, SVGs cleaned on import, preview headers
 deploy/               # the one-time AWS setup, the upload, the CloudFront function and headers; README.md explains them
 tests/e2e/            # the Playwright check
