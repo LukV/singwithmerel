@@ -1,12 +1,14 @@
 ---
 project: merel
 type: decision
-status: accepted
-updated: 2026-11-15
+status: accepted, partly replaced
+updated: 2026-11-16
 ---
 # 016 Your first note is do
 
 **Decision.** In Your turn, do is wherever you start. The first note of a try, held 0.2 s, is the melody's first note, and every note after is judged from it, within a semitone, in any octave. Do follows you as you go: each note is judged from the one before, so a step is wrong when it is a semitone or more off. Off key, you start again from do, and may start somewhere else. Merel still sings in C. Luk, 2026-11-15, after his own first try: from his voice, C3 is low and C4 too high to reach sol.
+
+Since [[017-judge-the-step]] (Luk, 2026-11-16), the first note is still where you start, but the notes after are judged by their step, not within a semitone, and a wrong note no longer starts again from do.
 
 **Why.** A singer's comfortable range is not Merel's. Judging in Merel's C made a man choose between a do too low and a sol too high, and the recordings show untrained singers start in their own key anyway: the child near A♭ and G, the woman near F♯, the man near E♭. Relative pitch is what the scale teaches; in do major the names stay the same ([[008-do-major]]).
 

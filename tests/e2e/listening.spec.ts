@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-// Merel listening, with Chromium's fake microphone singing the scale over and over, once in a
-// while with re instead of mi (fake-mic.ts; playwright.config.ts, project `listening`). A round
+// Merel listening, with Chromium's fake microphone singing the scale over and over, with a wrong
+// note after re (fake-mic.ts; playwright.config.ts, project `listening`). A round
 // takes real time on the audio clock.
 test.setTimeout(150_000);
 test.use({ viewport: { width: 1280, height: 860 } });
 
-test('Merel asks once, listens in Your turn, the voice dot follows, a miss starts again from do, and the last note completes the round', async ({ page }) => {
+test('Merel asks once, listens in Your turn, the voice dot follows, a wrong note resets nothing, and the last note completes the round', async ({ page }) => {
   // Keep the microphone's tracks, to see that they are closed after Your turn.
   await page.addInitScript(() => {
     const tracks: MediaStreamTrack[] = [];
@@ -40,9 +40,9 @@ test('Merel asks once, listens in Your turn, the voice dot follows, a miss start
   await expect(page.locator('.staff__note.is-found')).not.toHaveCount(0, { timeout: 10_000 });
   await expect(card.locator('.dot--on')).toHaveCount(0);
 
-  // Off key, a try misses: Merel says so mildly, and you sing again from do, every note outlined again.
-  await expect(card.locator('.card__status')).toContainText('Almost. Sing it again from do.', { timeout: 30_000 });
-  await expect(page.locator('.staff__note.is-found')).toHaveCount(0);
+  // A wrong note: Merel says so mildly, and the notes found stay found.
+  await expect(card.locator('.card__status')).toContainText('Not quite. Try mi again.', { timeout: 30_000 });
+  await expect(page.locator('.staff__note.is-found')).not.toHaveCount(0);
   await expect(card.locator('.dot--on')).toHaveCount(0);
 
   // The last note completes the round: a dot, Merel bows, the microphone is closed.

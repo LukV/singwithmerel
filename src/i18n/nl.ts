@@ -36,6 +36,7 @@ const nl: Strings = {
     find: (found) => (found === 0 ? 'Ja. Zoek nu de eerste noot op de toetsen.' : found === 1 ? 'Ja. Nu de tweede noot.' : 'Ja. En de laatste.'),
     wrongNote: (name) => `Niet ${name}. Probeer een andere toets.`,
     missed: (name) => `Bijna. Zing het opnieuw vanaf ${name}.`,
+    wrongSung: (name) => `Nog niet helemaal. Probeer ${name} nog eens.`,
     hearAgain: (name) => `Bijna. Luister nog eens, en zing dan vanaf ${name}.`,
     bravo: 'Bravo.',
     levelDone: 'Niveau gehaald.',

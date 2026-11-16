@@ -38,9 +38,11 @@ export interface Strings {
     /** Recognition, finding the notes: `found` notes are found so far. */
     find: (found: number) => string;
     wrongNote: (name: string) => string;
-    /** A try ended before all notes were found: sing again from `name`, the first not found. */
+    /** A long silence ended a try before all notes were found: sing again from `name`, do. */
     missed: (name: string) => string;
-    /** The same after two tries: Hear it is offered. */
+    /** A wrong note was held: try `name`, the next note, again; nothing resets. */
+    wrongSung: (name: string) => string;
+    /** After two wrong notes or misses: Hear it is offered, then sing from `name`, do. */
     hearAgain: (name: string) => string;
     bravo: string;
     levelDone: string;

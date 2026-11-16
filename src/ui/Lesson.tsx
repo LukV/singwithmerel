@@ -15,7 +15,7 @@ import { pathFor } from '../i18n/langs';
 import { lang } from '../state';
 
 const CARD_VIEWBOX = '20 -40 280 378';
-/** After this many tries that missed, Merel offers Hear it. */
+/** After this many wrong notes or misses, Merel offers Hear it. */
 const OFFER_HEAR = 2;
 
 export function Lesson() {
@@ -59,9 +59,10 @@ function statusFor(mine: Round | null, levelDone: boolean): string {
     case 'turn':
       if (bowing.value) return s.status.bravo;
       if (!mine.listen || asking.value) return s.status.turn;
-      if (mine.missed) {
+      if (mine.missed || mine.off) {
+        if (mine.tries >= OFFER_HEAR) return s.status.hearAgain(s.noteNames[mine.melody[0]!.step]!);
         const name = s.noteNames[mine.melody[mine.sung]!.step]!;
-        return mine.tries >= OFFER_HEAR ? s.status.hearAgain(name) : s.status.missed(name);
+        return mine.missed ? s.status.missed(name) : s.status.wrongSung(name);
       }
       return s.status.turnListening;
     case 'direction':
@@ -94,8 +95,8 @@ function Card({ level, state }: { level: number; state: LevelState }) {
   const note = running && singing ? listenNote.value : null;
   // After a no, a quiet way to let Merel listen after all, on the card you are on.
   const again = singing && (running || active) && micChoice.value === 'no' && note !== 'later' && canListen();
-  // Two tries missed: Hear it is the button to press.
-  const offerHear = running && mine.phase === 'turn' && mine.listen && mine.missed && mine.tries >= OFFER_HEAR;
+  // Two wrong notes or misses: Hear it is the button to press.
+  const offerHear = running && mine.phase === 'turn' && mine.listen && (mine.missed || mine.off) && mine.tries >= OFFER_HEAR;
 
   return (
     <section id={`c${level}`} class={`card card--${state}${running ? ' is-running' : ''}`} data-state={state} aria-labelledby={`c${level}-title`}>

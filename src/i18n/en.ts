@@ -36,6 +36,7 @@ const en: Strings = {
     find: (found) => (found === 0 ? 'Yes. Now find the first note on the keys.' : found === 1 ? 'Yes. Now the second note.' : 'Yes. And the last one.'),
     wrongNote: (name) => `Not ${name}. Try another key.`,
     missed: (name) => `Almost. Sing it again from ${name}.`,
+    wrongSung: (name) => `Not quite. Try ${name} again.`,
     hearAgain: (name) => `Almost. Hear it once more, then sing from ${name}.`,
     bravo: 'Bravo.',
     levelDone: 'Level done.',

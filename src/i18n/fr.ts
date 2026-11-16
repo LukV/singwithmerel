@@ -36,6 +36,7 @@ const fr: Strings = {
     find: (found) => (found === 0 ? 'Oui. Trouve maintenant la première note sur le clavier.' : found === 1 ? 'Oui. Maintenant la deuxième.' : 'Oui. Et la dernière.'),
     wrongNote: (name) => `Pas ${name}. Essaie une autre touche.`,
     missed: (name) => `Presque. Rechante à partir de ${name}.`,
+    wrongSung: (name) => `Pas tout à fait. Essaie encore ${name}.`,
     hearAgain: (name) => `Presque. Réécoute-le, puis chante à partir de ${name}.`,
     bravo: 'Bravo.',
     levelDone: 'Niveau réussi.',

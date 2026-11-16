@@ -127,6 +127,7 @@ async function listenNow(): Promise<void> {
   const ok = await listen(
     r.melody,
     () => dispatch({ type: 'sung' }),
+    () => dispatch({ type: 'wrong' }),
     () => dispatch({ type: 'missed' }),
     () => singing.value,
   );
@@ -210,6 +211,8 @@ export function hear(level: number): void {
   unlock();
   const r = round.value;
   if (r && r.level === level && (r.phase === 'direction' || r.phase === 'find' || r.phase === 'turn' || r.phase === 'done')) {
+    // In Your turn, while he listens, you sing from do after hearing it.
+    if (r.phase === 'turn' && r.listen) dispatch({ type: 'again' });
     void perform(r);
     return;
   }
