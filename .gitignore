@@ -15,6 +15,7 @@ blob-report/
 playwright/.cache/
 
 # Environment and secrets
+.cert/
 .env
 .env.*
 !.env.example
@@ -47,3 +48,6 @@ Thumbs.db
 voice/make/*.wav
 # Voicebanks unpacked here while making the clips; they belong in OpenUtau, not in git
 voice/make/*/
+
+# Voices recorded for tuning the judge (block 2); never committed unless the singers agree
+tuning/

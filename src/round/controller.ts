@@ -1,6 +1,8 @@
-import { batch, signal } from '@preact/signals';
+import { batch, effect, signal } from '@preact/signals';
 import { audioContext, unlock } from '../audio/tone';
 import { BEAT, preloadVoice, sing, type Performance } from '../audio/voice';
+import { askMic, listen, micChoice, muteKey, setMicChoice, stopListening } from '../listen/listening';
+import { canListen } from '../listen/mic';
 import type { Melody } from '../melody/melody';
 import { activeLevel, completeRound, skipLevel } from '../progress/levels';
 import { dockOpen, lang, progress, setProgress, started } from '../state';
@@ -17,13 +19,20 @@ export const round = signal<Round | null>(null);
 export const sounding = signal<number | null>(null);
 /** Merel bows for a moment when a round completes. */
 export const bowing = signal(false);
+/** Merel nods, softly, at each note you find. */
+export const nodding = signal(false);
 /** Whether Merel is singing now. */
 export const singing = signal(false);
+/** Your turn is waiting for the answer to Merel's ask to listen. */
+export const asking = signal(false);
+/** What the card says about listening, once: he will not listen, he will from the next round, the browser refuses, the microphone failed. */
+export const listenNote = signal<'off' | 'later' | 'blocked' | 'failed' | null>(null);
 
 const lastMelody: Record<number, Melody | null> = {};
 let performance: Performance | null = null;
 let token = 0;
 let bowTimer: ReturnType<typeof setTimeout> | undefined;
+let nodTimer: ReturnType<typeof setTimeout> | undefined;
 
 const now = () => audioContext()?.currentTime ?? globalThis.performance.now() / 1000;
 const still = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -69,6 +78,12 @@ async function perform(r: Round, delay = 0.12): Promise<boolean> {
   });
 }
 
+function nod(): void {
+  clearTimeout(nodTimer);
+  nodding.value = true;
+  nodTimer = setTimeout(() => (nodding.value = false), 400);
+}
+
 function bow(ms: number, then?: () => void): void {
   clearTimeout(bowTimer);
   bowing.value = true;
@@ -94,9 +109,60 @@ function dispatch(event: RoundEvent): void {
   round.value = next;
   // Finding the notes needs the keys: on a phone, bring the instrument back if it is tucked away.
   if (next.phase === 'find' && r.phase !== 'find') dockOpen.value = true;
+  if (event.type === 'sung' && next.phase === 'turn') nod();
   if (completed) complete(next);
   else if (next.phase === 'along' && r.phase === 'hear') void playAlong(next);
+  if (next.phase === 'turn' && r.phase === 'along' && next.listen) beginListening();
 }
+
+/** Your turn starts with Merel listening: ask first if he never asked, otherwise open the microphone. */
+function beginListening(): void {
+  if (micChoice.value === null) asking.value = true;
+  else void listenNow();
+}
+
+async function listenNow(): Promise<void> {
+  const r = round.value;
+  if (!r) return;
+  const ok = await listen(
+    r.melody,
+    () => dispatch({ type: 'sung' }),
+    () => dispatch({ type: 'missed' }),
+    () => singing.value,
+  );
+  if (ok || round.value?.phase !== 'turn' || round.value.level !== r.level || round.value.melody !== r.melody) return;
+  // Refused, missing or failing: the release 1 rule, said once.
+  setMicChoice('no');
+  listenNote.value = 'off';
+  dispatch({ type: 'deaf' });
+}
+
+/** The answer to Merel's ask: "Let him listen" or "Not now". */
+export function answerAsk(yes: boolean): void {
+  asking.value = false;
+  setMicChoice(yes ? 'yes' : 'no');
+  if (yes) void listenNow();
+  else {
+    listenNote.value = 'off';
+    dispatch({ type: 'deaf' });
+  }
+}
+
+/** "Let Merel listen" on a card, after a no: the browser asks again; he listens from the next round. */
+export async function askAgain(): Promise<void> {
+  unlock();
+  const result = await askMic();
+  if (result === 'ok') setMicChoice('yes');
+  listenNote.value = result === 'ok' ? 'later' : result === 'refused' ? 'blocked' : 'failed';
+}
+
+// The microphone is open only during a Your turn that listens.
+effect(() => {
+  const r = round.value;
+  if (r && r.phase === 'turn' && r.listen) return;
+  asking.value = false;
+  stopListening();
+});
 
 function complete(r: Round): void {
   const { progress: next, levelDone } = completeRound(progress.value, r.level);
@@ -131,9 +197,10 @@ export function startRound(level: number): void {
   // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
   started.value = true;
   dockOpen.value = true;
+  listenNote.value = null;
   const melody = melodyFor(level, lastMelody[level] ?? null);
   lastMelody[level] = melody;
-  const r = newRound(level, melody);
+  const r = newRound(level, melody, 'hear', canListen() && micChoice.value !== 'no');
   round.value = r;
   void playHear(r);
 }
@@ -174,6 +241,7 @@ export function answer(up: boolean): void {
 /** Every key press reaches here; in a recognition round it is an answer. */
 export function keyPressed(step: number): void {
   if (round.value?.phase === 'find') dispatch({ type: 'key', step });
+  else muteKey(step);
 }
 
 export function skip(level: number): void {

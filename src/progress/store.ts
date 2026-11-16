@@ -51,7 +51,8 @@ export function normalise(data: unknown): Progress | null {
 
 function storage(): Storage | null {
   try {
-    return globalThis.localStorage ?? null;
+    // Plain Node (unit tests, scripts) has a localStorage that warns when touched: no window, no storage.
+    return typeof window === 'undefined' ? null : (globalThis.localStorage ?? null);
   } catch {
     return null; // storage can be blocked; the app still works, it just forgets
   }

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
 import { STORAGE_KEY, empty, normalise, readProgress, writeProgress } from './store';
 import { decodeProgress, encodeProgress } from './code';

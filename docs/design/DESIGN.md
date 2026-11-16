@@ -79,7 +79,8 @@ Kalam is a free Google font that imitates marker handwriting; Print Club London'
 3. **Real notation first**: clef, time signature, stems, bar lines; colour marks what was played or sung.
 4. **Colour is never the only cue**: every note also shows its name, its letter where the language uses it, and its key.
 5. **Lines are hand-drawn, one weight**; the staff and the keys wobble slightly. Merel is the exception: built from geometry.
-6. **Touch targets at least 44 px**, the piano keys included: on a narrow phone the gutters give way, not the keys. Text contrast at least 4.5:1.
+6. **Your voice is never a note's colour.** While Merel listens, a soft dot follows your voice on the staff: paper-coloured, 0.8 of a line space across, with a faint paper ring, in the column of the note to sing and at the height of your pitch, folded into the octave around that note. It is a guide, not a score: no needle, no number. It fades when you are silent. The notes still to sing are outlined, the next one in full white and the others at half, and each fills in its colour when found, so filled or outlined says it as well as colour does.
+7. **Touch targets at least 44 px**, the piano keys included: on a narrow phone the gutters give way, not the keys. Text contrast at least 4.5:1.
 
 ## Merel
 
@@ -93,6 +94,6 @@ A geometric blackbird of discs and rounded bars: black body and head, white shir
 | Listening | Your turn, recognition | cocks his head and holds it |
 | Bowing | a round or level completed | a small dip, held |
 
-Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed, or down to its handle and back, and the gentle scroll from Start to the first exercise (Luk, 2026-11-14). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
+Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed, or down to its handle and back, the gentle scroll from Start to the first exercise (Luk, 2026-11-14), and the voice dot gliding after your voice (it jumps instead under reduced motion). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.
 
 A more naturalistic blackbird (long tail, level body, no shirt front) was tried on 2026-11-13 and dropped by Luk the same day; it is on the "Earlier rounds" page.

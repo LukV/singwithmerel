@@ -1,10 +1,14 @@
 import clef from '../../docs/design/assets/signs/clef.svg?clean&ink';
+import { useRef } from 'preact/hooks';
+import { voice } from '../listen/listening';
 import { SCALE, noteColour } from '../melody/scale';
+import { round } from '../round/controller';
 import { plays, t } from '../state';
 import { handLine } from './hand';
-import { staffLayout } from './staffLayout';
+import { staffLayout, type StaffLayout } from './staffLayout';
 import { staffView } from './staffView';
 import { useSize } from './useSize';
+import { voiceStep } from './voiceDot';
 
 const CLEF_INNER = clef.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
 const BURST_ANGLES = [30, 68, 112, 150, 210, 248, 292, 330];
@@ -20,12 +24,14 @@ interface HeadProps {
   ledger: boolean;
   /** Draw the head filled even for a half note: the colour of a sung or found note is a dot. */
   filled: boolean;
+  /** Draw the head as an outline even for a quarter note: a note still to sing. */
+  outline?: boolean;
 }
 
-function Note({ x, y, u, thin, step, beats, colour, ledger, filled }: HeadProps) {
+function Note({ x, y, u, thin, step, beats, colour, ledger, filled, outline = false }: HeadProps) {
   const up = step < 6;
   const stemX = up ? x + 0.95 * u : x - 1.17 * u - thin;
-  const hollow = beats >= 2 && !filled;
+  const hollow = outline || (beats >= 2 && !filled);
   return (
     <>
       {ledger && <rect x={x - 1.83 * u} y={y - thin / 2} width={3.67 * u} height={thin} rx={thin / 2} class="staff__ink" />}
@@ -58,9 +64,37 @@ function Burst({ x, y, u, thin }: { x: number; y: number; u: number; thin: numbe
 }
 
 /**
+ * Your voice while Merel listens: a soft paper-coloured dot with a faint ring, at the height of
+ * your pitch, in the column of the note to sing. Never a note's colour. It glides (CSS) and fades
+ * when you are silent; with reduced motion it jumps.
+ */
+function VoiceDot({ L, u, thin }: { L: StaffLayout; u: number; thin: number }) {
+  const r = round.value;
+  const cents = voice.value;
+  const last = useRef<{ x: number; y: number } | null>(null);
+  if (!r || r.phase !== 'turn' || !r.listen) {
+    last.current = null;
+    return null;
+  }
+  const index = Math.min(r.sung, r.melody.length - 1);
+  const target = r.melody[index]!;
+  const beat = r.melody.slice(0, index).reduce((sum, n) => sum + n.beats, 0);
+  if (cents !== null) last.current = { x: L.noteX(beat), y: L.noteY(voiceStep(cents, target.step)) };
+  const at = last.current;
+  if (!at) return null;
+  return (
+    <g class={`staff__voice${cents === null ? ' is-silent' : ''}`} style={{ transform: `translate(${at.x}px, ${at.y}px)` }}>
+      <circle r={1.5 * u} class="staff__voice-ring" stroke-width={thin} />
+      <circle r={0.8 * u} class="staff__voice-dot" />
+    </g>
+  );
+}
+
+/**
  * Real notation, drawn per size: five hand-drawn lines, the treble clef, 4/4, the notes with
  * stems in their rhythm, bar lines and the final double bar. A note sounding or just played
- * shows its colour and the dashes around it; found notes keep their colour. On a phone
+ * shows its colour and the dashes around it; found notes keep their colour; while Merel listens,
+ * the notes still to sing are outlined, the next one brighter. On a phone
  * (`compact`) the notes keep their spacing and the staff follows the current note.
  */
 export function Staff({ compact }: { compact: boolean }) {
@@ -107,7 +141,7 @@ export function Staff({ compact }: { compact: boolean }) {
             const colour = coloured ? noteColour(note) : 'var(--on-ink)';
             return (
               <g key={i} class={`staff__note is-${n.mark}`} data-note={note.pitch}>
-                <Note x={x} y={y} u={u} thin={thin} step={n.step} beats={n.beats} colour={colour} ledger={n.step === 0} filled={coloured} />
+                <Note x={x} y={y} u={u} thin={thin} step={n.step} beats={n.beats} colour={colour} ledger={n.step === 0} filled={coloured} outline={n.mark === 'next' || n.mark === 'waiting'} />
                 {n.mark === 'on' && <Burst key={plays.value} x={x} y={y} u={u} thin={thin} />}
                 <text x={x} y={L.nameY} class="staff__name lettering" font-size={Math.max(12, 1.22 * u)}>
                   {s.noteNames[n.step]!.toUpperCase()}
@@ -138,6 +172,7 @@ export function Staff({ compact }: { compact: boolean }) {
               </text>
             </g>
           )}
+          <VoiceDot L={L} u={u} thin={thin} />
         </g>
       </svg>
     </div>
