@@ -53,7 +53,7 @@ The skills in `.claude/skills/` run the steps: `start-pitch`, `ship-pitch` and `
 
 ## Files here
 
-- `blocks/`: one note per block. Released: [[1-sing-along|Block 1, Sing along]] (0.1.0). Current: [[2-your-turn|Block 2, Your turn]].
+- `blocks/`: one note per block. Released: [[1-sing-along|Block 1, Sing along]] (0.1.0), [[2-your-turn|Block 2, Your turn]] (0.2.0). Current: [[3-judge-the-step|Block 3, Judge the step]].
 - `pitches/`: one note per pitch, and `_template.md`. Shipped pitches stay where they are, with status shipped.
 
 ## Later levels
