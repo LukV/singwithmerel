@@ -1,3 +1,10 @@
+## v0.3.0 (2026-11-16)
+
+### Feat
+
+- **lesson**: Listen and Sing, a switch, instead of a round that runs by itself
+- **listen**: judge the step, not the note
+
 ## v0.2.0 (2026-11-16)
 
 ### Feat
