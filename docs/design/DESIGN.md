@@ -89,9 +89,9 @@ A geometric blackbird of discs and rounded bars: black body and head, white shir
 | Pose | Used when | Movement |
 |---|---|---|
 | Waiting | an exercise is open but idle | breathes, blinks, glances round, flicks his tail |
-| Singing | Hear it, Sing along, the identity screen | hops on the beat, beak opens and closes, head sways |
+| Singing | Listen, the identity screen | hops on the beat, beak opens and closes, head sways |
 | Thinking | a step needs a decision | tips his head back |
-| Listening | Your turn, recognition | cocks his head and holds it |
+| Listening | Sing on, recognition | cocks his head and holds it |
 | Bowing | a round or level completed | a small dip, held |
 
 Only Merel moves; nothing else animates, except the instrument sliding up on a phone when Start is pressed, or down to its handle and back, the gentle scroll from Start to the first exercise (Luk, 2026-11-14), and the voice dot gliding after your voice (it jumps instead under reduced motion). Movement switches off under the system's reduced-motion setting. Merel never speaks in text: he acts.

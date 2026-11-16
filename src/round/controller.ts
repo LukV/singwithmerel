@@ -1,6 +1,6 @@
 import { batch, effect, signal } from '@preact/signals';
 import { audioContext, unlock } from '../audio/tone';
-import { BEAT, preloadVoice, sing, type Performance } from '../audio/voice';
+import { preloadVoice, sing, type Performance } from '../audio/voice';
 import { askMic, listen, micChoice, muteKey, setMicChoice, stopListening } from '../listen/listening';
 import { canListen } from '../listen/mic';
 import type { Melody } from '../melody/melody';
@@ -111,8 +111,6 @@ function dispatch(event: RoundEvent): void {
   if (next.phase === 'find' && r.phase !== 'find') dockOpen.value = true;
   if (event.type === 'sung' && next.phase === 'turn') nod();
   if (completed) complete(next);
-  else if (next.phase === 'along' && r.phase === 'hear') void playAlong(next);
-  if (next.phase === 'turn' && r.phase === 'along' && next.listen) beginListening();
 }
 
 /** Your turn starts with Merel listening: ask first if he never asked, otherwise open the microphone. */
@@ -132,7 +130,7 @@ async function listenNow(): Promise<void> {
     () => singing.value,
   );
   if (ok || round.value?.phase !== 'turn' || round.value.level !== r.level || round.value.melody !== r.melody) return;
-  // Refused, missing or failing: the release 1 rule, said once.
+  // Refused, missing or failing: you sing on your own, said once.
   setMicChoice('no');
   listenNote.value = 'off';
   dispatch({ type: 'deaf' });
@@ -149,7 +147,7 @@ export function answerAsk(yes: boolean): void {
   }
 }
 
-/** "Let Merel listen" on a card, after a no: the browser asks again; he listens from the next round. */
+/** "Let Merel listen" on a card, after a no: the browser asks again; he listens the next time you sing. */
 export async function askAgain(): Promise<void> {
   unlock();
   const result = await askMic();
@@ -157,7 +155,7 @@ export async function askAgain(): Promise<void> {
   listenNote.value = result === 'ok' ? 'later' : result === 'refused' ? 'blocked' : 'failed';
 }
 
-// The microphone is open only during a Your turn that listens.
+// The microphone is open only while Sing is on and Merel listens.
 effect(() => {
   const r = round.value;
   if (r && r.phase === 'turn' && r.listen) return;
@@ -168,66 +166,89 @@ effect(() => {
 function complete(r: Round): void {
   const { progress: next, levelDone } = completeRound(progress.value, r.level);
   setProgress(next);
-  if (levelDone) {
-    // The level is complete: Merel bows, then the next level opens and the feed moves to it.
-    round.value = { ...r, phase: 'done' };
-    bow(1800, () => {
-      if (round.value?.level === r.level) round.value = null;
-      scrollToLevel(activeLevel(progress.value));
-    });
-  } else {
-    bow(1400);
-  }
+  // A melody sung: the next one is new (exercise 3); the scales stay.
+  if (!isRecognition(r.level)) lastMelody[r.level] = melodyFor(r.level, r.melody);
+  bow(levelDone ? 1800 : 1400, () => {
+    // Sing turns off; recognition stays on its answers until you listen again.
+    if (round.value?.level === r.level && !isRecognition(r.level)) round.value = null;
+    if (levelDone) scrollToLevel(activeLevel(progress.value));
+  });
 }
 
-async function playHear(r: Round): Promise<void> {
-  if (await perform(r)) dispatch({ type: 'played' });
-}
-
-async function playAlong(r: Round): Promise<void> {
-  // A beat of rest, then Merel sings it again with you.
-  if (await perform(r, BEAT)) dispatch({ type: 'played' });
-}
-
-export function startRound(level: number): void {
+/** Brings the instrument up: a card's Listen or Sing, not only the first screen's Start (on a phone, someone may have scrolled down or come back to their level). */
+function bringUp(): void {
   unlock();
   preloadVoice(lang.value);
   clearTimeout(bowTimer);
   bowing.value = false;
-  // A card's Start or Hear it brings the instrument up too, not only the first screen's Start:
-  // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
   started.value = true;
   dockOpen.value = true;
-  listenNote.value = null;
-  const melody = melodyFor(level, lastMelody[level] ?? null);
-  lastMelody[level] = melody;
-  const r = newRound(level, melody, 'hear', canListen() && micChoice.value !== 'no');
-  round.value = r;
-  void playHear(r);
 }
 
-/** "Hear it": during recognition, sing the melody again; otherwise sing an example, which counts for nothing. */
+/** The melody a card sings now: the scale, or its random melody until you sing it. */
+const melodyOf = (level: number) => (level <= 2 ? melodyFor(level) : (lastMelody[level] ??= melodyFor(level, null)));
+
+/** Recognition: a new melody, Merel sings it, then the questions. */
+function startRecognition(level: number): void {
+  const melody = melodyFor(level, lastMelody[level] ?? null);
+  lastMelody[level] = melody;
+  const r = newRound(level, melody, 'hear');
+  round.value = r;
+  void perform(r).then((ended) => {
+    if (ended) dispatch({ type: 'played' });
+  });
+}
+
+/**
+ * Listen: Merel sings the card's melody, which counts for nothing. While Sing is on, you sing from
+ * do after it. In recognition it starts a round, or sings it again during one. Pressed while he
+ * sings this card's melody, he stops.
+ */
 export function hear(level: number): void {
-  unlock();
+  bringUp();
   const r = round.value;
-  if (r && r.level === level && (r.phase === 'direction' || r.phase === 'find' || r.phase === 'turn' || r.phase === 'done')) {
-    // In Your turn, while he listens, you sing from do after hearing it.
-    if (r.phase === 'turn' && r.listen) dispatch({ type: 'again' });
+  const mine = r && r.level === level;
+  if (mine && singing.value && (r.phase === 'preview' || r.phase === 'hear')) return stop();
+  if (isRecognition(level)) {
+    if (mine && (r.phase === 'direction' || r.phase === 'find')) void perform(r);
+    else startRecognition(level);
+    return;
+  }
+  if (mine && r.phase === 'turn') {
+    if (r.listen) dispatch({ type: 'again' });
     void perform(r);
     return;
   }
-  clearTimeout(bowTimer);
-  bowing.value = false;
-  // A card's Start or Hear it brings the instrument up too, not only the first screen's Start:
-  // on a phone, someone who scrolled down or came back to their level would otherwise not see it.
-  started.value = true;
-  dockOpen.value = true;
-  const melody = level <= 2 ? melodyFor(level) : (lastMelody[level] ??= melodyFor(level));
-  const preview = newRound(level, melody, 'preview');
+  const preview = newRound(level, melodyOf(level), 'preview');
   round.value = preview;
   void perform(preview).then((ended) => {
     if (ended && round.value === preview) round.value = null;
   });
+}
+
+/** Whether Sing is on for a card. */
+export const isSinging = (level: number) => {
+  const r = round.value;
+  return !!r && r.level === level && r.phase === 'turn';
+};
+
+/**
+ * Sing, a switch. On: your turn; Merel listens when he can (asking first, once). Off: you stop;
+ * when he was not listening, the round counts, as you sang it on your own.
+ */
+export function toggleSing(level: number): void {
+  const r = round.value;
+  if (r && r.level === level && r.phase === 'turn') {
+    if (r.listen) stop();
+    else dispatch({ type: 'finished' });
+    return;
+  }
+  bringUp();
+  silence();
+  listenNote.value = null;
+  const next = newRound(level, melodyOf(level), 'turn', canListen() && micChoice.value !== 'no');
+  round.value = next;
+  if (next.listen) beginListening();
 }
 
 export function stop(): void {

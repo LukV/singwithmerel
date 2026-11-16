@@ -4,7 +4,7 @@ import { dotsOf, isDone, isSkipped, type LevelState } from '../progress/levels';
 import { DOTS } from '../progress/store';
 import { canListen } from '../listen/mic';
 import { micChoice } from '../listen/listening';
-import { answer, answerAsk, askAgain, asking, bowing, hear, listenNote, nodding, round, skip, startRound, stop } from '../round/controller';
+import { answer, answerAsk, askAgain, asking, bowing, hear, isSinging, listenNote, nodding, round, singing, skip, toggleSing } from '../round/controller';
 import { goesUp, isRecognition, type Round } from '../round/round';
 import { cards, progress, t } from '../state';
 import { HandRule } from './HandRule';
@@ -41,6 +41,7 @@ export function Lesson() {
 function poseFor(state: LevelState, mine: Round | null): Pose {
   if (mine) {
     if (bowing.value || mine.phase === 'done') return 'bowing';
+    if (singing.value) return 'singing';
     if (mine.phase === 'turn' || mine.phase === 'find') return 'listening';
     if (mine.phase === 'direction') return 'thinking';
     return 'singing';
@@ -52,10 +53,9 @@ function statusFor(mine: Round | null, levelDone: boolean): string {
   const s = t.value;
   if (!mine) return '';
   switch (mine.phase) {
+    case 'preview':
     case 'hear':
       return s.status.listen;
-    case 'along':
-      return s.status.along;
     case 'turn':
       if (bowing.value) return s.status.bravo;
       if (!mine.listen || asking.value) return s.status.turn;
@@ -82,19 +82,21 @@ function Card({ level, state }: { level: number; state: LevelState }) {
   const ex = s.exercises[level - 1]!;
   const r = round.value;
   const mine = r && r.level === level ? r : null;
-  const running = !!mine && mine.phase !== 'preview';
+  const running = !!mine;
   const completed = state === 'completed';
   const active = state === 'active';
   const done = isDone(p, level);
   const dots = dotsOf(p, level);
   const pose = poseFor(state, mine);
-  const status = running ? statusFor(mine, done) : completed ? (done ? s.done : s.skipped) : '';
-  const between = running && ((mine.phase === 'turn' && !mine.listen) || (mine.phase === 'done' && !bowing.value));
-  const singing = !isRecognition(level);
-  const ask = running && singing && mine.phase === 'turn' && asking.value;
-  const note = running && singing ? listenNote.value : null;
+  const status = mine ? statusFor(mine, done) : completed ? (done ? s.done : s.skipped) : '';
+  const singingLevel = !isRecognition(level);
+  const singingNow = singing.value;
+  const sing = isSinging(level);
+  const upcoming = state === 'upcoming';
+  const ask = running && singingLevel && mine.phase === 'turn' && asking.value;
+  const note = running && singingLevel ? listenNote.value : null;
   // After a no, a quiet way to let Merel listen after all, on the card you are on.
-  const again = singing && (running || active) && micChoice.value === 'no' && note !== 'later' && canListen();
+  const again = singingLevel && !upcoming && micChoice.value === 'no' && note !== 'later' && canListen();
   // Two wrong notes or misses: Hear it is the button to press.
   const offerHear = running && mine.phase === 'turn' && mine.listen && (mine.missed || mine.off) && mine.tries >= OFFER_HEAR;
 
@@ -162,27 +164,22 @@ function Card({ level, state }: { level: number; state: LevelState }) {
           </div>
         )}
         <div class="card__buttons">
-          {between ? (
-            <button type="button" class="button button--filled" onClick={() => startRound(level)}>
-              {s.next}
-            </button>
-          ) : running ? (
-            <button type="button" class="button" onClick={stop}>
-              {s.stop}
-            </button>
-          ) : (
-            <button
-              type="button"
-              class={`button${active ? ' button--filled' : ''}`}
-              disabled={state === 'upcoming'}
-              onClick={() => startRound(level)}
-            >
-              {completed ? s.cardAgain : s.cardStart}
-            </button>
-          )}
-          <button type="button" class={`button${offerHear ? ' button--filled' : ''}`} onClick={() => hear(level)}>
+          {/* Listen: the first thing to press on the level you are on, and again after two tries. */}
+          <button
+            type="button"
+            class={`button${offerHear || (active && !mine) ? ' button--filled' : ''}`}
+            disabled={upcoming}
+            aria-pressed={!!mine && singingNow && (mine.phase === 'preview' || mine.phase === 'hear')}
+            onClick={() => hear(level)}
+          >
             {s.hearIt}
           </button>
+          {singingLevel && (
+            <button type="button" class={`button button--switch${sing ? ' button--filled' : ''}`} disabled={upcoming} aria-pressed={sing} onClick={() => toggleSing(level)}>
+              <span class="button__light" aria-hidden="true" />
+              {s.sing}
+            </button>
+          )}
         </div>
         {(again || (active && !isSkipped(p, level))) && (
           <div class="card__quiet">

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-// Rounds take real time on the audio clock: exercise 1 is two passes of eight notes at 90 per minute.
+// Listen takes real time on the audio clock: exercise 1 is eight notes at 90 per minute.
 test.setTimeout(60_000);
 test.use({ viewport: { width: 1280, height: 860 } });
 
@@ -11,45 +11,55 @@ async function begin(page: Page) {
 
 const card = (page: Page, n: number) => page.locator(`#c${n}`);
 const filledDots = (page: Page, n: number) => card(page, n).locator('.dot--on');
+const sing = (page: Page, n: number) => card(page, n).getByRole('button', { name: 'Sing' });
+const OFF = 'Merel will not listen this time: sing on your own, then press Sing again, and the round counts.';
 
-test('one full round of exercise 1 fills a dot, and a reload keeps it', async ({ page }) => {
+test('Listen counts for nothing; Sing on and off, without Merel listening, fills a dot, and a reload keeps it', async ({ page }) => {
   await begin(page);
-  await card(page, 1).getByRole('button', { name: 'Start' }).click();
+  await card(page, 1).getByRole('button', { name: 'Listen' }).click();
   await expect(card(page, 1).locator('.card__status')).toHaveText('Listen.');
   await expect(card(page, 1).locator('.merel')).toHaveAttribute('data-pose', 'singing');
-  // The staff marks the notes as Merel sings them.
+  // The staff marks the notes as Merel sings them; when he ends, nothing has counted.
   await expect(page.locator('.staff__note.is-on')).toHaveCount(1, { timeout: 5_000 });
-  await expect(card(page, 1).locator('.card__status')).toHaveText('Sing along.', { timeout: 15_000 });
-  // At the first Your turn Merel asks to listen, in one sentence; no dot yet.
-  await expect(card(page, 1).locator('.card__ask')).toContainText('Merel listens while you sing.', { timeout: 15_000 });
+  await expect(card(page, 1).locator('.card__status')).toHaveText('', { timeout: 15_000 });
   await expect(filledDots(page, 1)).toHaveCount(0);
-  await card(page, 1).getByRole('button', { name: 'Not now' }).click();
-  // Not now: said once, and the round counts after Sing along, as in 0.1.0.
-  await expect(card(page, 1).locator('.card__note')).toHaveText('Merel will not listen this time: the round counts after Sing along.');
-  await expect(filledDots(page, 1)).toHaveCount(1);
-  await expect(card(page, 1).getByRole('button', { name: 'Next round' })).toBeVisible({ timeout: 5_000 });
-  await expect(card(page, 1).locator('.merel')).toHaveAttribute('data-pose', 'listening');
 
+  // Sing: the first time, Merel asks to listen, in one sentence.
+  await sing(page, 1).click();
+  await expect(sing(page, 1)).toHaveAttribute('aria-pressed', 'true');
+  await expect(card(page, 1).locator('.card__ask')).toContainText('Merel listens while you sing.');
+  await card(page, 1).getByRole('button', { name: 'Not now' }).click();
+  // Not now: said once; you sing on your own, and Sing off counts the round.
+  await expect(card(page, 1).locator('.card__note')).toHaveText(OFF);
+  await expect(card(page, 1).locator('.card__status')).toHaveText('Your turn. Sing it on your own, then press Sing again.');
+  await expect(filledDots(page, 1)).toHaveCount(0);
+  await sing(page, 1).click();
+  await expect(filledDots(page, 1)).toHaveCount(1);
+  await expect(card(page, 1).locator('.card__status')).toHaveText('Bravo.');
+  await expect(card(page, 1).locator('.merel')).toHaveAttribute('data-pose', 'bowing');
+  await expect(sing(page, 1)).toHaveAttribute('aria-pressed', 'false', { timeout: 5_000 });
   await expect(card(page, 1).getByRole('button', { name: 'Let Merel listen' })).toBeVisible();
 
   await page.reload();
   await expect(filledDots(page, 1)).toHaveCount(1);
-  // The answer is remembered: the next round does not ask again.
-  await card(page, 1).getByRole('button', { name: 'Start' }).click();
-  await expect(card(page, 1).locator('.card__status')).toHaveText('Sing along.', { timeout: 15_000 });
-  await expect(filledDots(page, 1)).toHaveCount(2, { timeout: 15_000 });
+  // The answer is remembered: Sing does not ask again.
+  await sing(page, 1).click();
   await expect(card(page, 1).locator('.card__ask')).toHaveCount(0);
+  await sing(page, 1).click();
+  await expect(filledDots(page, 1)).toHaveCount(2);
 });
 
-test('a microphone that cannot be opened: Merel says so once, and the round counts after Sing along', async ({ page }) => {
+test('a microphone that cannot be opened: Merel says so once, and Sing off counts the round', async ({ page }) => {
   // The browser refuses the microphone, as when someone says no to its question.
   await page.addInitScript(() => {
     navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError'));
   });
   await begin(page);
-  await card(page, 1).getByRole('button', { name: 'Start' }).click();
-  await card(page, 1).getByRole('button', { name: 'Let him listen' }).click({ timeout: 30_000 });
-  await expect(card(page, 1).locator('.card__note')).toHaveText('Merel will not listen this time: the round counts after Sing along.');
+  await sing(page, 1).click();
+  await card(page, 1).getByRole('button', { name: 'Let him listen' }).click();
+  await expect(card(page, 1).locator('.card__note')).toHaveText(OFF);
+  await expect(filledDots(page, 1)).toHaveCount(0);
+  await sing(page, 1).click();
   await expect(filledDots(page, 1)).toHaveCount(1);
   // Asking again from the card: the browser is asked again, and still refuses.
   await card(page, 1).getByRole('button', { name: 'Let Merel listen' }).click();
@@ -62,6 +72,10 @@ test('skip opens the next level; the progress code brings progress back in a cle
   await expect(card(page, 1)).toHaveAttribute('data-state', 'completed');
   await expect(card(page, 2)).toHaveAttribute('data-state', 'active');
   await expect(card(page, 1).locator('.card__status')).toHaveText('Skipped.');
+  // A completed card stays open: you can still listen and sing; the next level waits.
+  await expect(card(page, 1).getByRole('button', { name: 'Listen' })).toBeEnabled();
+  await expect(sing(page, 1)).toBeEnabled();
+  await expect(sing(page, 3)).toBeDisabled();
 
   const code = await page.locator('#progress-code').inputValue();
   expect(code).toMatch(/^m[01]\./);
@@ -98,7 +112,9 @@ test('recognition: up or down, then the notes on the keys; a wrong key shows and
   await begin(page);
   for (const n of [1, 2, 3]) await card(page, n).getByRole('button', { name: 'Skip this level' }).click();
   await expect(card(page, 4)).toHaveAttribute('data-state', 'active');
-  await card(page, 4).getByRole('button', { name: 'Start' }).click();
+  // Recognition has no Sing; Listen starts the round.
+  await expect(sing(page, 4)).toHaveCount(0);
+  await card(page, 4).getByRole('button', { name: 'Listen' }).click();
   await expect(page.locator('.staff__note')).toHaveCount(0);
 
   const status = card(page, 4).locator('.card__status');

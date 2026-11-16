@@ -21,15 +21,13 @@ export interface Strings {
   exercises: { title: string; text: string }[];
   navProgress: string;
   staffEmpty: string;
-  cardStart: string;
-  stop: string;
-  next: string;
+  /** The switch on a singing card: on, it is your turn and Merel listens. */
+  sing: string;
   skip: string;
   skipped: string;
   dotsLabel: (dots: number, total: number) => string;
   status: {
     listen: string;
-    along: string;
     turn: string;
     /** Your turn while Merel listens. */
     turnListening: string;
@@ -42,7 +40,7 @@ export interface Strings {
     missed: (name: string) => string;
     /** A wrong note was held: try `name`, the next note, again; nothing resets. */
     wrongSung: (name: string) => string;
-    /** After two wrong notes or misses: Hear it is offered, then sing from `name`, do. */
+    /** After two wrong notes or misses: Listen is offered, then sing from `name`, do. */
     hearAgain: (name: string) => string;
     bravo: string;
     levelDone: string;
@@ -83,7 +81,6 @@ export interface Strings {
   startOverYes: string;
   startOverNo: string;
   startedOver: string;
-  cardAgain: string;
   hearIt: string;
   done: string;
   instrument: string;

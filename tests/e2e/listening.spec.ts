@@ -6,7 +6,7 @@ import { expect, test } from '@playwright/test';
 test.setTimeout(150_000);
 test.use({ viewport: { width: 1280, height: 860 } });
 
-test('Merel asks once, listens in Your turn, the voice dot follows, a wrong note resets nothing, and the last note completes the round', async ({ page }) => {
+test('Merel asks once, listens while Sing is on, the voice dot follows, a wrong note resets nothing, and the last note completes the round', async ({ page }) => {
   // Keep the microphone's tracks, to see that they are closed after Your turn.
   await page.addInitScript(() => {
     const tracks: MediaStreamTrack[] = [];
@@ -23,12 +23,14 @@ test('Merel asks once, listens in Your turn, the voice dot follows, a wrong note
   await page.goto('/en/');
   await page.getByRole('button', { name: 'Start' }).first().click();
   const card = page.locator('#c1');
-  await card.getByRole('button', { name: 'Start' }).click();
-  await expect(card.locator('.card__status')).toHaveText('Sing along.', { timeout: 15_000 });
-  // Merel does not listen while he sings.
+  // Listen: Merel sings, and does not listen.
+  await card.getByRole('button', { name: 'Listen' }).click();
+  await expect(card.locator('.card__status')).toHaveText('Listen.');
   expect(await liveTracks()).toBe(0);
 
-  await expect(card.locator('.card__ask')).toContainText('Your voice stays on this device.', { timeout: 15_000 });
+  // Sing: the first time, Merel asks.
+  await card.getByRole('button', { name: 'Sing' }).click();
+  await expect(card.locator('.card__ask')).toContainText('Your voice stays on this device.');
   await card.getByRole('button', { name: 'Let him listen' }).click();
   await expect(card.locator('.card__status')).toHaveText('Your turn. Sing it alone; Merel listens.');
   await expect(card.locator('.merel')).toHaveAttribute('data-pose', 'listening');
@@ -52,8 +54,9 @@ test('Merel asks once, listens in Your turn, the voice dot follows, a wrong note
   await expect(page.locator('.staff__voice')).toHaveCount(0);
   await expect.poll(liveTracks).toBe(0);
 
-  // The next round listens without asking again.
-  await card.getByRole('button', { name: 'Next round' }).click({ timeout: 5_000 });
+  // Sing turns off; on again, Merel listens without asking.
+  await expect(card.getByRole('button', { name: 'Sing' })).toHaveAttribute('aria-pressed', 'false', { timeout: 5_000 });
+  await card.getByRole('button', { name: 'Sing' }).click();
   await expect(card.locator('.card__status')).toHaveText('Your turn. Sing it alone; Merel listens.', { timeout: 30_000 });
   await expect(card.locator('.card__ask')).toHaveCount(0);
   await expect(card.locator('.dot--on')).toHaveCount(2, { timeout: 40_000 });
@@ -64,7 +67,7 @@ test('recognition does not ask for the microphone', async ({ page }) => {
   await page.getByRole('button', { name: 'Start' }).first().click();
   for (const n of [1, 2, 3]) await page.locator(`#c${n}`).getByRole('button', { name: 'Skip this level' }).click();
   const card = page.locator('#c4');
-  await card.getByRole('button', { name: 'Start' }).click();
+  await card.getByRole('button', { name: 'Listen' }).click();
   await expect(card.locator('.card__status')).toHaveText('Up or down?', { timeout: 10_000 });
   await expect(card.locator('.card__ask')).toHaveCount(0);
   await expect(card.getByRole('button', { name: 'Let Merel listen' })).toHaveCount(0);

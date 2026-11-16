@@ -81,6 +81,22 @@ a {
   color: var(--on-ink);
 }
 
+/* Sing, a switch: a small light, filled while it is on (the button fills too, and says aria-pressed). */
+.button--switch {
+  gap: 10px;
+}
+
+.button__light {
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.button--switch[aria-pressed='true'] .button__light {
+  background: currentColor;
+}
+
 .dot {
   display: block;
   flex: none;
@@ -527,21 +543,7 @@ a {
   color: var(--on-ink);
 }
 
-.card--completed {
-  color: var(--quiet);
-}
-
-.card--completed .card__node {
-  border-color: var(--quiet);
-}
-
-.card--completed .card__merel {
-  opacity: 0.45;
-}
-
-.card--completed .card__dots {
-  opacity: 0.6;
-}
+/* A completed card stays open: you can always listen or sing. Its node carries a tick. */
 
 /* ---- The instrument ---- */
 
