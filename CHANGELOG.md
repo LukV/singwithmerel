@@ -1,3 +1,28 @@
+## v0.2.0 (2026-11-16)
+
+### Feat
+
+- **listen**: a listening log in dev, to see why a note is not heard
+- **listen**: your first note is do
+- **listen**: off key, you start again from do
+- **round**: notes fill as you find them; a miss keeps them and you sing again
+- **listen**: the mild judge, tuned on a child, a woman and a man
+- **listen**: npm run tune, and npm run dev:phone over HTTPS for the microphone
+- **listen**: Merel listens in Your turn, with a voice dot on the staff
+
+### Fix
+
+- **listen**: hear a bass's low do, down to 50 Hz
+- **listen**: low do counts after a scale down sung into each note from above
+- **listen**: do follows a voice that sinks going down
+- **listen**: the scale down moves on from high do to si
+- **listen**: hear a laptop's raw microphone, not only a loud phone recording
+- **listen**: the microphone opens in dev, and the card tells a refusal from a failure
+
+### Refactor
+
+- **listen**: move YIN to src/listen, shared with npm run voice
+
 ## v0.1.0 (2026-11-14)
 
 ### Feat
