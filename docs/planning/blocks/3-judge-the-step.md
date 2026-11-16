@@ -1,8 +1,9 @@
 ---
 project: merel
 type: block
-status: in-cycle
+status: shipped
 updated: 2026-11-16
+shipped_on: 2026-11-16
 ---
 # Block 3: Judge the step
 
@@ -25,14 +26,14 @@ Read first: [[017-judge-the-step]], [[018-listen-and-sing]], [[016-movable-do]],
 
 Items marked *(after release)* become true only after Luk merges, bumps and tags; `finish-block` leaves them open.
 
-- [ ] A note counts when you move from the note found last the right way, from half the step to well past it, in any octave; the numbers live in the judge's config object.
-- [ ] A wrong note held says something mild, keeps the notes found, and you try the step again; after two, Merel offers Hear it, and after Hear it you sing from do.
-- [ ] A long silence (3 s) starts the try again from do.
-- [ ] A singing card has Listen and Sing, a switch; recognition has Listen; no step runs by itself; completed cards stay open, and levels open as before.
-- [ ] Without a microphone, Sing off earns the dot.
-- [ ] `npm run tune`: all 11 takes behave as they should under the new rule.
-- [ ] Unit tests and the browser check pass, with a fake microphone that sings a wrong note; the build has no errors or warnings; CI is green on the pull request.
-- [ ] Every page in `docs/` is true for what was built.
+- [x] A note counts when you move from the note found last the right way, from half the step to well past it, in any octave; the numbers live in the judge's config object.
+- [x] A wrong note held says something mild, keeps the notes found, and you try the step again; after two, Merel offers Listen, and after it you sing from do.
+- [x] A long silence (3 s) starts the try again from do.
+- [x] A singing card has Listen and Sing, a switch; recognition has Listen; no step runs by itself; completed cards stay open, and levels open as before.
+- [x] Without a microphone, Sing off earns the dot.
+- [x] `npm run tune`: all 11 takes behave as they should under the new rule.
+- [x] Unit tests and the browser check pass, with a fake microphone that sings a wrong note; the build has no errors or warnings; CI is green on the pull request.
+- [x] Every page in `docs/` is true for what was built.
 - [ ] *(after release)* `v0.3.0` is live on singwithmerel.com with its GitHub release.
 
 ## Test scenario
@@ -58,3 +59,7 @@ Luk runs this on the candidate at https://next.singwithmerel.com, after merging 
 
 - Merel sings in C only; a voice that finds C too low or too high sings in its own key, but hears Merel in another (from block 2).
 - Android Chrome, tried by a person (from block 2).
+
+## What actually happened
+
+Merel 0.3.0 is mild for real. Merel judges the step from the note found last, not the note: the right way, from half the step to well past it, in any octave ([[017-judge-the-step]]); a wrong note says "Not quite" and keeps what you found, and only 3 s of silence, or Listen while you sing, starts again from do. After 3.1, Luk found the round itself too much like an exam, so 3.2 replaced its three steps with two buttons on each card, Listen and Sing, a switch ([[018-listen-and-sing]]); completed cards stay open, and without a microphone, turning Sing off earns the dot. All 11 tuning takes behave as they should. The machine steps of the scenario pass (105 unit tests, the browser check, a build without warnings); the person's steps, the phone, Android Chrome and the person who found 0.2.0 too hard, come on the candidate. Nothing new moved to *Later*.
