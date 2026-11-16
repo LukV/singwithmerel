@@ -1,8 +1,9 @@
 ---
 project: merel
 type: pitch
-status: in-cycle
+status: shipped
 started: 2026-11-16
+shipped_on: 2026-11-16
 block: 3-judge-the-step
 created: 2026-11-16
 ---
@@ -44,11 +45,11 @@ The step judge with wrong notes that reset nothing, and the silence miss. The de
 
 ## Definition of done
 
-- [ ] A note counts when you move the right way from the note found last, from half the step to well past it, in any octave; the numbers are in the judge's config object.
-- [ ] A wrong note says "Not quite" and keeps the notes; a long silence and Hear it start from do; after two Hear it is offered.
-- [ ] `npm run tune`: all 11 takes behave as they should.
-- [ ] The docs this pitch made wrong are true again: features (one round), overview (voice evaluation), decisions 014 and 016 point at 017, AGENTS (tune).
-- [ ] Every machine-runnable step of the test scenario passes.
+- [x] A note counts when you move the right way from the note found last, from half the step to well past it, in any octave; the numbers are in the judge's config object.
+- [x] A wrong note says "Not quite" and keeps the notes; a long silence and Hear it start from do; after two Hear it is offered.
+- [x] `npm run tune`: all 11 takes behave as they should.
+- [x] The docs this pitch made wrong are true again: features (one round), overview (voice evaluation), decisions 014 and 016 point at 017, AGENTS (tune).
+- [x] Every machine-runnable step of the test scenario passes.
 
 ## Test scenario
 
@@ -64,4 +65,4 @@ The step judge with wrong notes that reset nothing, and the silence miss. The de
 
 ## What actually happened
 
-*(At the end.)*
+Everything landed, the cut line and above it. The judge keeps where the note found last was sung and counts the next when the step goes its way, from half its size to 200 cents past it (half its size past it for a leap), in any octave; `tolerance`, `follow` and `strikes` are gone, `least`, `most` and `stay` are new, and the silence is 3 s instead of 1.5. A wrong note is a round event of its own (`wrong`), the card says "Not quite. Try mi again." and the notes stay; Hear it in Your turn (`again`) starts from do. Tuning found one trap: in a legato step, a frame just short of the step was taken for the note found last sung again, and the judge re-anchored there and stuck (the man's and the child's scale up stopped at la and si). Singing the note found last again now counts only after a pause and once held 0.2 s. With that, `npm run tune` gives 11 of 11: all six scales and the man's do mi sol complete; the woman's and the child's do mi sol stop at their sol, which comes back down; the woman's scale down sings its si only 29 cents under do, so the judge runs a note behind and waits for one more do, as decision 017 says it may. Routine choices: a tie between staying on the note and the step goes to the step, except to the same note in another octave, which needs a pause; the fake microphone in the browser check sings do, re, do again, a second's thought, then the rest of the scale, since a message shown for 0.2 s is too quick for the check (and for a person). Whether it is mild enough now is the person's step of the scenario, ideally the one who found 0.2.0 too hard.

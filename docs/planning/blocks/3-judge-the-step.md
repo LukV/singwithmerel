@@ -18,7 +18,7 @@ Read first: [[017-judge-the-step]], [[016-movable-do]], [[014-your-turn-earns-th
 
 | # | Pitch | Status | What Luk can try at the end |
 |---|---|---|---|
-| 3.1 | [[3-1-judge-the-step\|Judge the step]] | in-cycle | Squeeze or stretch the steps and they still count; a wrong note says "Not quite" and keeps your notes |
+| 3.1 | [[3-1-judge-the-step\|Judge the step]] | shipped | Squeeze or stretch the steps and they still count; a wrong note says "Not quite" and keeps your notes |
 
 ## Definition of done
 
