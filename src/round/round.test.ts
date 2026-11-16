@@ -12,28 +12,30 @@ const run = (round: Round, events: RoundEvent[]) => {
 };
 
 describe('a singing round', () => {
-  it('goes hear, sing along, your turn, and completes when sing along ends', () => {
-    const r = newRound(1, melodyFor(1));
-    const afterHear = advance(r, { type: 'played' });
-    expect(afterHear.round.phase).toBe('along');
-    expect(afterHear.completed).toBe(false);
-    const afterAlong = advance(afterHear.round, { type: 'played' });
-    expect(afterAlong.round.phase).toBe('turn');
-    expect(afterAlong.completed).toBe(true);
+  it('is your turn from the start: Sing is on', () => {
+    expect(newRound(1, melodyFor(1)).phase).toBe('turn');
+    expect(newRound(4, melodyFor(4)).phase).toBe('hear');
   });
 
-  it('with Merel listening, completes when the last note is sung, not after sing along', () => {
-    const { round, completed } = run(newRound(1, melodyFor(1), 'hear', true), [{ type: 'played' }, { type: 'played' }]);
-    expect(round.phase).toBe('turn');
-    expect(completed).toBe(0);
-    const sung = run(round, Array.from({ length: 8 }, () => ({ type: 'sung' }) as const));
+  it('without Merel listening, completes when Sing is turned off', () => {
+    const r = newRound(1, melodyFor(1), 'turn', false);
+    expect(advance(r, { type: 'sung' }).round).toBe(r);
+    const { round, completed } = advance(r, { type: 'finished' });
+    expect(round.phase).toBe('done');
+    expect(completed).toBe(true);
+  });
+
+  it('with Merel listening, completes when the last note is sung, not when Sing is turned off', () => {
+    const r = newRound(1, melodyFor(1), 'turn', true);
+    expect(advance(r, { type: 'finished' }).round).toBe(r);
+    const sung = run(r, Array.from({ length: 8 }, () => ({ type: 'sung' }) as const));
     expect(sung.round.sung).toBe(8);
     expect(sung.round.phase).toBe('done');
     expect(sung.completed).toBe(1);
   });
 
   it('starts again from do after a miss, counts the tries, and completes on the last note', () => {
-    const { round } = run(newRound(1, melodyFor(1), 'hear', true), [{ type: 'played' }, { type: 'played' }, { type: 'sung' }, { type: 'sung' }]);
+    const round = run(newRound(1, melodyFor(1), 'turn', true), [{ type: 'sung' }, { type: 'sung' }]).round;
     const missed = run(round, [{ type: 'missed' }, { type: 'missed' }]);
     expect(missed.round.sung).toBe(0);
     expect(missed.round.tries).toBe(2);
@@ -47,13 +49,32 @@ describe('a singing round', () => {
     expect(rest.completed).toBe(1);
   });
 
-  it('falls back to the release 1 rule when Merel cannot listen after all', () => {
-    const along = run(newRound(3, melodyFor(3), 'hear', true), [{ type: 'played' }, { type: 'played' }, { type: 'sung' }]);
-    const { round, completed } = run(along.round, [{ type: 'deaf' }]);
-    expect(completed).toBe(1);
+  it('keeps the notes found after a wrong note, counts it, and starts from do after Hear it', () => {
+    const round = run(newRound(1, melodyFor(1), 'turn', true), [{ type: 'sung' }, { type: 'sung' }]).round;
+    const wrong = run(round, [{ type: 'wrong' }]);
+    expect(wrong.round.sung).toBe(2);
+    expect(wrong.round.tries).toBe(1);
+    expect(wrong.round.off).toBe(true);
+    expect(wrong.round.missed).toBe(false);
+    const on = run(wrong.round, [{ type: 'sung' }]);
+    expect(on.round.sung).toBe(3);
+    expect(on.round.off).toBe(false);
+    const heard = run(on.round, [{ type: 'wrong' }, { type: 'again' }]);
+    expect(heard.round.sung).toBe(0);
+    expect(heard.round.off).toBe(false);
+    expect(heard.round.tries).toBe(2);
+    expect(heard.round.phase).toBe('turn');
+  });
+
+  it('when Merel cannot listen after all, you sing on your own, and Sing off completes it', () => {
+    const sung = run(newRound(3, melodyFor(3), 'turn', true), [{ type: 'sung' }]);
+    const { round, completed } = run(sung.round, [{ type: 'deaf' }]);
+    expect(completed).toBe(0);
     expect(round.listen).toBe(false);
+    expect(round.sung).toBe(0);
     expect(round.phase).toBe('turn');
     expect(advance(round, { type: 'sung' }).round).toBe(round);
+    expect(advance(round, { type: 'finished' }).completed).toBe(true);
   });
 
   it('never listens in recognition', () => {

@@ -2,7 +2,7 @@
 project: merel
 type: context
 status: living
-updated: 2026-11-14
+updated: 2026-11-16
 ---
 # Decisions
 
@@ -23,6 +23,8 @@ updated: 2026-11-14
 | [[011-versions-and-releases]] | Semantic versions with commitizen; only a tag deploys: candidates to next., releases to the site | 2026-11-14 |
 | [[012-stack]] | Vite, TypeScript and Preact; Vitest and Playwright; static page per language | 2026-11-14 |
 | [[013-piano-samples]] | The keys play a recorded grand piano, the Iowa samples, self-hosted | 2026-11-14 |
-| [[014-your-turn-earns-the-dot]] | With a microphone, the dot comes from Your turn; off key you start again from do, unlimited tries, a voice dot on the staff | 2026-11-14 |
+| [[014-your-turn-earns-the-dot]] | With a microphone, the dot comes from Your turn; unlimited tries, a voice dot on the staff | 2026-11-14 |
 | [[015-pitch-detector]] | YIN in an AudioWorklet, our own code, 50 to 1100 Hz, a 64 ms frame every 10 ms | 2026-11-15 |
 | [[016-movable-do]] | Your first note is do: Your turn is judged from where you start, and do follows you | 2026-11-15 |
+| [[017-judge-the-step]] | Judge the step, not the note: the right way by about the right amount; a wrong note resets nothing | 2026-11-16 |
+| [[018-listen-and-sing]] | A singing card has Listen and Sing, a switch; no steps run by themselves; completed cards stay open | 2026-11-16 |

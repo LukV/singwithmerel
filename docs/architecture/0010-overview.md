@@ -31,7 +31,7 @@ src/
   melody/     # the do major scale, the scale exercises, the random three-note melody; pure functions, tested
   audio/      # the AudioContext, the plain tone, the piano notes, Merel's clips scheduled on the audio clock
   round/      # one round as a small state machine (round.ts), and the controller that plays it
-  listen/     # YIN, the pitch tracker and its worklet, the microphone, the mild judge, Merel listening in Your turn
+  listen/     # YIN, the pitch tracker and its worklet, the microphone, the mild judge, Merel listening while Sing is on
   progress/   # the merel.v1 record in local storage, levels and dots, the progress code
   i18n/       # languages and paths; EN, FR, NL strings and note names, one file each
   ui/         # identity, lesson (path, cards), instrument (staff, keys), Merel (SVG poses, CSS motion)
@@ -55,37 +55,38 @@ deploy/       # the one-time AWS setup, the upload, the CloudFront path function
 
 ## One round in code
 
-1. A card's Start asks `round` for a new round; it takes its notes from `melody`: a fixed scale, or a random shape, never the one before.
-2. **Hear it:** `audio` loads the named clips (or "du" in recognition) and schedules them a beat apart at 90 per minute on the audio clock; a clip that is missing or does not decode is a plain tone at its pitch. The controller follows the audio clock frame by frame, so the staff marks the note that sounds; Merel sings.
-3. **Sing along:** the same playback, a beat later. When Merel does not listen, the round completes when it ends, and Your turn follows as practice. In recognition, the answers move the state machine instead, and the round completes when the third note is found.
-4. **Your turn:** if Merel never asked, the card asks first (`merel.mic` in local storage keeps the answer). Then `listen/mic.ts` opens the microphone with echo cancelling, noise suppression and automatic gain off, into the one AudioContext and through the pitch worklet; the worklet posts a frame (pitch, clarity, level) about every 10 ms. `listen/listening.ts` skips the first 0.25 s (Merel's last note may ring), anything while Merel sings Hear it, and a pressed key's note for 2 s, calms the voice for the dot (a median of five frames), and gives each frame to the judge. A frame that finds a note moves the round on (`sung`), and Merel nods; the last one completes it. A try that ends before moves it too (`missed`): the notes empty, the card says to sing again from do, and after two tries Hear it is offered. While Merel sings Hear it, and while a key rings, the try starts afresh. When the round leaves Your turn, the microphone closes.
-5. If the microphone is refused, missing or fails, the round gets `deaf` and completes as after Sing along.
+1. A singing card has Listen and Sing ([[018-listen-and-sing]]); `round` takes the card's notes from `melody`: a fixed scale, or a random shape, kept until it is sung, then a new one, never the one before.
+2. **Listen:** `audio` loads the named clips (or "du" in recognition) and schedules them a beat apart at 90 per minute on the audio clock; a clip that is missing or does not decode is a plain tone at its pitch. The controller follows the audio clock frame by frame, so the staff marks the note that sounds; Merel sings. On a singing card this is a `preview` round, which counts for nothing. In recognition, Listen starts the round (`hear`), and the answers move the state machine; the round completes when the third note is found.
+3. **Sing** on starts a `turn` round. When Merel does not listen, Sing off (`finished`) completes it.
+4. **Merel listening:** if he never asked, the card asks first (`merel.mic` in local storage keeps the answer). Then `listen/mic.ts` opens the microphone with echo cancelling, noise suppression and automatic gain off, into the one AudioContext and through the pitch worklet; the worklet posts a frame (pitch, clarity, level) about every 10 ms. `listen/listening.ts` skips the first 0.25 s, anything while Merel sings Listen, and a pressed key's note for 2 s, calms the voice for the dot (a median of five frames), and gives each frame to the judge. A frame that finds a note moves the round on (`sung`), and Merel nods; the last one completes it, and Sing turns off. A wrong note held moves it too (`wrong`): the notes stay, and the card says to try the next note again. A long silence (`missed`) empties the notes, and the card says to sing again from do. After two of either, Listen is offered; Listen while Sing is on (`again`) empties the notes, and you sing from do after it. While a key rings, the tone you sing starts afresh. When Sing is off, the microphone is closed.
+5. If the microphone is refused, missing or fails, the round gets `deaf`: you sing on your own, and Sing off completes it.
 6. `progress` fills a dot and saves the record; at five dots the level is done, Merel bows, the next level opens and the lesson scrolls to it.
 
 ## Voice evaluation
 
 **Hearing.** The microphone's sound goes to an AudioWorklet that halves the sample rate (to 22 or 24 kHz), and every 240 samples (10 ms) runs YIN on the last 1536 (about 64 ms), between 50 Hz (a bass's low do) and 1100 Hz (a child's high notes); the page gets the pitch and the level, never the sound ([[015-pitch-detector]]). `npm run tune` runs the same code over recordings.
 
-**The mild judge** (`listen/judge.ts`, `judgeFor`) turns the frames into notes found:
+**The mild judge** (`listen/judge.ts`, `judgeFor`) turns the frames into notes found. It judges the step, not the note ([[017-judge-the-step]]):
 
-- **Your do** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is; held on, it keeps setting the key while you stay nearer to it than to the next note (so a glide from high do down to si moves on to si, not do along with it). Every note found does the same while you stay on it, so the scoop into a note weighs less than where it settles. Each note after is judged from the one before: once found, it sets where do is, so do follows a singer who drifts, as voices sink going down. The judge compares each pitch with the next note not yet found, in that key.
-- **Octave folded.** Each pitch becomes a pitch class before comparing, so a bass and a child both sing do.
-- **Tolerance.** Less than a semitone (100 cents) from the note.
-- **Hold.** A note is found once you have been close to it for 0.2 s in all; a pause or a wobble off the note under 0.15 s does not break it. Sound under the level gate is silence.
-- **Order, not timing.** Notes come in order; a wrong note does not count, and the judge waits for the right one. Rhythm is not judged. Right after a note is found, the next counts only once you move nearer to it, or pause, so one long tone between two neighbours is not both.
-- **A miss.** A steady tone held 0.2 s that was never on the note just found nor close to the next (off key), or 1.5 s of silence after singing, ends the try. The next try starts from do.
+- **Where you start** ([[016-movable-do]]). The first pitch of a try held 0.2 s, wobbling less than 60 cents, is the melody's first note, wherever it is.
+- **The step.** After it, the judge keeps where the note found last was sung (the median of its frames while you stay on it) and looks at the step from there to each pitch you sing. The next note counts when the step goes its way, from half its size to 200 cents past it, or half its size past it for a leap: a whole step from 100 to 400 cents, a half step from 50 to 300, do to sol from 350 to 1050. An octave either way is the same note, so a bass and a child both sing it. A drift, a squeezed step or a stretched one does not add up: every step starts from where you are.
+- **Still on the note.** Within 100 cents of the note found last, and nearer to it than to the step, you are still on it, or singing it again after a pause; held 0.2 s again, the next step starts from where you sing it now. Right after a note, the next counts only once you move nearer to it, or pause, so one long tone is not two notes.
+- **Hold.** A note is found once you have been on the step for 0.2 s in all; a pause or a wobble under 0.15 s does not break it. Sound under the level gate is silence.
+- **A wrong note** is a steady tone held 0.2 s that is on no step and not on the note found last: the wrong way, too far, or too short a step. It is said, and resets nothing: the judge waits for the step. Notes come in order; rhythm is not judged.
+- **A miss.** 3 s of silence after singing ends the try, and the next starts from do; Merel singing Listen does too.
 - **Sing-along is never judged**: Merel's voice reaches the microphone too. Headphones solve it; the app suggests them.
 
 The numbers live in one object, `JUDGE`, with why each was chosen.
 
-**Tuning.** Recordings of a child, a woman and a man (scale up, scale down, do mi sol, and an off-key take) sit in `tuning/`, never committed. They are untrained and were sung without hearing Merel, each in the singer's own key, so `npm run tune` first measures and labels them: each note matched to the note meant, the key of the take, and how far off each note is in that key (`npm run tune -- --label` writes `tuning/labels.json`, to correct by hand). It then judges each take as sung, its first note as do, with how far off each step is from the note before as the measure: the judge must find every note of the in-tune takes, stop at a wrong note while it is sung (a note under 120 cents off may go either way), and complete no off-key take.
+**Tuning.** Recordings of a child, a woman and a man (scale up, scale down, do mi sol, and an off-key take) sit in `tuning/`, never committed. They are untrained and were sung without hearing Merel, each in the singer's own key, so `npm run tune` first measures and labels them: each note matched to the note meant, the key of the take, and how far off each note is in that key (`npm run tune -- --label` writes `tuning/labels.json`, to correct by hand). It then judges each take as sung, its first note as do, and measures each step from the note before: a step is wrong when the judge's rule would not count it. The judge must find every note of a take with no wrong step, stop at a wrong step while it is sung (a step within 30 cents of an edge may go either way), and complete no off-key take.
 
 | Release | A round completes when | Fallback |
 |---|---|---|
 | 0.1.0 | you sang along to the end | none needed |
 | 0.2.0 | Your turn found every note, mildly | the 0.1.0 rule |
+| 0.3.0 | Sing found every note, by its step | Sing turned off, on your word ([[018-listen-and-sing]]) |
 
-Microphone refused, missing or failing: the app falls back to the 0.1.0 rule and says so once ([[014-your-turn-earns-the-dot]]).
+Microphone refused, missing or failing: you sing on your own, turning Sing off counts the round, and the app says so once ([[014-your-turn-earns-the-dot]], [[018-listen-and-sing]]).
 
 ## Progress
 
@@ -113,4 +114,4 @@ Safari deletes a site's stored data after about seven days without a visit unles
 
 ## Privacy
 
-The microphone is asked for only at the first Your turn, with one sentence on why, and is open only during Your turn. The sound is analysed in the worklet as it comes and dropped; only pitch and level reach the page, and nothing is kept. The response headers allow the microphone for our own origin only (`Permissions-Policy: microphone=(self)`). No analytics, no cookies, fonts self-hosted, no request to any host but our own; the content security policy enforces it. CloudFront keeps no access logs. The privacy and about page says the same to the user.
+The microphone is asked for only the first time you press Sing, with one sentence on why, and is open only while Sing is on. The sound is analysed in the worklet as it comes and dropped; only pitch and level reach the page, and nothing is kept. The response headers allow the microphone for our own origin only (`Permissions-Policy: microphone=(self)`). No analytics, no cookies, fonts self-hosted, no request to any host but our own; the content security policy enforces it. CloudFront keeps no access logs. The privacy and about page says the same to the user.

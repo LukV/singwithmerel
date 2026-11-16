@@ -21,7 +21,7 @@ import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os';
 import { basename, extname, join } from 'node:path';
 import { SCALE_DOWN, SCALE_UP, type Melody } from '../src/melody/melody.ts';
-import { centsOf, JUDGE, judgeFor } from '../src/listen/judge.ts';
+import { centsOf, counts, JUDGE, judgeFor, reach, stepOf } from '../src/listen/judge.ts';
 import { Tracker, type Frame } from '../src/listen/tracker.ts';
 import { toWav } from './voice/convert.ts';
 import { readWav } from './voice/wav.ts';
@@ -34,8 +34,8 @@ const LABELS = join('tuning', 'labels.json');
 const LABELS_ABOUT =
   'Each note of a take, matched in order to the note meant, in the key the take was sung in (key: cents above C4). off: cents from the note meant in that key; in tune within 50, a bit off under 100, else a wrong note. Made by npm run tune -- --label; correct by hand.';
 
-/** A note less than this many cents off, though past the tolerance, may count or not. */
-const DOUBT = 120;
+/** A step within this many cents of the edge of what counts may count or not: the judge measures it on its own frames. */
+const DOUBT = 30;
 
 const median = (a: number[]) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)]!;
 
@@ -119,6 +119,7 @@ export interface Judged {
   /** The times (seconds) each note was found, in order, in the try that got furthest. */
   times: number[];
   misses: number;
+  wrongs: number;
 }
 
 /** Judges frames for a melody, moved by `shift` cents first. */
@@ -128,9 +129,11 @@ export function judgeTake(frames: Frame[], melody: Melody, shift: number): Judge
   const times: number[] = [];
   let best: number[] = [];
   let misses = 0;
+  let wrongs = 0;
   for (const f of frames) {
     const e = judge.hear({ ...f, hz: f.hz === null ? null : f.hz * factor });
     if (e?.type === 'found') times.push(f.time);
+    if (e?.type === 'wrong') wrongs++;
     if (e?.type === 'miss') {
       // A miss starts again from do: the try that got furthest is the one reported.
       misses++;
@@ -138,7 +141,7 @@ export function judgeTake(frames: Frame[], melody: Melody, shift: number): Judge
       times.length = 0;
     }
   }
-  return { times: times.length >= best.length ? times : best, misses };
+  return { times: times.length >= best.length ? times : best, misses, wrongs };
 }
 
 function read(file: string): { rate: number; samples: Float32Array } {
@@ -203,30 +206,35 @@ function report(file: string, labels: Record<string, Label>, made: Label[]): boo
   if (melody) {
     const l = labels[name] ?? labelTake(name, notesOf(frames), melody);
     made.push(l);
-    // As the judge hears it: the first note is do, and each note after is judged from the one
-    // before (JUDGE.follow), so how far off each step is.
+    // As the judge hears it: the first note is where you start, and each note after is judged by
+    // the step from the note before: the right way, from half its size to well past it.
     const notes = l.notes.map((n, i) => {
-      const back = l.notes.slice(Math.max(0, i - JUDGE.follow), i);
-      const off = i === 0 ? 0 : n.off - back.reduce((a, b) => a + b.off, 0) / back.length;
-      return { ...n, off: Math.round(off), verdict: verdictOf(off) };
+      if (i === 0) return { ...n, step: 0, wrong: false, edge: Infinity };
+      const size = stepOf(melody, i);
+      const moved = SEMITONES[melody[i]!.step]! * 100 + n.off - (SEMITONES[melody[i - 1]!.step]! * 100 + l.notes[i - 1]!.off);
+      const { low, high } = reach(size);
+      const edge = Math.min(Math.abs(Math.abs(moved) - low), Math.abs(Math.abs(moved) - high));
+      return { ...n, step: Math.round(moved), wrong: !counts(moved, size), edge };
     });
-    const wrong = notes.findIndex((n) => n.verdict === 'wrong note');
+    const wrong = notes.findIndex((n) => n.wrong);
     const j = judgeTake(frames, melody, 0);
-    // With a wrong note: every note before it found, the take not complete, and the wrong note not
-    // found while it was sung (a later note may yet stand in for it, as a singer would do). A note
-    // just past the tolerance (under DOUBT) may go either way: the judge measures it on its own frames.
+    // With a wrong step: every note before it found, the take not complete, and the wrong note not
+    // found while it was sung (a later note may yet stand in for it, as a singer would do). A step
+    // near the edge (within DOUBT) may go either way.
     const at = wrong < 0 ? undefined : j.times[wrong];
     const span = wrong < 0 ? null : notes[wrong]!;
     const complete = j.times.length === melody.length;
     const stops = j.times.length >= wrong && !complete && !(at !== undefined && span && at >= span.start && at <= span.end + JUDGE.gap);
-    const doubtful = wrong >= 0 && Math.abs(notes[wrong]!.off) < DOUBT;
-    const ok = wrong < 0 ? complete : stops || (doubtful && complete);
-    const offs = notes.map((n) => `${n.meant}${n.off >= 0 ? '+' : ''}${n.off}${n.verdict === 'wrong note' ? '!' : ''}`).join(' ');
+    // Near the edge (within DOUBT), the step the judge waits for, or the wrong one, may go either way.
+    const waits = notes[wrong < 0 ? j.times.length : wrong];
+    const doubtful = !!waits && waits.edge < DOUBT;
+    const ok = wrong < 0 ? complete || doubtful : stops || (doubtful && complete);
+    const offs = notes.map((n, i) => (i === 0 ? n.meant : `${n.step >= 0 ? '+' : ''}${n.step} ${n.meant}${n.wrong ? '!' : ''}`)).join(' ');
     console.log(`${ok ? 'ok ' : 'NO '} ${name.padEnd(18)} do at ${keyName(l.key + l.notes[0]!.off).padEnd(6)} ${offs}`);
     const should =
       wrong < 0
-        ? 'every note'
-        : `the notes before its wrong ${notes[wrong]!.meant}, not that one, and not complete${doubtful ? ` (or every note: it is under ${DOUBT} off)` : ''}`;
+        ? `every note${doubtful ? ` (or stop at ${waits!.meant}: its step is within ${DOUBT} cents of the edge)` : ''}`
+        : `the notes before its wrong ${notes[wrong]!.meant}, not that one, and not complete${doubtful ? ` (or every note: a step is within ${DOUBT} cents of the edge)` : ''}`;
     console.log(`    ${''.padEnd(18)} should find ${should}: ${describe(melody, j)}`);
     return ok;
   }
@@ -246,8 +254,8 @@ function report(file: string, labels: Record<string, Label>, made: Label[]): boo
 
 if (import.meta.main) {
   const j = JUDGE;
-  console.log(`Judge: under ${j.tolerance} cents from the note in any octave, held ${j.hold} s in all (pauses up to ${j.gap} s), above level ${j.gate}; a try ends after ${j.silence} s of silence.`);
-  console.log('Each take as sung, its first note taken as do: how far off each step is from the note before (! a wrong note), then what the judge finds.\n');
+  console.log(`Judge: each step the right way, from ${j.least} of its size to ${j.most} cents past it (or half its size, for a leap), in any octave, held ${j.hold} s in all (pauses up to ${j.gap} s), above level ${j.gate}; a try ends after ${j.silence} s of silence.`);
+  console.log('Each take as sung, its first note taken as do: each step sung, in cents (! one that does not count), then what the judge finds.\n');
   const takes = existsSync('tuning') ? readdirSync('tuning').filter((f) => AUDIO.test(f)).sort() : [];
   if (!takes.length) console.log('No recordings in tuning/ yet (docs/planning/blocks/2-your-turn.md says how to make them).');
   const relabel = process.argv.includes('--label');

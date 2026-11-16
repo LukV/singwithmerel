@@ -2,11 +2,11 @@
 project: merel
 type: features
 status: draft
-updated: 2026-11-14
+updated: 2026-11-16
 ---
 # Features
 
-**In brief.** The screen splits into a lesson that scrolls and an instrument that stays put. The lesson is a path of numbered exercises; each exercise runs as rounds of Hear it, Sing along and Your turn. One completed round fills one dot; five dots open the next level. Everything stays in do major, and in any octave.
+**In brief.** The screen splits into a lesson that scrolls and an instrument that stays put. The lesson is a path of numbered exercises; a singing card has two buttons, Listen and Sing: you hear Merel as often as you like, and have a go when you are ready. One completed round fills one dot; five dots open the next level. Everything stays in do major, and in any octave.
 
 ## Screen
 
@@ -25,25 +25,26 @@ The exercises hang from a thin hand-drawn line, each on a numbered node.
 
 | State | Node | Card |
 |---|---|---|
-| Active | Filled black, white number | Underlined title, filled button, Merel moves |
-| Upcoming | Outlined | Still Merel |
-| Completed | Grey with a tick | Grey text, Merel bows, dots full |
+| Active | Filled black, white number | Underlined title, Listen filled, Merel moves |
+| Upcoming | Outlined | Still Merel, buttons not yet open |
+| Completed | A tick | As open as the active card: you can always listen or sing; dots full, or "Skipped." |
 
 ## One round
 
-1. **Hear it.** Merel sings the notes alone, by name, while the staff marks each one.
-2. **Sing along.** A beat later he sings them again and you sing with him.
-3. **Your turn.** Merel is silent and listens; you sing alone. The notes on the staff are outlined, the next one to sing brighter, and a soft dot follows your voice. Each note fills in its colour when you hold it close enough, in any octave, and Merel nods. Do is where you start: your first note, sung in your own range, is do, and each note after is judged from the one before, so sinking a little as you go down is fine. When every note is found, Merel bows and the dot fills; then "next round".
+A singing card has no steps that run by themselves, only two buttons ([[018-listen-and-sing]]):
 
-**A miss.** When you hold a wrong note, or stop singing before every note is found, Merel says something mild ("Almost. Sing it again from do."). The notes empty again, and you sing the melody from do, as a teacher would have you do, as often as you like. After two such tries he offers Hear it, which turns into the filled button; the round goes on, its dots stay, and Skip this level stays. Judging is mild: less than a semitone off counts, rhythm and timing are not judged, and there is no score.
+- **Listen.** Merel sings the notes by name, while the staff marks each one. As often as you like; it never counts, and you may hum along. Pressed while he sings, he stops.
+- **Sing**, a switch with a small light. On, it is your turn: Merel is silent and listens; you sing alone. The notes on the staff are outlined, the next one to sing brighter, and a soft dot follows your voice. Each note fills in its colour when you hold it, and Merel nods. Do is where you start: your first note, sung in your own range, is do. Each note after counts when you go the right way from the note before, up or down, by about the right step, in any octave: a step a little small or a little large is fine, and so is sinking as you go down. When every note is found, Merel bows, the dot fills, and Sing turns off. Exercise 3 then has a new melody to listen to.
 
-**The microphone.** At the first Your turn Merel asks in one sentence ("Merel listens while you sing. Your voice stays on this device."), with "Let him listen" and "Not now"; only then does the browser ask. The answer is remembered. The microphone is open only during Your turn. Said no, or the microphone is refused, missing or fails: Merel says once that he will not listen this time, the round counts after Sing along as in 0.1.0, and Your turn is practice. A quiet "Let Merel listen" on the card asks the browser again; he listens from the next round. If it still does not open, the card says which: the browser keeps the microphone closed (allow it in the browser's settings), or the microphone did not open on this device. Pressing a key during Your turn does not count as your voice: the piano note is ignored while it rings.
+**A wrong note, and a miss.** When you hold a wrong note (the wrong way, or much too far), Merel says so mildly ("Not quite. Try mi again."); the notes you found stay, and you try that step again. When you stop singing for a few seconds before every note is found, he says "Almost. Sing it again from do.", the notes empty, and you sing the melody from do. After two of either he offers Listen, which turns into the filled button; Listen while Sing is on, and you sing from do after it. Tries are unlimited, the round's dots stay, and Skip this level stays. Judging is mild: the shape of the melody counts, not exact pitch; rhythm and timing are not judged, and there is no score.
 
-Recognition (exercise 4) sings on "du" and replaces steps 2 and 3 with answering, while the staff stays empty: first the direction of each step (up or down, two big buttons), then the notes on the keys, which appear on the staff as you find them. Each right answer says yes and stays on the card: the directions with a tick, then the three notes, filled in their colour and name as you find them, with the next one outlined. On a phone the keys come back up when it is time to find the notes. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round. "Hear it" sings the melody again at any time.
+**The microphone.** The first time you press Sing, Merel asks in one sentence ("Merel listens while you sing. Your voice stays on this device."), with "Let him listen" and "Not now"; only then does the browser ask. The answer is remembered. The microphone is open only while Sing is on. Said no, or the microphone is refused, missing or fails: Merel says once that he will not listen this time; you sing on your own, and turning Sing off counts the round. A quiet "Let Merel listen" on the card asks the browser again; he listens the next time you sing. If it still does not open, the card says which: the browser keeps the microphone closed (allow it in the browser's settings), or the microphone did not open on this device. Pressing a key while Sing is on does not count as your voice: the piano note is ignored while it rings.
+
+Recognition (exercise 4) has Listen only, which starts a round: Merel sings on "du", then you answer, while the staff stays empty: first the direction of each step (up or down, two big buttons), then the notes on the keys, which appear on the staff as you find them. Each right answer says yes and stays on the card: the directions with a tick, then the three notes, filled in their colour and name as you find them, with the next one outlined. On a phone the keys come back up when it is time to find the notes. A wrong answer shows the note you chose, in its colour, and you try again; it never resets the round. Listen sings the melody again at any time; after the round, it starts the next.
 
 Merel acts the round out: singing while he sings, thinking over up or down, listening while you sing or search, nodding softly at each note you find, bowing when a round completes, waiting otherwise.
 
-With Merel listening, a round completes in Your turn; without, after Sing along ([[014-your-turn-earns-the-dot]], [[architecture/0010-overview#Voice evaluation|voice evaluation]]). Recognition never uses the microphone.
+With Merel listening, a round completes on its last note; without, when you turn Sing off ([[014-your-turn-earns-the-dot]], [[018-listen-and-sing]], [[architecture/0010-overview#Voice evaluation|voice evaluation]]). Recognition never uses the microphone.
 
 ## Dots and levels
 
@@ -89,7 +90,7 @@ Planned, not specified yet ([[planning/_about|the plan]]):
 - **Installable.** Merel installs to the home screen like an app, with its own icon. On a phone or tablet, after the first completed level, the lesson invites you once, just before the next level, and scrolls to the invitation: on an iPhone or iPad with how (Share, then Add to Home Screen) and why (Safari forgets progress after seven days without a visit); where the browser can install it, with an Install button. "Not now" closes it for good.
 - **Offline.** After the first visit Merel starts, sings and keeps your progress without a network.
 - **Updates.** A new release arrives by itself: the next time Merel opens with a network, or, if it stays open, once no round is under way. Nothing to do and nothing lost.
-- **Privacy and about.** A short page per language, linked at the foot of the lesson: no accounts, nothing sent, the microphone only during Your turn and only if you let him, analysed on the device and never recorded, what the progress code holds, how to clear everything, and who made Merel.
+- **Privacy and about.** A short page per language, linked at the foot of the lesson: no accounts, nothing sent, the microphone only while Sing is on and only if you let him, analysed on the device and never recorded, what the progress code holds, how to clear everything, and who made Merel.
 
 ## Languages
 

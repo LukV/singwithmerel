@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { SCALE_DOWN, SCALE_UP, type Melody } from '../melody/melody';
 import { freqFromC4 } from '../melody/scale';
-import { JUDGE, fold, judgeFor } from './judge';
+import { JUDGE, counts, fold, judgeFor } from './judge';
 import type { Frame } from './tracker';
 
 /** A pitch track: each part a pitch in Hz (or null for silence) held for some seconds, a frame every 10 ms. */
@@ -25,7 +25,7 @@ const sing = (semis: number[], seconds = 0.5, cents = 0): [number, number][] => 
 function judge(frames: Frame[], melody: Melody = SCALE_UP) {
   const j = judgeFor(melody);
   const events = frames.map((f) => j.hear(f)).filter((e) => e !== null);
-  return { found: j.found, events, misses: events.filter((e) => e.type === 'miss').length };
+  return { found: j.found, events, misses: events.filter((e) => e.type === 'miss').length, wrongs: events.filter((e) => e.type === 'wrong').length };
 }
 
 describe('the mild judge', () => {
@@ -89,20 +89,45 @@ describe('the mild judge', () => {
     expect(judge(track(sink), SCALE_DOWN).found).toBe(8);
   });
 
-  it('takes a new do after a miss', () => {
+  it('takes a new do after a long silence', () => {
     const j = judgeFor(SCALE_UP);
-    for (const f of track([...sing([0, 2, 6]), [null, 0.3], ...sing(SCALE.map((s) => s + 3))])) j.hear(f);
+    for (const f of track([...sing([0, 2]), [null, JUDGE.silence + 0.1], ...sing(SCALE.map((s) => s + 3))])) j.hear(f);
     expect(j.found).toBe(8);
     expect(j.key).toBeCloseTo(300, 0);
   });
 
-  it('allows up to a semitone off from your do, not more', () => {
+  it('counts a step the right way, from half its size to well past it', () => {
+    // A whole step counts from 100 to 400 cents, a half step from 50 to 300, a fifth from 350 to 1050.
+    expect(counts(100, 200)).toBe(true);
+    expect(counts(400, 200)).toBe(true);
+    expect(counts(90, 200)).toBe(false);
+    expect(counts(450, 200)).toBe(false);
+    expect(counts(-200, 200)).toBe(false);
+    expect(counts(50, 100)).toBe(true);
+    expect(counts(300, 100)).toBe(true);
+    expect(counts(-700, -700)).toBe(true);
+    expect(counts(-500, -700)).toBe(true);
+    expect(counts(-200, -700)).toBe(false);
+    // An octave either way is the same note: a fifth up sung as a fourth down.
+    expect(counts(-500, 700)).toBe(true);
     const doReMi: Melody = [0, 1, 2].map((step) => ({ step, beats: 1 }));
-    const off = (cents: number): [number, number][] => [[hz(0), 0.5], [hz(2, cents), 0.5], [hz(4, cents), 0.5]];
-    expect(judge(track(off(90)), doReMi).found).toBe(3);
-    expect(judge(track(off(-90)), doReMi).found).toBe(3);
-    expect(judge(track([...off(140), [null, 0.2]]), doReMi).events[0]).toEqual({ type: 'found', index: 0 });
-    expect(judge(track([...off(140), [null, 0.2]]), doReMi).misses).toBe(1);
+    const steps = (a: number, b: number): [number, number][] => [[hz(0), 0.5], [hz(a / 100), 0.5], [hz((a + b) / 100), 0.5]];
+    expect(judge(track(steps(110, 380)), doReMi).found).toBe(3);
+    expect(judge(track([[hz(0), 0.5], [hz(0.8), 0.5], [null, 0.2]]), doReMi).found).toBe(1);
+    expect(judge(track([[hz(0), 0.5], [hz(-2), 0.5], [null, 0.2]]), doReMi).found).toBe(1);
+  });
+
+  it('finds a scale sung with uneven steps: half steps as whole ones, whole steps as half ones', () => {
+    // Each step in cents, sung one after the other without a breath.
+    const steps = (sizes: number[]): [number, number][] => [0, ...sizes].map((_, i, all) => [hz(all.slice(1, i + 1).reduce((a, b) => a + b, 0) / 100), 0.5]);
+    expect(judge(track(steps([120, 120, 190, 130, 120, 140, 190]))).found).toBe(8);
+    expect(judge(track(steps([300, 380, 190, 280, 290, 290, 250]))).found).toBe(8);
+  });
+
+  it('does not count standing still, and singing the note found last again is no wrong note', () => {
+    const { found, wrongs } = judge(track([[hz(0), 0.5], [null, 0.3], [hz(0, 20), 0.5], [null, 0.3], ...sing([2, 4])]));
+    expect(wrongs).toBe(0);
+    expect(found).toBe(3);
   });
 
   it('needs the note held for the hold time', () => {
@@ -124,11 +149,11 @@ describe('the mild judge', () => {
     expect(events.at(-1)).toEqual({ type: 'found', index: 2 });
   });
 
-  it('does not count a slide through a note before the hold time', () => {
-    // A slide from do to mi passes re too quickly to count, so mi, out of turn, does not count either.
-    const slide: [number, number][] = Array.from({ length: 30 }, (_, k) => [hz((k * 4) / 30), 0.01]);
-    const { found } = judge(track([[hz(0), 0.5], ...slide, [hz(4), 0.5]]), [{ step: 0, beats: 1 }, { step: 1, beats: 1 }, { step: 2, beats: 1 }]);
-    expect(found).toBe(1);
+  it('does not count a quick slide as a note of its own', () => {
+    // A quick slide from do to mi passes re too quickly to count; mi, a big step, stands in for re.
+    const slide: [number, number][] = Array.from({ length: 15 }, (_, k) => [hz((k * 4) / 15), 0.01]);
+    const { found } = judge(track([[hz(0), 0.5], ...slide, [hz(4, -10), 0.5]]), [{ step: 0, beats: 1 }, { step: 1, beats: 1 }, { step: 2, beats: 1 }]);
+    expect(found).toBe(2);
   });
 
   it('keeps a note held across a short pause or a stray frame', () => {
@@ -150,7 +175,7 @@ describe('the mild judge', () => {
     const { found, events, misses } = judge(track([...sing([0, 2]), [null, JUDGE.silence + 0.1]]));
     expect(found).toBe(0);
     expect(misses).toBe(1);
-    expect(events.at(-1)).toEqual({ type: 'miss', why: 'silence' });
+    expect(events.at(-1)).toEqual({ type: 'miss' });
   });
 
   it('does not miss before you sing, nor after the last note', () => {
@@ -158,14 +183,27 @@ describe('the mild judge', () => {
     expect(judge(track([...sing(SCALE), [null, 3]])).misses).toBe(0);
   });
 
-  it('misses as soon as you hold a wrong note, without waiting for silence, and starts again from do', () => {
+  it('says so when you hold a wrong note, resets nothing, and waits for the step', () => {
+    // Do mi sol: do, mi, then re, the wrong way; then sol.
     const melody: Melody = [{ step: 0, beats: 1 }, { step: 2, beats: 1 }, { step: 4, beats: 2 }];
-    const { misses, found, events } = judge(track([...sing([0, 4, 6]), [null, 0.2]]), melody);
-    expect(events.filter((e) => e.type === 'found')).toHaveLength(2);
-    expect(misses).toBe(1);
-    expect(found).toBe(0);
-    // From do again, the melody completes.
-    expect(judge(track([...sing([0, 4, 6]), [null, 0.3], ...sing([0, 4, 7])]), melody).found).toBe(3);
+    const wrong = judge(track([...sing([0, 4, 2]), [null, 0.2]]), melody);
+    expect(wrong.found).toBe(2);
+    expect(wrong.wrongs).toBe(1);
+    expect(wrong.misses).toBe(0);
+    const { found, events } = judge(track([...sing([0, 4, 2]), [null, 0.3], [hz(4), 0.4], [hz(7), 0.5]]), melody);
+    expect(found).toBe(3);
+    expect(events.filter((e) => e.type !== 'found')).toEqual([{ type: 'wrong' }]);
+  });
+
+  it('starts again from do after Merel sings it again', () => {
+    const j = judgeFor(SCALE_UP);
+    for (const f of track(sing([0, 2, 4]))) j.hear(f);
+    expect(j.found).toBe(3);
+    j.restart();
+    expect(j.found).toBe(0);
+    expect(j.key).toBeNull();
+    for (const f of track(sing(SCALE.map((s) => s - 5)))) j.hear({ ...f, time: f.time + 10 });
+    expect(j.found).toBe(8);
   });
 
   it('starts from a given note, and afresh after a rest', () => {
@@ -173,7 +211,7 @@ describe('the mild judge', () => {
     for (const f of track(sing([4]))) j.hear(f);
     expect(j.found).toBe(3);
     const k = judgeFor(SCALE_UP);
-    const frames = track([...sing([0]), [null, 1], [null, 1]]);
+    const frames = track([...sing([0]), [null, JUDGE.silence], [null, 1]]);
     let miss = false;
     frames.forEach((f, i) => {
       if (i === 60) k.rest();
