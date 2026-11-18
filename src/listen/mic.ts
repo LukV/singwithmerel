@@ -1,3 +1,4 @@
+import { playbackSession, recordingSession } from '../audio/session';
 import { audioContext } from '../audio/tone';
 import type { Frame } from './tracker';
 import workletUrl from './pitch-worklet.ts?worker&url';
@@ -32,6 +33,7 @@ export async function openMic(onFrame: (frame: Frame) => void): Promise<Mic | Mi
   const ac = audioContext();
   if (!ac || !canListen() || !ac.audioWorklet) return 'failed';
   let stream: MediaStream | null = null;
+  recordingSession();
   try {
     stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
@@ -57,10 +59,12 @@ export async function openMic(onFrame: (frame: Frame) => void): Promise<Mic | Mi
         node.disconnect();
         mute.disconnect();
         for (const track of open.getTracks()) track.stop();
+        playbackSession();
       },
     };
   } catch (error) {
     for (const track of stream?.getTracks() ?? []) track.stop();
+    playbackSession();
     const name = (error as { name?: string } | null)?.name;
     return !stream && (name === 'NotAllowedError' || name === 'SecurityError') ? 'refused' : 'failed';
   }

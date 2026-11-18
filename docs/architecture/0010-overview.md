@@ -107,7 +107,7 @@ Safari deletes a site's stored data after about seven days without a visit unles
 ## Device notes
 
 - Audio starts only after a tap: Start creates and resumes the AudioContext.
-- The silent switch on an iPhone can mute web audio; on an iPhone the first screen says so in one line, and every phone gets a line about headphones.
+- Silent mode on an iPhone mutes web audio by default. From iOS 17 the page sets its audio session to "playback" (`audio/session.ts`), as a video does, so Merel sounds in silent mode too; while the microphone is open the session is "auto", which the browser makes play-and-record. Older iPhones stay muted, so on an iPhone the first screen says so in one line, and every phone gets a line about headphones.
 - Bluetooth headphones add delay: fine for listening and judging, sing-along may feel slightly late. A Bluetooth headset may switch to its own, poorer microphone while Merel listens; Merel does not fight it.
 - The microphone works only on a secure page: the live site, `localhost`, or `npm run dev:phone` (HTTPS with a certificate of its own, which the phone warns about once). Plain `npm run dev -- --host` reaches a phone without the microphone, and Merel works as in 0.1.0 there.
 - Eight keys on a 390 px phone are about 43 px each, at the limit for touch; test early.
