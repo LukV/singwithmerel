@@ -1,3 +1,5 @@
+import { playbackSession } from './session';
+
 /**
  * One AudioContext for the whole app, and a plain tone for the instrument and as Merel's
  * stand-in when a clip is missing. Browsers, iOS Safari first, only allow sound after a tap:
@@ -11,6 +13,7 @@ export function audioContext(): AudioContext | null {
   const AC: typeof AudioContext | undefined =
     globalThis.AudioContext ?? (globalThis as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!AC) return null;
+  playbackSession();
   context = new AC();
   return context;
 }
